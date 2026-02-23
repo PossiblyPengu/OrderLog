@@ -1,0 +1,697 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+    <!-- ORDER LOG WIDGET THEME - Modern Material Design 3 Inspired                  -->
+    <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+    
+    <!-- High-visibility caret color - bright cyan for contrast on any background -->
+    <SolidColorBrush x:Key="HighVisibilityCaretBrush" Color="#00D4FF"/>
+    
+    <!-- Default TextBox style with visible caret -->
+    <Style TargetType="TextBox">
+        <Setter Property="CaretBrush" Value="{StaticResource HighVisibilityCaretBrush}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    
+    <!-- Default RichTextBox style with visible caret -->
+    <Style TargetType="RichTextBox">
+        <Setter Property="CaretBrush" Value="{StaticResource HighVisibilityCaretBrush}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- SPACING & LAYOUT CONSTANTS                                                  -->
+    <!-- Based on 8px grid system for consistent visual rhythm                       -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <!-- Widget Container -->
+    <Thickness x:Key="WidgetPadding">16,16,16,16</Thickness>
+    <Thickness x:Key="WidgetContentPadding">16,12,16,12</Thickness>
+    
+    <!-- Card Dimensions -->
+    <sys:Double x:Key="WidgetCardWidth">Auto</sys:Double>
+    <sys:Double x:Key="WidgetCardMinWidth">280</sys:Double>
+    <sys:Double x:Key="WidgetCardMaxWidth">400</sys:Double>
+    <sys:Double x:Key="WidgetCardColorBarHeight">8</sys:Double>
+    <CornerRadius x:Key="WidgetCardCornerRadius">20</CornerRadius>
+    <CornerRadius x:Key="WidgetCardTopCornerRadius">20,20,0,0</CornerRadius>
+    <CornerRadius x:Key="WidgetCardBottomCornerRadius">0,0,20,20</CornerRadius>
+    <Thickness x:Key="WidgetCardMargin">0,0,0,20</Thickness>
+    <Thickness x:Key="WidgetCardPadding">0</Thickness>
+    
+    <!-- Card Content Spacing -->
+    <Thickness x:Key="WidgetCardHeaderPadding">16,14,16,12</Thickness>
+    <Thickness x:Key="WidgetCardBodyPadding">16,12,16,16</Thickness>
+    <Thickness x:Key="WidgetCardFooterPadding">12,10,12,10</Thickness>
+    
+    <!-- List Spacing -->
+    <Thickness x:Key="WidgetListItemSpacing">0,0,0,12</Thickness>
+    
+    <!-- Section Spacing -->
+    <sys:Double x:Key="WidgetSectionGap">24</sys:Double>
+    <sys:Double x:Key="WidgetElementGap">8</sys:Double>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- TYPOGRAPHY                                                                   -->
+    <!-- Clear hierarchy: Title > Subtitle > Body > Caption                          -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <sys:Double x:Key="WidgetTitleFontSize">15</sys:Double>
+    <sys:Double x:Key="WidgetSubtitleFontSize">13</sys:Double>
+    <sys:Double x:Key="WidgetBodyFontSize">13</sys:Double>
+    <sys:Double x:Key="WidgetCaptionFontSize">11</sys:Double>
+    <sys:Double x:Key="WidgetBadgeFontSize">10</sys:Double>
+    
+    <FontWeight x:Key="WidgetTitleFontWeight">SemiBold</FontWeight>
+    <FontWeight x:Key="WidgetSubtitleFontWeight">Medium</FontWeight>
+    <FontWeight x:Key="WidgetBodyFontWeight">Normal</FontWeight>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- WIDGET-SPECIFIC BRUSHES                                                      -->
+    <!-- Colors are defined in DarkTheme.xaml and LightTheme.xaml                    -->
+    <!-- These brushes reference theme colors via DynamicResource for switching      -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <!-- Status Brushes - Use DynamicResource for theme switching -->
+    <SolidColorBrush x:Key="WidgetStatusNotReadyBrush" Color="{DynamicResource WidgetStatusNotReadyColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusOnDeckBrush" Color="{DynamicResource WidgetStatusOnDeckColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusInProgressBrush" Color="{DynamicResource WidgetStatusInProgressColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusDoneBrush" Color="{DynamicResource WidgetStatusDoneColor}"/>
+    
+    <!-- Status Background Brushes - Use DynamicResource for theme switching -->
+    <SolidColorBrush x:Key="WidgetStatusNotReadyBgBrush" Color="{DynamicResource WidgetStatusNotReadyBgColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusOnDeckBgBrush" Color="{DynamicResource WidgetStatusOnDeckBgColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusInProgressBgBrush" Color="{DynamicResource WidgetStatusInProgressBgColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusDoneBgBrush" Color="{DynamicResource WidgetStatusDoneBgColor}"/>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- ELEVATION & SHADOWS - Modern Three-Tier System                              -->
+    <!-- Using low BlurRadius + zero ShadowDepth for softer rounded shadow effect    -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <!-- Level 1: Resting State - Soft diffused shadow (no offset = better rounded corners) -->
+    <DropShadowEffect x:Key="WidgetCardShadow"
+                      BlurRadius="16"
+                      ShadowDepth="0"
+                      Direction="270"
+                      Opacity="0.12"
+                      Color="#000000"/>
+
+    <!-- Level 2: Hover/Focused State - Enhanced elevation (zero depth for rounded shadow) -->
+    <DropShadowEffect x:Key="WidgetCardHoverShadow"
+                      BlurRadius="24"
+                      ShadowDepth="0"
+                      Direction="270"
+                      Opacity="0.18"
+                      Color="#000000"/>
+
+    <!-- Level 3: Dragging/Modal State - Maximum elevation -->
+    <DropShadowEffect x:Key="WidgetCardDragShadow"
+                      BlurRadius="32"
+                      ShadowDepth="0"
+                      Direction="270"
+                      Opacity="0.25"
+                      Color="#000000"/>
+
+    <!-- Button Shadow - Subtle depth -->
+    <DropShadowEffect x:Key="WidgetButtonShadow"
+                      BlurRadius="12"
+                      ShadowDepth="3"
+                      Direction="270"
+                      Opacity="0.18"
+                      Color="#000000"/>
+
+    <!-- Accent Glow - For primary actions -->
+    <DropShadowEffect x:Key="WidgetAccentGlow"
+                      BlurRadius="20"
+                      ShadowDepth="0"
+                      Opacity="0.4"
+                      Color="{DynamicResource AccentColor}"/>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- CARD STYLES                                                                  -->
+    <!-- Material Design 3 inspired elevated card design                             -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <!-- Elevated Card Style (Primary card type) - Modern refined design -->
+    <Style x:Key="OrderLogWidgetElevatedCardStyle" TargetType="Border" BasedOn="{StaticResource ElevatedCardStyle}">
+        <!-- Based on global `ElevatedCardStyle` from ModernStyles.xaml for consistency -->
+        <Setter Property="CornerRadius" Value="{StaticResource WidgetCardCornerRadius}"/>
+        <Setter Property="Margin" Value="{StaticResource WidgetCardMargin}"/>
+        <Setter Property="Padding" Value="{StaticResource WidgetCardPadding}"/>
+        <Setter Property="MinWidth" Value="{StaticResource WidgetCardMinWidth}"/>
+        <Setter Property="MaxWidth" Value="{StaticResource WidgetCardMaxWidth}"/>
+        <Setter Property="Effect" Value="{StaticResource WidgetCardShadow}"/>
+        <!-- Subtle border for better definition -->
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="{DynamicResource BorderColor}" Opacity="0.05"/>
+            </Setter.Value>
+        </Setter>
+        <!-- Smooth hover elevation transition -->
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Effect" Value="{StaticResource WidgetCardHoverShadow}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <!-- Outlined Card Style (Secondary card type) -->
+    <Style x:Key="WidgetOutlinedCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{StaticResource WidgetCardCornerRadius}"/>
+        <Setter Property="Margin" Value="{StaticResource WidgetCardMargin}"/>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- TAB BAR STYLES                                                               -->
+    <!-- Modern segmented control design                                             -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <CornerRadius x:Key="WidgetTabContainerRadius">12</CornerRadius>
+    <CornerRadius x:Key="WidgetTabItemRadius">10</CornerRadius>
+    <Thickness x:Key="WidgetTabContainerPadding">4</Thickness>
+    <Thickness x:Key="WidgetTabItemPadding">16,8</Thickness>
+    <sys:Double x:Key="WidgetTabHeight">36</sys:Double>
+    
+    <Style x:Key="WidgetTabContainerStyle" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+        <Setter Property="CornerRadius" Value="{StaticResource WidgetTabContainerRadius}"/>
+        <Setter Property="Padding" Value="{StaticResource WidgetTabContainerPadding}"/>
+    </Style>
+    
+    <Style x:Key="WidgetTabButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="TabBorder"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="20"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="WidgetTabButtonActiveStyle" TargetType="Button" BasedOn="{StaticResource WidgetTabButtonStyle}">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextOnPrimaryBrush}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="{DynamicResource AccentColor}" BlurRadius="12" ShadowDepth="0" Opacity="0.5"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- STATUS BADGE STYLES                                                          -->
+    <!-- Pill-shaped status indicators with icon + text                              -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <CornerRadius x:Key="WidgetBadgeCornerRadius">12</CornerRadius>
+    <Thickness x:Key="WidgetBadgePadding">10,5,10,5</Thickness>
+    
+    <Style x:Key="WidgetStatusBadgeBaseStyle" TargetType="Border">
+        <Setter Property="CornerRadius" Value="{StaticResource WidgetBadgeCornerRadius}"/>
+        <Setter Property="Padding" Value="{StaticResource WidgetBadgePadding}"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+    
+    <Style x:Key="WidgetStatusNotReadyBadgeStyle" TargetType="Border" BasedOn="{StaticResource WidgetStatusBadgeBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource WidgetStatusNotReadyBgBrush}"/>
+    </Style>
+    
+    <Style x:Key="WidgetStatusOnDeckBadgeStyle" TargetType="Border" BasedOn="{StaticResource WidgetStatusBadgeBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource WidgetStatusOnDeckBgBrush}"/>
+    </Style>
+    
+    <Style x:Key="WidgetStatusInProgressBadgeStyle" TargetType="Border" BasedOn="{StaticResource WidgetStatusBadgeBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource WidgetStatusInProgressBgBrush}"/>
+    </Style>
+    
+    <Style x:Key="WidgetStatusDoneBadgeStyle" TargetType="Border" BasedOn="{StaticResource WidgetStatusBadgeBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource WidgetStatusDoneBgBrush}"/>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- ACTION BUTTON STYLES                                                         -->
+    <!-- FAB-style primary action, ghost secondary actions                           -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <!-- Primary Action Button (FAB-like) -->
+    <Style x:Key="WidgetPrimaryActionButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextOnPrimaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="20,12"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Effect" Value="{StaticResource WidgetButtonShadow}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder" 
+                            Background="{TemplateBinding Background}" 
+                            CornerRadius="12"
+                            Padding="{TemplateBinding Padding}"
+                            Effect="{TemplateBinding Effect}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource AccentDarkBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource AccentDarkBrush}"/>
+                            <Setter Property="Effect" Value="{x:Null}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!-- Secondary Action Button -->
+    <Style x:Key="WidgetSecondaryActionButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Padding" Value="20,12"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder" 
+                            Background="{TemplateBinding Background}" 
+                            CornerRadius="12"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource SurfaceActiveBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource BorderBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!-- Icon Button (for toolbar actions) -->
+    <Style x:Key="WidgetIconButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Width" Value="36"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder" 
+                            Background="{TemplateBinding Background}" 
+                            CornerRadius="10"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource SurfaceActiveBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- DRAG HANDLE STYLE                                                            -->
+    <!-- Minimal, accessible grip indicator                                          -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <!-- Modern Drag Handle - Smooth, animated grip for card reordering -->
+    <Style x:Key="WidgetDragHandleStyle" TargetType="Button">
+        <Setter Property="Width" Value="32"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="SizeAll"/>
+        <Setter Property="ToolTip" Value="Drag to reorder"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="HandleBorder"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="8"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="HandleScale" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <Grid x:Name="DotsGrid"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Opacity="0.7">
+                            <!-- 6-dot grip pattern -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Vertical" Margin="0,0,4,0">
+                                    <Ellipse x:Name="Dot1" Width="3.5" Height="3.5" Fill="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,3.5"/>
+                                    <Ellipse x:Name="Dot2" Width="3.5" Height="3.5" Fill="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,3.5"/>
+                                    <Ellipse x:Name="Dot3" Width="3.5" Height="3.5" Fill="{DynamicResource TextTertiaryBrush}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Ellipse x:Name="Dot4" Width="3.5" Height="3.5" Fill="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,3.5"/>
+                                    <Ellipse x:Name="Dot5" Width="3.5" Height="3.5" Fill="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,3.5"/>
+                                    <Ellipse x:Name="Dot6" Width="3.5" Height="3.5" Fill="{DynamicResource TextTertiaryBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="HandleBorder" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                            <Setter TargetName="Dot1" Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                            <Setter TargetName="Dot2" Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                            <Setter TargetName="Dot3" Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                            <Setter TargetName="Dot4" Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                            <Setter TargetName="Dot5" Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                            <Setter TargetName="Dot6" Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                            <Setter TargetName="DotsGrid" Property="Opacity" Value="1"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="HandleScale"
+                                                       Storyboard.TargetProperty="ScaleX"
+                                                       To="1.1" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetName="HandleScale"
+                                                       Storyboard.TargetProperty="ScaleY"
+                                                       To="1.1" Duration="0:0:0.15"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="HandleScale"
+                                                       Storyboard.TargetProperty="ScaleX"
+                                                       To="1" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetName="HandleScale"
+                                                       Storyboard.TargetProperty="ScaleY"
+                                                       To="1" Duration="0:0:0.15"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="HandleScale"
+                                                       Storyboard.TargetProperty="ScaleX"
+                                                       To="0.95" Duration="0:0:0.05"/>
+                                        <DoubleAnimation Storyboard.TargetName="HandleScale"
+                                                       Storyboard.TargetProperty="ScaleY"
+                                                       To="0.95" Duration="0:0:0.05"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="HandleScale"
+                                                       Storyboard.TargetProperty="ScaleX"
+                                                       To="1" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetName="HandleScale"
+                                                       Storyboard.TargetProperty="ScaleY"
+                                                       To="1" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- INPUT FIELD STYLES                                                           -->
+    <!-- Clean, borderless inline editing with subtle focus states                   -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <Style x:Key="WidgetInlineTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource HighVisibilityCaretBrush}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="TextBoxBorder" 
+                            Background="{TemplateBinding Background}" 
+                            BorderBrush="Transparent"
+                            BorderThickness="0,0,0,2"
+                            Padding="{TemplateBinding Padding}">
+                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="TextBoxBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="WidgetPlaceholderTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}"/>
+        <Setter Property="FontStyle" Value="Italic"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Opacity" Value="0.7"/>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- COMBOBOX / DROPDOWN STYLE                                                    -->
+    <!-- Minimal dropdown for status selection                                       -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <Style x:Key="WidgetStatusDropdownStyle" TargetType="ComboBox">
+        <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="FontSize" Value="{StaticResource WidgetBodyFontSize}"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="MinHeight" Value="32"/>
+        <Setter Property="MinWidth" Value="120"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- EMPTY STATE STYLE                                                            -->
+    <!-- Friendly message when no items exist                                        -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <Style x:Key="WidgetEmptyStateContainerStyle" TargetType="Border">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="32"/>
+    </Style>
+    
+    <Style x:Key="WidgetEmptyStateIconStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="48"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,0,0,16"/>
+        <Setter Property="Opacity" Value="0.5"/>
+    </Style>
+    
+    <Style x:Key="WidgetEmptyStateTitleStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource WidgetTitleFontSize}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,0,0,8"/>
+    </Style>
+    
+    <Style x:Key="WidgetEmptyStateDescriptionStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource WidgetBodyFontSize}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- SCROLLBAR STYLE                                                              -->
+    <!-- Minimal, auto-hiding scrollbar                                              -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <Style x:Key="WidgetScrollBarStyle" TargetType="ScrollBar">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="8"/>
+        <Setter Property="Margin" Value="0,4,4,4"/>
+    </Style>
+    
+    <Style x:Key="WidgetScrollViewerStyle" TargetType="ScrollViewer">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="PanningMode" Value="VerticalOnly"/>
+    </Style>
+    
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- CONTEXT MENU STYLES                                                          -->
+    <!-- Modern context menu with rounded corners and shadows                        -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    
+    <Style TargetType="ContextMenu">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8"
+                            Padding="{TemplateBinding Padding}">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.4" Direction="270"/>
+                        </Border.Effect>
+                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="MenuItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4"
+                            Padding="{TemplateBinding Padding}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter x:Name="Icon" 
+                                              ContentSource="Icon" 
+                                              Width="16" Height="16"
+                                              Margin="0,0,8,0"
+                                              VerticalAlignment="Center"/>
+                            <ContentPresenter Grid.Column="1"
+                                              ContentSource="Header"
+                                              RecognizesAccessKey="True"
+                                              VerticalAlignment="Center"/>
+                            <Path x:Name="SubMenuArrow"
+                                  Grid.Column="2"
+                                  Data="M0,0 L4,4 L0,8"
+                                  Stroke="{DynamicResource TextSecondaryBrush}"
+                                  StrokeThickness="1.5"
+                                  VerticalAlignment="Center"
+                                  Margin="8,0,0,0"
+                                  Visibility="Collapsed"/>
+                            <Popup x:Name="PART_Popup"
+                                   IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Placement="Right"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Fade">
+                                <Border Background="{DynamicResource SurfaceBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="4">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.4" Direction="270"/>
+                                    </Border.Effect>
+                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasItems" Value="True">
+                            <Setter TargetName="SubMenuArrow" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="Icon" Value="{x:Null}">
+                            <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="Separator">
+        <Setter Property="Height" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="Margin" Value="8,4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Border Background="{TemplateBinding Background}" 
+                            Height="{TemplateBinding Height}"
+                            Margin="{TemplateBinding Margin}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+</ResourceDictionary>

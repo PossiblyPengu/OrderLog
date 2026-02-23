@@ -1,0 +1,566 @@
+using System;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Shell;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using SOUP.Features.OrderLog.ViewModels;
+using SOUP.Services;
+using SOUP.Helpers;
+
+namespace SOUP.Windows;
+
+/// <summary>
+/// AppBar widget window for Order Log that docks to screen edges and reserves screen space
+/// </summary>
+public partial class OrderLogWidgetWindow : Window
+{
+    private readonly OrderLogViewModel _viewModel;
+    private readonly IServiceProvider _serviceProvider;
+
+    // AppBar state
+    private bool _isAppBarRegistered;
+    private AppBarEdge _currentEdge = AppBarEdge.None;
+    private AppBarEdge _edgeBeforeMinimize = AppBarEdge.None;
+    private int _appBarCallbackId;
+    private HwndSource? _hwndSource;
+
+    // Default width for the docked appbar
+    private readonly int _dockedWidth = 380;
+
+    #region Windows API Imports
+
+    [DllImport("shell32.dll", CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+    private static extern uint SHAppBarMessage(uint dwMessage, ref APPBARDATA pData);
+
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    private static extern int RegisterWindowMessage(string msg);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+
+    private const int GWL_EXSTYLE = -20;
+    private const int WS_EX_TOOLWINDOW = 0x00000080;
+
+    private const uint ABM_NEW = 0x00;
+    private const uint ABM_REMOVE = 0x01;
+    private const uint ABM_QUERYPOS = 0x02;
+    private const uint ABM_SETPOS = 0x03;
+
+    private const uint ABN_POSCHANGED = 0x01;
+    private const uint ABN_FULLSCREENAPP = 0x02;
+
+    private const uint ABE_LEFT = 0;
+    private const uint ABE_TOP = 1;
+    private const uint ABE_RIGHT = 2;
+    private const uint ABE_BOTTOM = 3;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct APPBARDATA
+    {
+        public uint cbSize;
+        public IntPtr hWnd;
+        public uint uCallbackMessage;
+        public uint uEdge;
+        public RECT rc;
+        public int lParam;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RECT
+    {
+        public int left;
+        public int top;
+        public int right;
+        public int bottom;
+    }
+
+    private enum AppBarEdge
+    {
+        None,
+        Left,
+        Right,
+        Top,
+        Bottom
+    }
+
+    #endregion
+
+    public OrderLogWidgetWindow(OrderLogViewModel viewModel, IServiceProvider serviceProvider)
+    {
+        InitializeComponent();
+        _viewModel = viewModel;
+        _serviceProvider = serviceProvider;
+
+        WidgetView.DataContext = _viewModel;
+
+        Loaded += OnLoaded;
+        Closing += OnClosing;
+        SourceInitialized += OnSourceInitialized;
+        StateChanged += OnStateChanged;
+
+        ApplyTheme();
+    }
+
+    private void OnSourceInitialized(object? sender, EventArgs e)
+    {
+        var hwnd = new WindowInteropHelper(this).Handle;
+        _hwndSource = HwndSource.FromHwnd(hwnd);
+        _hwndSource?.AddHook(WndProc);
+
+        var exStyle = NativeMethods.GetWindowLongPtr(hwnd, GWL_EXSTYLE).ToInt64();
+        NativeMethods.SetWindowLongPtr(hwnd, GWL_EXSTYLE, new IntPtr(exStyle | WS_EX_TOOLWINDOW));
+
+        _appBarCallbackId = RegisterWindowMessage("OrderLogAppBarCallback");
+    }
+
+    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (msg == _appBarCallbackId)
+        {
+            switch (wParam.ToInt32())
+            {
+                case (int)ABN_POSCHANGED:
+                    if (_isAppBarRegistered && _currentEdge != AppBarEdge.None)
+                    {
+                        PositionAppBar();
+                    }
+                    handled = true;
+                    break;
+
+                case (int)ABN_FULLSCREENAPP:
+                    if (lParam.ToInt32() != 0)
+                    {
+                        Topmost = false;
+                    }
+                    else
+                    {
+                        Topmost = true;
+                    }
+                    handled = true;
+                    break;
+            }
+        }
+
+        return IntPtr.Zero;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        DockToEdge(AppBarEdge.Right);
+        ApplyTaskbarOverlay();
+        InitializeWidgetAsync();
+    }
+
+    private void ApplyTaskbarOverlay()
+    {
+        try
+        {
+            var drawing = new GeometryDrawing
+            {
+                Brush = Brushes.White,
+                Pen = new Pen(Brushes.Black, 0.5),
+                Geometry = new GeometryGroup
+                {
+                    Children =
+                    {
+                        new EllipseGeometry(new Point(8, 8), 7.5, 7.5),
+                    }
+                }
+            };
+
+            var plusDrawing = new GeometryDrawing
+            {
+                Brush = new SolidColorBrush(Color.FromRgb(139, 92, 246)),
+                Geometry = new GeometryGroup
+                {
+                    Children =
+                    {
+                        new RectangleGeometry(new Rect(4, 6.5, 8, 3)),
+                        new RectangleGeometry(new Rect(6.5, 4, 3, 8)),
+                    }
+                }
+            };
+
+            var drawingGroup = new DrawingGroup();
+            drawingGroup.Children.Add(drawing);
+            drawingGroup.Children.Add(plusDrawing);
+
+            var drawingImage = new DrawingImage(drawingGroup);
+            drawingImage.Freeze();
+
+            TaskbarItemInfo ??= new TaskbarItemInfo();
+            TaskbarItemInfo.Overlay = drawingImage;
+            TaskbarItemInfo.Description = "Order Log";
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to apply taskbar overlay");
+        }
+    }
+
+    private void ClearTaskbarOverlay()
+    {
+        try
+        {
+            if (TaskbarItemInfo != null)
+            {
+                TaskbarItemInfo.Overlay = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to clear taskbar overlay");
+        }
+    }
+
+    private async void InitializeWidgetAsync()
+    {
+        try
+        {
+            await _viewModel.InitializeAsync();
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                WidgetView.InvalidateVisual();
+                WidgetView.UpdateLayout();
+            }, System.Windows.Threading.DispatcherPriority.Loaded);
+
+            // Hide update badge - no UpdateService in standalone mode
+            await Dispatcher.InvokeAsync(() =>
+            {
+                UpdateBadge.Visibility = Visibility.Collapsed;
+            });
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to initialize OrderLog widget");
+        }
+    }
+
+    private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        ClearTaskbarOverlay();
+
+        try
+        {
+            var themeService = _serviceProvider.GetService<ThemeService>();
+            if (themeService != null)
+            {
+                themeService.ThemeChanged -= OnThemeChanged;
+            }
+            _viewModel.OnWidgetThemeSettingChanged -= OnWidgetThemeSettingChanged;
+        }
+        catch { }
+
+        if (_isAppBarRegistered)
+        {
+            UnregisterAppBar();
+        }
+
+        if (_hwndSource != null)
+        {
+            _hwndSource.RemoveHook(WndProc);
+            _hwndSource = null;
+        }
+    }
+
+    private void OnStateChanged(object? sender, EventArgs e)
+    {
+        if (WindowState == WindowState.Normal && _edgeBeforeMinimize != AppBarEdge.None)
+        {
+            RegisterAppBar();
+            _currentEdge = _edgeBeforeMinimize;
+            PositionAppBar();
+            _edgeBeforeMinimize = AppBarEdge.None;
+
+            Log.Debug("AppBar re-registered after restore at edge: {Edge}", _currentEdge);
+        }
+    }
+
+    #region AppBar Registration
+
+    private void RegisterAppBar()
+    {
+        if (_isAppBarRegistered) return;
+
+        var hwnd = new WindowInteropHelper(this).Handle;
+        var data = new APPBARDATA
+        {
+            cbSize = (uint)Marshal.SizeOf<APPBARDATA>(),
+            hWnd = hwnd,
+            uCallbackMessage = (uint)_appBarCallbackId
+        };
+
+        var result = SHAppBarMessage(ABM_NEW, ref data);
+        _isAppBarRegistered = result != 0;
+
+        Log.Debug("AppBar registered: {IsRegistered}", _isAppBarRegistered);
+    }
+
+    private void UnregisterAppBar()
+    {
+        if (!_isAppBarRegistered) return;
+
+        var hwnd = new WindowInteropHelper(this).Handle;
+        var data = new APPBARDATA
+        {
+            cbSize = (uint)Marshal.SizeOf<APPBARDATA>(),
+            hWnd = hwnd
+        };
+
+        SHAppBarMessage(ABM_REMOVE, ref data);
+        _isAppBarRegistered = false;
+        _currentEdge = AppBarEdge.None;
+
+        Log.Debug("AppBar unregistered");
+    }
+
+    private void PositionAppBar()
+    {
+        if (!_isAppBarRegistered || _currentEdge == AppBarEdge.None) return;
+
+        var hwnd = new WindowInteropHelper(this).Handle;
+        var screen = System.Windows.Forms.Screen.FromHandle(hwnd);
+        var screenBounds = screen.Bounds;
+
+        var data = new APPBARDATA
+        {
+            cbSize = (uint)Marshal.SizeOf<APPBARDATA>(),
+            hWnd = hwnd,
+            uEdge = _currentEdge switch
+            {
+                AppBarEdge.Left => ABE_LEFT,
+                AppBarEdge.Right => ABE_RIGHT,
+                AppBarEdge.Top => ABE_TOP,
+                AppBarEdge.Bottom => ABE_BOTTOM,
+                _ => ABE_RIGHT
+            }
+        };
+
+        int appBarWidth = (int)(_dockedWidth * GetDpiScale());
+
+        switch (_currentEdge)
+        {
+            case AppBarEdge.Left:
+                data.rc.left = screenBounds.Left;
+                data.rc.top = screenBounds.Top;
+                data.rc.right = screenBounds.Left + appBarWidth;
+                data.rc.bottom = screenBounds.Bottom;
+                break;
+
+            case AppBarEdge.Right:
+                data.rc.left = screenBounds.Right - appBarWidth;
+                data.rc.top = screenBounds.Top;
+                data.rc.right = screenBounds.Right;
+                data.rc.bottom = screenBounds.Bottom;
+                break;
+        }
+
+        SHAppBarMessage(ABM_QUERYPOS, ref data);
+
+        switch (_currentEdge)
+        {
+            case AppBarEdge.Left:
+                data.rc.right = data.rc.left + appBarWidth;
+                break;
+            case AppBarEdge.Right:
+                data.rc.left = data.rc.right - appBarWidth;
+                break;
+        }
+
+        SHAppBarMessage(ABM_SETPOS, ref data);
+
+        var dpiScale = GetDpiScale();
+        Left = data.rc.left / dpiScale;
+        Top = data.rc.top / dpiScale;
+        Width = (data.rc.right - data.rc.left) / dpiScale;
+        Height = (data.rc.bottom - data.rc.top) / dpiScale;
+
+        MoveWindow(hwnd, data.rc.left, data.rc.top,
+            data.rc.right - data.rc.left,
+            data.rc.bottom - data.rc.top, true);
+    }
+
+    private double GetDpiScale()
+    {
+        var source = PresentationSource.FromVisual(this);
+        return source?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
+    }
+
+    #endregion
+
+    #region Dock Commands
+
+    private void DockLeft_Click(object sender, RoutedEventArgs e)
+    {
+        DockToEdge(AppBarEdge.Left);
+    }
+
+    private void DockRight_Click(object sender, RoutedEventArgs e)
+    {
+        DockToEdge(AppBarEdge.Right);
+    }
+
+    private void DockToEdge(AppBarEdge edge)
+    {
+        if (!_isAppBarRegistered)
+        {
+            RegisterAppBar();
+        }
+
+        _currentEdge = edge;
+        PositionAppBar();
+
+        Log.Debug("Docked to {Edge}", edge);
+    }
+
+    #endregion
+
+    #region Theme Support
+
+    private void ApplyTheme()
+    {
+        try
+        {
+            var themeService = _serviceProvider.GetService<ThemeService>();
+            if (themeService != null)
+            {
+                bool isDark = _viewModel.UseIndependentTheme
+                    ? _viewModel.WidgetIsDarkMode
+                    : themeService.IsDarkMode;
+
+                ApplyThemeResources(isDark);
+                themeService.ThemeChanged += OnThemeChanged;
+
+                _viewModel.OnWidgetThemeSettingChanged += OnWidgetThemeSettingChanged;
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to apply theme");
+        }
+    }
+
+    private void OnWidgetThemeSettingChanged(object? sender, EventArgs e)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            try
+            {
+                if (_viewModel.UseIndependentTheme)
+                {
+                    Features.OrderLog.Converters.StatusToColorConverter.InvalidateCache();
+                    ApplyThemeResources(_viewModel.WidgetIsDarkMode);
+                }
+                else
+                {
+                    var themeService = _serviceProvider.GetService<ThemeService>();
+                    if (themeService != null)
+                    {
+                        Features.OrderLog.Converters.StatusToColorConverter.InvalidateCache();
+                        ApplyThemeResources(themeService.IsDarkMode);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Failed to apply widget theme setting change");
+            }
+        });
+    }
+
+    private void ApplyThemeResources(bool isDarkMode)
+    {
+        Resources.MergedDictionaries.Clear();
+
+        Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
+            Source = new Uri("pack://application:,,,/OrderLog;component/Themes/ModernStyles.xaml")
+        });
+
+        var themePath = isDarkMode
+            ? "pack://application:,,,/OrderLog;component/Themes/DarkTheme.xaml"
+            : "pack://application:,,,/OrderLog;component/Themes/LightTheme.xaml";
+
+        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(themePath) });
+
+        if (_viewModel.CardFontSize > 0)
+        {
+            Resources["CardFontSize"] = _viewModel.CardFontSize;
+        }
+    }
+
+    private void OnThemeChanged(object? sender, bool isDarkMode)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            try
+            {
+                Features.OrderLog.Converters.StatusToColorConverter.InvalidateCache();
+
+                if (_viewModel.UseIndependentTheme)
+                {
+                    ApplyThemeResources(_viewModel.WidgetIsDarkMode);
+                }
+                else
+                {
+                    ApplyThemeResources(isDarkMode);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Failed to apply theme change");
+            }
+        });
+    }
+
+    #endregion
+
+    #region Window Event Handlers
+
+    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        // No dragging - always docked
+    }
+
+    private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+    {
+        _edgeBeforeMinimize = _currentEdge;
+
+        if (_isAppBarRegistered)
+        {
+            UnregisterAppBar();
+        }
+        WindowState = WindowState.Minimized;
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    public void ShowWidget()
+    {
+        Show();
+        Activate();
+
+        if (_isAppBarRegistered && _currentEdge != AppBarEdge.None)
+        {
+            PositionAppBar();
+        }
+    }
+
+    private void UpdateBadge_Click(object sender, MouseButtonEventArgs e)
+    {
+        // No-op in standalone mode - no UpdateService
+        e.Handled = true;
+    }
+
+    #endregion
+}

@@ -1,0 +1,27 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## NuGet
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nupkg
+**/[Pp]ackages/*.lock.json
+
+## Visual Studio
+.vs/
+*.rsuser
+*.csproj.user
+*_wpftmp.csproj
+
+## Rider
+.idea/
+
+## OS
+Thumbs.db
+desktop.ini
+.DS_Store
