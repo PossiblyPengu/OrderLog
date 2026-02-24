@@ -235,14 +235,16 @@
                                 Click="Cancel_Click"
                                 Style="{DynamicResource SecondaryButtonStyle}"
                                 Padding="0,10"
-                                IsCancel="True"/>
+                                IsCancel="True"
+                                ToolTip="Esc"/>
 
                         <Button Grid.Column="4"
                                 Content="Apply"
                                 Click="Apply_Click"
                                 Style="{DynamicResource PrimaryButtonStyle}"
                                 Padding="0,10"
-                                IsDefault="True"/>
+                                IsDefault="True"
+                                ToolTip="Enter"/>
                     </Grid>
                 </StackPanel>
             </ScrollViewer>

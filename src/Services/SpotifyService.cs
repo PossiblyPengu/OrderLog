@@ -298,11 +298,17 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
                 {
                     using var stream = await mediaProperties.Thumbnail.OpenReadAsync();
                     albumArt = await ConvertToBitmapImageAsync(stream);
+                    if (albumArt == null)
+                        Log.Debug("Album art thumbnail present but conversion returned null for '{Title}'", title);
                 }
                 catch (Exception ex)
                 {
-                    Log.Debug(ex, "Failed to load album art thumbnail");
+                    Log.Debug(ex, "Failed to load album art thumbnail for '{Title}'", title);
                 }
+            }
+            else
+            {
+                Log.Debug("No thumbnail available from SMTC for '{Title}'", title);
             }
 
             System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
@@ -336,6 +342,14 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
                         _artRetryCts = newCts;
                         RetryFetchAlbumArtAsync(currentTrackKey, newCts.Token).SafeFireAndForget("RetryFetchAlbumArt");
                     }
+                    else if (AlbumArt == null && _artRetryCts == null)
+                    {
+                        // Still no art and no retry running — kick off a new retry cycle
+                        // (covers cases where previous retries were exhausted but art became available later)
+                        var newCts = new CancellationTokenSource();
+                        _artRetryCts = newCts;
+                        RetryFetchAlbumArtAsync(currentTrackKey, newCts.Token).SafeFireAndForget("RetryFetchAlbumArt:Poll");
+                    }
                 }
                 else
                 {
@@ -357,10 +371,21 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     {
         try
         {
-            using var memoryStream = new MemoryStream();
-            var inputStream = stream.AsStreamForRead();
-            await inputStream.CopyToAsync(memoryStream);
-            memoryStream.Position = 0;
+            // Buffer the entire stream into a byte array first to avoid
+            // issues with the UWP stream adapter being disposed or unreliable
+            byte[] imageBytes;
+            using (var memoryStream = new MemoryStream())
+            {
+                var inputStream = stream.AsStreamForRead();
+                await inputStream.CopyToAsync(memoryStream);
+                imageBytes = memoryStream.ToArray();
+            }
+
+            if (imageBytes.Length < 100)
+            {
+                Log.Debug("Album art stream too small ({Bytes} bytes), likely empty or corrupt", imageBytes.Length);
+                return null;
+            }
 
             BitmapImage? bitmap = null;
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
@@ -368,7 +393,7 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
                 bitmap = new BitmapImage();
                 bitmap.BeginInit();
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.StreamSource = memoryStream;
+                bitmap.StreamSource = new MemoryStream(imageBytes);
                 bitmap.EndInit();
                 bitmap.Freeze();
             });
@@ -433,8 +458,8 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     {
         try
         {
-            // Retry schedule in ms
-            var delays = new[] { 300, 700, 1200, 2000, 3000 };
+            // Retry schedule in ms — aggressive early, then back off
+            var delays = new[] { 300, 600, 1000, 1500, 2500, 4000, 6000, 10000 };
 
             foreach (var d in delays)
             {
@@ -463,10 +488,16 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
                         var img = await ConvertToBitmapImageAsync(stream);
                         if (img != null)
                         {
+                            Log.Debug("Album art retry succeeded after {Delay}ms delay", d);
                             CancelArtRetry();
                             System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => AlbumArt = img);
                             return;
                         }
+                        Log.Debug("Album art retry: thumbnail present but conversion failed (delay={Delay}ms)", d);
+                    }
+                    else
+                    {
+                        Log.Debug("Album art retry: no thumbnail available yet (delay={Delay}ms)", d);
                     }
                 }
                 catch (OperationCanceledException)
@@ -482,7 +513,13 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
         finally
         {
             // Clean up if this CTS is still the active one (i.e., retries exhausted without success)
-            Interlocked.CompareExchange(ref _artRetryCts, null, null);
+            var current = Interlocked.CompareExchange(ref _artRetryCts, null, null);
+            if (current != null && !token.IsCancellationRequested)
+            {
+                Log.Debug("Album art retries exhausted for track key '{TrackKey}' — will retry on next poll", expectedTrackKey);
+                // Clear the CTS so the next poll cycle can kick off a fresh retry
+                Interlocked.CompareExchange(ref _artRetryCts, null, current);
+            }
         }
     }
 

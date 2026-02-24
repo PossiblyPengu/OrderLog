@@ -258,10 +258,10 @@
                                 </MenuItem>
                                 <Separator/>
                                 <MenuItem Header="Change Color..." Click="ChangeColor_Click" CommandParameter="{Binding}"/>
-                                <MenuItem Header="Unlink" Click="Unlink_Click"/>
+                                <MenuItem Header="Unlink" Click="Unlink_Click" ToolTip="Remove this order from its linked group"/>
                                 <Separator/>
-                                <MenuItem Header="Archive" Click="QuickArchive_Click"/>
-                                <MenuItem Header="Delete" Click="DeleteNote_Click" Foreground="{DynamicResource DangerBrush}"/>
+                                <MenuItem Header="Archive" Click="QuickArchive_Click" InputGestureText="Del"/>
+                                <MenuItem Header="Delete" Click="DeleteNote_Click" Foreground="{DynamicResource DangerBrush}" InputGestureText="Ctrl+Del"/>
                             </ContextMenu>
                         </Border.ContextMenu>
                         <Grid>

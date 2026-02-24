@@ -10,7 +10,8 @@
       "Bash(DOTNET_ROOT=\"D:/CODE/important files/dotnet-sdk-8.0.404-win-x64\" \"D:/CODE/important files/dotnet-sdk-8.0.404-win-x64/dotnet.exe\" build:*)",
       "Bash(grep:*)",
       "Bash(\"/c/Program Files/dotnet/dotnet.exe\" build \"d:/CODE/SOUP/OrderLog/src/OrderLog.csproj\")",
-      "Bash(powershell.exe -Command \"dotnet build ''d:\\\\CODE\\\\SOUP\\\\OrderLog\\\\src\\\\OrderLog.csproj''\")"
+      "Bash(powershell.exe -Command \"dotnet build ''d:\\\\CODE\\\\SOUP\\\\OrderLog\\\\src\\\\OrderLog.csproj''\")",
+      "Bash(find src -name \"*.xaml\" -exec grep -l \"ToolTip\\\\|Placeholder\\\\|watermark\" {} ;)"
     ]
   }
 }

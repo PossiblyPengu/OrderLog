@@ -43,7 +43,7 @@
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4">
-                                    <TextBlock Text="&#x2715;" FontSize="14"
+                                    <TextBlock Text="✕" FontSize="14"
                                                Foreground="{DynamicResource TitleBarTextBrush}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>

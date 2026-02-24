@@ -61,13 +61,29 @@
                                Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
-                    <TextBox x:Name="TemplateNameTextBox"
-                             FontSize="13"
-                             Padding="12,10"
-                             Background="{DynamicResource SurfaceBrush}"
-                             BorderBrush="{DynamicResource BorderBrush}"
-                             BorderThickness="1"
-                             Margin="0,0,0,16"/>
+                    <Grid Margin="0,0,0,16">
+                        <TextBox x:Name="TemplateNameTextBox"
+                                 FontSize="13"
+                                 Padding="12,10"
+                                 Background="{DynamicResource SurfaceBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}"
+                                 BorderThickness="1"/>
+                        <TextBlock Text="e.g., Quick Order"
+                                   FontSize="13" FontStyle="Italic"
+                                   Foreground="{DynamicResource TextDisabledBrush}"
+                                   Margin="14,10,0,0" IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=TemplateNameTextBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
 
                     <!-- Vendor Name -->
                     <TextBlock Text="Vendor Name"
@@ -76,17 +92,33 @@
                                Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
-                    <TextBox x:Name="VendorNameTextBox"
-                             FontSize="13"
-                             Padding="12,10"
-                             Background="{DynamicResource SurfaceBrush}"
-                             BorderBrush="{DynamicResource BorderBrush}"
-                             BorderThickness="1"
-                             Margin="0,0,0,16">
-                        <i:Interaction.Behaviors>
-                            <behaviors:VendorAutocompleteBehavior/>
-                        </i:Interaction.Behaviors>
-                    </TextBox>
+                    <Grid Margin="0,0,0,16">
+                        <TextBox x:Name="VendorNameTextBox"
+                                 FontSize="13"
+                                 Padding="12,10"
+                                 Background="{DynamicResource SurfaceBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}"
+                                 BorderThickness="1">
+                            <i:Interaction.Behaviors>
+                                <behaviors:VendorAutocompleteBehavior/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                        <TextBlock Text="Enter vendor name"
+                                   FontSize="13" FontStyle="Italic"
+                                   Foreground="{DynamicResource TextDisabledBrush}"
+                                   Margin="14,10,0,0" IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=VendorNameTextBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
 
                     <!-- Transfer Numbers -->
                     <TextBlock Text="Transfer Numbers"
@@ -95,13 +127,29 @@
                                Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
-                    <TextBox x:Name="TransferNumbersTextBox"
-                             FontSize="13"
-                             Padding="12,10"
-                             Background="{DynamicResource SurfaceBrush}"
-                             BorderBrush="{DynamicResource BorderBrush}"
-                             BorderThickness="1"
-                             Margin="0,0,0,16"/>
+                    <Grid Margin="0,0,0,16">
+                        <TextBox x:Name="TransferNumbersTextBox"
+                                 FontSize="13"
+                                 Padding="12,10"
+                                 Background="{DynamicResource SurfaceBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}"
+                                 BorderThickness="1"/>
+                        <TextBlock Text="e.g., T-12345, T-67890"
+                                   FontSize="13" FontStyle="Italic"
+                                   Foreground="{DynamicResource TextDisabledBrush}"
+                                   Margin="14,10,0,0" IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=TransferNumbersTextBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
 
                     <!-- WHS Shipment Numbers -->
                     <TextBlock Text="WHS Shipment Numbers"
@@ -110,13 +158,29 @@
                                Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
-                    <TextBox x:Name="WhsShipmentNumbersTextBox"
-                             FontSize="13"
-                             Padding="12,10"
-                             Background="{DynamicResource SurfaceBrush}"
-                             BorderBrush="{DynamicResource BorderBrush}"
-                             BorderThickness="1"
-                             Margin="0,0,0,16"/>
+                    <Grid Margin="0,0,0,16">
+                        <TextBox x:Name="WhsShipmentNumbersTextBox"
+                                 FontSize="13"
+                                 Padding="12,10"
+                                 Background="{DynamicResource SurfaceBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}"
+                                 BorderThickness="1"/>
+                        <TextBlock Text="e.g., WHS-001, WHS-002"
+                                   FontSize="13" FontStyle="Italic"
+                                   Foreground="{DynamicResource TextDisabledBrush}"
+                                   Margin="14,10,0,0" IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=WhsShipmentNumbersTextBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
 
                     <!-- Default Status -->
                     <TextBlock Text="Default Status"
