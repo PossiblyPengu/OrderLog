@@ -25,3 +25,12 @@ obj/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+.fake
+NUL
+
+## Build outputs
+publish/
+
+## Logs
+*.log

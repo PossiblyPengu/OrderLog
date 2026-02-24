@@ -13,6 +13,8 @@ namespace SOUP.Features.OrderLog.Services;
 /// </summary>
 public sealed class GroupStateStore : IDisposable
 {
+    private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = true };
+
     private readonly string _path;
     private readonly ILogger<GroupStateStore>? _logger;
     private Dictionary<string, bool> _states = new(StringComparer.OrdinalIgnoreCase);
@@ -53,7 +55,7 @@ public sealed class GroupStateStore : IDisposable
             string json;
             lock (_lock)
             {
-                json = JsonSerializer.Serialize(_states, new JsonSerializerOptions { WriteIndented = true });
+                json = JsonSerializer.Serialize(_states, s_jsonOptions);
             }
             File.WriteAllText(_path, json);
         }

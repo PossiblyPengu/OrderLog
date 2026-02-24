@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:models="clr-namespace:SOUP.Features.OrderLog.Models"
-             xmlns:services="clr-namespace:SOUP.Services"
              xmlns:converters="clr-namespace:SOUP.Features.OrderLog.Converters"
              xmlns:commonConverters="clr-namespace:SOUP.Converters"
              xmlns:vm="clr-namespace:SOUP.Features.OrderLog.ViewModels"
@@ -2569,6 +2568,13 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
+                                <ContentControl Content="{Binding}">
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <!-- Default: single archived item -->
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
                                 <!-- Archived item card -->
                                 <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="6" Padding="0">
                                     <Border.ContextMenu>
@@ -2614,8 +2620,7 @@
                                                 <Button Grid.Column="2" Click="QuickArchive_Click" DataContext="{Binding First}"
                                                     ToolTip="Restore" Cursor="Hand"
                                                     Margin="0,0,12,0"
-                                                    VerticalAlignment="Center"
-                                                    Visibility="{Binding DataContext.IsMultiSelectMode, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}">
+                                                    VerticalAlignment="Center">
                                                     <Button.Style>
                                                         <Style TargetType="Button">
                                                             <Setter Property="Background" Value="Transparent"/>
@@ -2677,6 +2682,18 @@
                                                    HorizontalAlignment="Right" Margin="0,4,16,8"/>
                                     </Grid>
                                 </Border>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <!-- When IsGroup is true, use archived merged template -->
+                                                <DataTrigger Binding="{Binding IsGroup}" Value="True">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource ArchivedOrderItemGroupMergedTemplate}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>

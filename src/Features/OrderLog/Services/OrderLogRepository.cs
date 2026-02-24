@@ -137,7 +137,7 @@ public sealed class OrderLogRepository : IOrderLogService
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to load orders");
-            return [];
+            return new List<OrderItem>();
         }
         finally
         {

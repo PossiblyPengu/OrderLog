@@ -6,7 +6,7 @@
     <RootNamespace>SOUP</RootNamespace>
     <AssemblyName>OrderLog</AssemblyName>
     <ApplicationIcon>Assets\orderlog.ico</ApplicationIcon>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>

@@ -224,7 +224,14 @@
         <GradientStop Color="#ef4444" Offset="0"/>
         <GradientStop Color="#f87171" Offset="1"/>
     </LinearGradientBrush>
-
+    
+    <LinearGradientBrush x:Key="LauncherBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#1e1b4b" Offset="0.0"/>
+        <GradientStop Color="#312e81" Offset="0.3"/>
+        <GradientStop Color="#4c1d95" Offset="0.6"/>
+        <GradientStop Color="#581c87" Offset="1.0"/>
+    </LinearGradientBrush>
+    
     <!-- ============================= -->
     <!-- TYPOGRAPHY                    -->
     <!-- ============================= -->

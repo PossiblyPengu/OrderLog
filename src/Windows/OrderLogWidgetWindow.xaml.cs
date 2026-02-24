@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -15,9 +16,6 @@ using SOUP.Helpers;
 
 namespace SOUP.Windows;
 
-/// <summary>
-/// AppBar widget window for Order Log that docks to screen edges and reserves screen space
-/// </summary>
 public partial class OrderLogWidgetWindow : Window
 {
     private readonly OrderLogViewModel _viewModel;
@@ -221,19 +219,31 @@ public partial class OrderLogWidgetWindow : Window
 
     private async void InitializeWidgetAsync()
     {
+        Log.Information("OrderLogWidgetWindow: InitializeWidgetAsync starting");
         try
         {
-            await _viewModel.InitializeAsync();
+            var initTask = _viewModel.InitializeAsync();
+            if (await Task.WhenAny(initTask, Task.Delay(5000)) != initTask)
+            {
+                Log.Warning("OrderLogWidgetWindow: ViewModel.InitializeAsync is taking >5s");
+            }
+            await initTask;
+            Log.Information("OrderLogWidgetWindow: ViewModel.InitializeAsync completed");
 
             await Dispatcher.InvokeAsync(() =>
             {
                 WidgetView.InvalidateVisual();
                 WidgetView.UpdateLayout();
             }, System.Windows.Threading.DispatcherPriority.Loaded);
+            Log.Information("OrderLogWidgetWindow: UI layout updated after init");
         }
         catch (Exception ex)
         {
             Log.Warning(ex, "Failed to initialize OrderLog widget");
+        }
+        finally
+        {
+            try { _viewModel.IsLoading = false; } catch { }
         }
     }
 
@@ -248,7 +258,6 @@ public partial class OrderLogWidgetWindow : Window
             {
                 themeService.ThemeChanged -= OnThemeChanged;
             }
-            _viewModel.OnWidgetThemeSettingChanged -= OnWidgetThemeSettingChanged;
         }
         catch { }
 
@@ -425,14 +434,10 @@ public partial class OrderLogWidgetWindow : Window
             var themeService = _serviceProvider.GetService<ThemeService>();
             if (themeService != null)
             {
-                bool isDark = _viewModel.UseIndependentTheme
-                    ? _viewModel.WidgetIsDarkMode
-                    : themeService.IsDarkMode;
+                bool isDark = themeService.IsDarkMode;
 
                 ApplyThemeResources(isDark);
                 themeService.ThemeChanged += OnThemeChanged;
-
-                _viewModel.OnWidgetThemeSettingChanged += OnWidgetThemeSettingChanged;
             }
         }
         catch (Exception ex)
@@ -441,33 +446,7 @@ public partial class OrderLogWidgetWindow : Window
         }
     }
 
-    private void OnWidgetThemeSettingChanged(object? sender, EventArgs e)
-    {
-        Dispatcher.Invoke(() =>
-        {
-            try
-            {
-                if (_viewModel.UseIndependentTheme)
-                {
-                    Features.OrderLog.Converters.StatusToColorConverter.InvalidateCache();
-                    ApplyThemeResources(_viewModel.WidgetIsDarkMode);
-                }
-                else
-                {
-                    var themeService = _serviceProvider.GetService<ThemeService>();
-                    if (themeService != null)
-                    {
-                        Features.OrderLog.Converters.StatusToColorConverter.InvalidateCache();
-                        ApplyThemeResources(themeService.IsDarkMode);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "Failed to apply widget theme setting change");
-            }
-        });
-    }
+    
 
     private void ApplyThemeResources(bool isDarkMode)
     {
@@ -497,15 +476,7 @@ public partial class OrderLogWidgetWindow : Window
             try
             {
                 Features.OrderLog.Converters.StatusToColorConverter.InvalidateCache();
-
-                if (_viewModel.UseIndependentTheme)
-                {
-                    ApplyThemeResources(_viewModel.WidgetIsDarkMode);
-                }
-                else
-                {
-                    ApplyThemeResources(isDarkMode);
-                }
+                ApplyThemeResources(isDarkMode);
             }
             catch (Exception ex)
             {

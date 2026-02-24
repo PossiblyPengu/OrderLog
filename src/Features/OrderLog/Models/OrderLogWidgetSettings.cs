@@ -21,6 +21,9 @@ public class OrderLogWidgetSettings
     // Notes section expand/collapse state
     public bool NotesExpanded { get; set; } = true;
 
+    // Startup
+    public bool RunAtStartup { get; set; } = false;
+
     // Independent theme control for widget
     public bool UseIndependentTheme { get; set; } = false;
     public bool WidgetIsDarkMode { get; set; } = true;

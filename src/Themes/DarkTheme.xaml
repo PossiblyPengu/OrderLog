@@ -283,7 +283,13 @@
     <SolidColorBrush x:Key="NonEssentialIn990Brush" Color="{StaticResource NonEssentialIn990Color}"/>
     <SolidColorBrush x:Key="NonEssentialIn990TextBrush" Color="{StaticResource NonEssentialIn990TextColor}"/>
     <SolidColorBrush x:Key="NonEssentialIn990AccentBrush" Color="#ec4899"/>
-
+    
+    <!-- Launcher Background Gradient (WinUI 3 Dark) -->
+    <LinearGradientBrush x:Key="LauncherBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#202020" Offset="0"/>
+        <GradientStop Color="#282828" Offset="0.5"/>
+        <GradientStop Color="#1C1C1C" Offset="1"/>
+    </LinearGradientBrush>
 
     <!-- Card/Input Background - use existing brushes, no duplicate -->
     <SolidColorBrush x:Key="InputBackgroundBrush" Color="#383838"/>

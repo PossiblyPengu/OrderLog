@@ -981,6 +981,7 @@ public sealed class DictionaryDbContext : IDisposable
         if (!_disposed)
         {
             _disposed = true;
+            GC.SuppressFinalize(this);
             Serilog.Log.Debug("DictionaryDbContext disposed successfully");
         }
     }

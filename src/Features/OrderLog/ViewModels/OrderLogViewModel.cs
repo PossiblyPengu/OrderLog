@@ -14,6 +14,7 @@ using SOUP.Helpers;
 using SOUP.Features.OrderLog.Services;
 using SOUP.Infrastructure.Services;
 using SOUP.Services;
+using Microsoft.Win32;
 
 namespace SOUP.Features.OrderLog.ViewModels;
 
@@ -138,16 +139,10 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     private bool _notesOnlyMode = false;
 
     /// <summary>
-    /// Gets or sets whether the widget uses its own independent theme toggle.
+    /// Basic system option: run app at Windows startup.
     /// </summary>
     [ObservableProperty]
-    private bool _useIndependentTheme = false;
-
-    /// <summary>
-    /// Gets or sets the widget's dark mode state when using independent theme.
-    /// </summary>
-    [ObservableProperty]
-    private bool _widgetIsDarkMode = true;
+    private bool _runAtStartup = false;
 
     // Search & Filter Properties
     [ObservableProperty]
@@ -213,25 +208,34 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         RefreshDisplayItems();
     }
 
-    partial void OnUseIndependentThemeChanged(bool value)
+    partial void OnRunAtStartupChanged(bool value)
     {
         SaveWidgetSettings();
-        OnWidgetThemeSettingChanged?.Invoke(this, EventArgs.Empty);
+        SetRunAtStartup(value);
     }
 
-    partial void OnWidgetIsDarkModeChanged(bool value)
+    private void SetRunAtStartup(bool enable)
     {
-        SaveWidgetSettings();
-        if (UseIndependentTheme)
+        try
         {
-            OnWidgetThemeSettingChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
+            var name = "OrderLog";
+            var exe = System.Reflection.Assembly.GetEntryAssembly()?.Location ?? string.Empty;
+            if (string.IsNullOrEmpty(exe)) return;
 
-    /// <summary>
-    /// Event raised when the widget theme settings change.
-    /// </summary>
-    public event EventHandler? OnWidgetThemeSettingChanged;
+            using var rk = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true)
+                       ?? Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+
+            if (enable)
+            {
+                rk.SetValue(name, $"\"{exe}\"");
+            }
+            else
+            {
+                rk.DeleteValue(name, false);
+            }
+        }
+        catch { }
+    }
 
     partial void OnColorFiltersChanged(string[]? value)
     {
@@ -502,8 +506,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             OnDeckGroupExpanded = OnDeckGroupExpanded,
             InProgressGroupExpanded = InProgressGroupExpanded,
             NotesExpanded = NotesExpanded,
-            UseIndependentTheme = UseIndependentTheme,
-            WidgetIsDarkMode = WidgetIsDarkMode
+            RunAtStartup = RunAtStartup
         };
         _settingsService.SaveSettingsAsync("OrderLogWidget", settings).SafeFireAndForget("SaveWidgetSettings");
     }
@@ -552,10 +555,27 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
     public async Task InitializeAsync()
     {
+        _logger?.LogInformation("OrderLogViewModel.InitializeAsync: start");
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Loading…";
+        }
+        catch { }
         // load persisted widget settings
         try
         {
-            var s = await _settingsService.LoadSettingsAsync<OrderLogWidgetSettings>("OrderLogWidget");
+            StatusMessage = "Loading settings...";
+            var swSettings = System.Diagnostics.Stopwatch.StartNew();
+            _logger?.LogInformation("Loading widget settings...");
+            var settingsTask = _settingsService.LoadSettingsAsync<OrderLogWidgetSettings>("OrderLogWidget");
+            if (await Task.WhenAny(settingsTask, Task.Delay(5000)) != settingsTask)
+            {
+                _logger?.LogWarning("Loading widget settings is taking >5s");
+            }
+            var s = await settingsTask;
+            swSettings.Stop();
+            _logger?.LogInformation("Loaded widget settings in {Ms}ms", swSettings.ElapsedMilliseconds);
             CardFontSize = s.CardFontSize <= 0 ? DefaultCardFontSize : s.CardFontSize;
             // Note: ShowNowPlaying defaults to true in the model, so we can use it directly
             ShowNowPlaying = s.ShowNowPlaying;
@@ -574,9 +594,9 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             OnDeckGroupExpanded = s.OnDeckGroupExpanded;
             InProgressGroupExpanded = s.InProgressGroupExpanded;
             NotesExpanded = s.NotesExpanded;
-            // Independent theme settings
-            UseIndependentTheme = s.UseIndependentTheme;
-            WidgetIsDarkMode = s.WidgetIsDarkMode;
+            // System settings
+            RunAtStartup = s.RunAtStartup;
+            SetRunAtStartup(RunAtStartup);
             
             // Apply font size to resources
             if (Application.Current != null)
@@ -590,8 +610,62 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         }
 
         // Templates removed: skip loading templates
-        await _vendorColorService.LoadMappingsAsync();
-        await LoadAsync();
+        try
+        {
+            StatusMessage = "Loading vendor color mappings...";
+            var swColors = System.Diagnostics.Stopwatch.StartNew();
+            _logger?.LogInformation("Loading vendor color mappings...");
+            var colorTask = _vendorColorService.LoadMappingsAsync();
+            if (await Task.WhenAny(colorTask, Task.Delay(5000)) != colorTask)
+            {
+                _logger?.LogWarning("Loading vendor color mappings is taking >5s");
+            }
+            await colorTask;
+            swColors.Stop();
+            _logger?.LogInformation("Loaded vendor color mappings in {Ms}ms", swColors.ElapsedMilliseconds);
+
+            StatusMessage = "Loading items...";
+            var swLoad = System.Diagnostics.Stopwatch.StartNew();
+            _logger?.LogInformation("Loading items from data store...");
+            var loadTask = LoadAsync();
+            var timeoutTask = Task.Delay(10000);
+            if (await Task.WhenAny(loadTask, timeoutTask) != loadTask)
+            {
+                _logger?.LogWarning("Loading items is taking >10s; continuing startup and letting load finish in background");
+                // Attach continuation to log when background load completes
+                loadTask.ContinueWith(t =>
+                {
+                    if (t.IsFaulted)
+                    {
+                        _logger?.LogWarning(t.Exception, "Background LoadAsync failed");
+                    }
+                    else
+                    {
+                        _logger?.LogInformation("Background LoadAsync completed");
+                    }
+                }, TaskScheduler.Default);
+            }
+            else
+            {
+                await loadTask;
+                swLoad.Stop();
+                _logger?.LogInformation("Loaded items in {Ms}ms", swLoad.ElapsedMilliseconds);
+            }
+
+            StatusMessage = "Finalizing...";
+            _logger?.LogInformation("OrderLogViewModel.InitializeAsync: completed");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Error during InitializeAsync post-settings work");
+            StatusMessage = "Initialization error";
+        }
+        try
+        {
+            IsLoading = false;
+            UpdateDefaultStatus();
+        }
+        catch { }
     }
 
     public async Task LoadAsync()
@@ -599,7 +673,16 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         try
         {
             IsLoading = true;
-            var all = await _orderLogService.LoadAsync();
+            _logger?.LogInformation("OrderLogViewModel.LoadAsync: calling _orderLogService.LoadAsync");
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var loadTask = _orderLogService.LoadAsync();
+            if (await Task.WhenAny(loadTask, Task.Delay(5000)) != loadTask)
+            {
+                _logger?.LogWarning("_orderLogService.LoadAsync is taking >5s");
+            }
+            var all = await loadTask;
+            sw.Stop();
+            _logger?.LogInformation("OrderLogViewModel.LoadAsync: _orderLogService.LoadAsync completed in {Ms}ms", sw.ElapsedMilliseconds);
 
             Items.Clear();
             ArchivedItems.Clear();
@@ -619,6 +702,8 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
                     _itemIds.Add(it.Id);
                 }
             }
+
+            _logger?.LogInformation("OrderLogViewModel.LoadAsync: Items={ItemsCount}, Archived={ArchivedCount}", Items.Count, ArchivedItems.Count);
 
             RefreshDisplayItems();
             RefreshArchivedDisplayItems();
@@ -645,7 +730,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             if (token.IsCancellationRequested) return;
             await SaveAsync();
         }
-        catch (TaskCanceledException) { }
+        catch (TaskCanceledException) { } // Expected when debounce is re-triggered
     }
 
     public async Task SaveAsync()
@@ -713,17 +798,46 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         if (item.LinkedGroupId != null)
         {
             var gid = item.LinkedGroupId.Value;
-            itemsToArchive = Items.Where(i => i.LinkedGroupId == gid).ToList();
+            // Include any member from all items (active or already archived) to ensure group consistency
+            itemsToArchive = AllItems.Where(i => i.LinkedGroupId == gid).ToList();
         }
         else
         {
             itemsToArchive = new List<OrderItem> { item };
         }
 
+        // Record archive action for undo and set PreviousStatus/IsArchived
+        var archiveAction = new ArchiveAction(itemsToArchive);
+        _undoRedoStack.ExecuteAction(archiveAction);
+
+        // Ensure items are marked Done so timestamps (CompletedAt) are set
+        foreach (var it in itemsToArchive)
+        {
+            it.Status = OrderItem.OrderStatus.Done;
+        }
+
         foreach (var it in itemsToArchive)
         {
             RemoveFromItems(it);
             AddToArchived(it);
+        }
+
+        _logger?.LogInformation("Archived group {GroupId} moved {Count} items to archive", item.LinkedGroupId, itemsToArchive.Count);
+
+        // Sync timestamps across linked group so archived preview shows consistent times
+        if (itemsToArchive.Count > 1)
+        {
+            var referenceItem = itemsToArchive[0];
+            foreach (var it in itemsToArchive.Skip(1))
+            {
+                it.SyncTimestampsFrom(referenceItem);
+            }
+
+            foreach (var it in itemsToArchive)
+            {
+                it.RefreshTimeInProgress();
+                it.RefreshTimeOnDeck();
+            }
         }
 
         RefreshDisplayItems();
@@ -967,8 +1081,16 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
         if (willBeArchived)
         {
+            // Use ArchiveAction for undo support and to set PreviousStatus/IsArchived
             var action = new ArchiveAction(itemsToChange);
             _undoRedoStack.ExecuteAction(action);
+
+            // Ensure items transition to Done so timestamps (CompletedAt) are set
+            foreach (var it in itemsToChange)
+            {
+                it.Status = OrderItem.OrderStatus.Done;
+            }
+
             foreach (var it in itemsToChange)
             {
                 RemoveFromItems(it);
@@ -2146,6 +2268,25 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         }
 
         var snapshot = filtered.ToList();
+        // Diagnostic: log linked-group distribution in archived items to help debug grouping issues
+        try
+        {
+            var linkedGroups = snapshot
+                .Where(i => i.LinkedGroupId != null && i.LinkedGroupId != Guid.Empty)
+                .GroupBy(i => i.LinkedGroupId)
+                .Select(g => new { GroupId = g.Key, Count = g.Count() })
+                .OrderByDescending(g => g.Count)
+                .ToList();
+
+            var totalLinkedItems = linkedGroups.Sum(g => g.Count);
+            _logger?.LogDebug("Archived snapshot: {Total} items, {LinkedItems} in {Groups} linked groups", snapshot.Count, totalLinkedItems, linkedGroups.Count);
+            if (linkedGroups.Count > 0)
+            {
+                var sample = string.Join(", ", linkedGroups.Take(6).Select(g => $"{g.GroupId}:{g.Count}"));
+                _logger?.LogDebug("Archived linked groups sample: {Sample}", sample);
+            }
+        }
+        catch { }
         var sw = System.Diagnostics.Stopwatch.StartNew();
         var sortMode = ArchivedSortModeEnum;
 

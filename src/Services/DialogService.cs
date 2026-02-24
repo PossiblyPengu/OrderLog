@@ -248,7 +248,7 @@ public class DialogService
     /// <param name="errorMessage">The error message to display.</param>
     public void ShowExportErrorDialog(string errorMessage)
     {
-        MessageDialog.ShowWarning(null!, $"Export failed:\n\n{errorMessage}", "Export Error");
+        MessageDialog.Show($"Export failed:\n\n{errorMessage}", "Export Error", DialogType.Warning);
     }
 
     /// <summary>
@@ -268,7 +268,7 @@ public class DialogService
     /// <param name="errorMessage">The error message to display.</param>
     public void ShowImportErrorDialog(string errorMessage)
     {
-        MessageDialog.ShowWarning(null!, $"Import failed:\n\n{errorMessage}", "Import Error");
+        MessageDialog.Show($"Import failed:\n\n{errorMessage}", "Import Error", DialogType.Warning);
     }
 
     /// <summary>
@@ -278,7 +278,7 @@ public class DialogService
     /// <param name="title">The dialog title.</param>
     public void ShowError(string message, string title = "Error")
     {
-        MessageDialog.ShowError(null!, message, title);
+        MessageDialog.Show(message, title, DialogType.Error);
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ public class DialogService
     /// <param name="title">The dialog title.</param>
     public void ShowWarning(string message, string title = "Warning")
     {
-        MessageDialog.ShowWarning(null!, message, title);
+        MessageDialog.Show(message, title, DialogType.Warning);
     }
 
     /// <summary>
@@ -298,6 +298,6 @@ public class DialogService
     /// <param name="title">The dialog title.</param>
     public void ShowInfo(string message, string title = "Information")
     {
-        MessageDialog.ShowInfo(null!, message, title);
+        MessageDialog.Show(message, title, DialogType.Information);
     }
 }

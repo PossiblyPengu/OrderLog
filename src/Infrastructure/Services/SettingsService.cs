@@ -55,7 +55,18 @@ public sealed class SettingsService
 
         try
         {
-            var json = await File.ReadAllTextAsync(filePath).ConfigureAwait(false);
+            Serilog.Log.Information("SettingsService: Loading settings for {AppName} from {File}", appName, filePath);
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var readTask = File.ReadAllTextAsync(filePath);
+            var timeoutTask = Task.Delay(5000);
+            if (await Task.WhenAny(readTask, timeoutTask) != readTask)
+            {
+                Serilog.Log.Warning("SettingsService: Reading settings for {AppName} timed out (>5s), using defaults", appName);
+                return new T();
+            }
+            var json = await readTask.ConfigureAwait(false);
+            sw.Stop();
+            Serilog.Log.Information("SettingsService: Loaded settings for {AppName} in {Ms}ms", appName, sw.ElapsedMilliseconds);
             return JsonSerializer.Deserialize<T>(json, _jsonOptions) ?? new T();
         }
         catch (Exception ex)

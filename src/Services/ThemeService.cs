@@ -21,6 +21,7 @@ namespace SOUP.Services;
 /// </remarks>
 public partial class ThemeService : ObservableObject
 {
+    private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = true };
     /// <summary>
     /// Gets the singleton instance of the theme service.
     /// </summary>
@@ -169,10 +170,7 @@ public partial class ThemeService : ObservableObject
                 IsDarkMode = IsDarkMode
             };
 
-            var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-            });
+            var json = JsonSerializer.Serialize(settings, s_jsonOptions);
 
             File.WriteAllText(_settingsPath, json);
         }

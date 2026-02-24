@@ -14,8 +14,8 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/SOUP;component/Themes/ModernStyles.xaml" />
-                <ResourceDictionary Source="/SOUP;component/Themes/DarkTheme.xaml" />
+                <ResourceDictionary Source="/OrderLog;component/Themes/ModernStyles.xaml" />
+                <ResourceDictionary Source="/OrderLog;component/Themes/DarkTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Status Chip Style (matching main widget design) -->

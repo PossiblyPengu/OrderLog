@@ -14,6 +14,12 @@ namespace SOUP.Features.OrderLog.Services;
 /// </summary>
 public class OrderLogClipboardService
 {
+    private static readonly JsonSerializerOptions s_jsonOptions = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     private readonly ILogger<OrderLogClipboardService>? _logger;
 
     public OrderLogClipboardService(ILogger<OrderLogClipboardService>? logger = null)
@@ -38,13 +44,7 @@ public class OrderLogClipboardService
                 Items = itemsList
             };
 
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            var json = JsonSerializer.Serialize(wrapper, options);
+            var json = JsonSerializer.Serialize(wrapper, s_jsonOptions);
             Clipboard.SetText(json);
 
             _logger?.LogInformation("Copied {Count} items to clipboard", itemsList.Count);
@@ -80,12 +80,7 @@ public class OrderLogClipboardService
                 return false;
             }
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            var wrapper = JsonSerializer.Deserialize<ClipboardData>(json, options);
+            var wrapper = JsonSerializer.Deserialize<ClipboardData>(json, s_jsonOptions);
 
             if (wrapper?.Type != "OrderLogClipboard")
             {

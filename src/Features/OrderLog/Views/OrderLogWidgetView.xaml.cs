@@ -766,11 +766,38 @@ public partial class OrderLogWidgetView : UserControl
 
     private void OpenSettings_Click(object sender, RoutedEventArgs e)
     {
-        if (DataContext is not OrderLogViewModel vm) return;
+        try
+        {
+            if (DataContext is not OrderLogViewModel vm) return;
 
-        var settingsWindow = new Windows.OrderLogSettingsWindow(vm);
-        settingsWindow.Owner = Window.GetWindow(this);
-        settingsWindow.ShowDialog();
+            var settingsView = new OrderLogSettingsView { DataContext = vm };
+            var settingsWindow = new Window
+            {
+                Title = "OrderLog Settings",
+                Content = settingsView,
+                Owner = Window.GetWindow(this),
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                MinWidth = 450,
+                MinHeight = 500,
+                MaxHeight = 700,
+                WindowStyle = WindowStyle.ToolWindow,
+                ResizeMode = ResizeMode.NoResize,
+            };
+
+            // Apply theme resources to the settings window
+            foreach (var dict in Resources.MergedDictionaries)
+            {
+                settingsWindow.Resources.MergedDictionaries.Add(dict);
+            }
+            settingsWindow.Background = (System.Windows.Media.Brush)FindResource("BackgroundBrush");
+
+            settingsWindow.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to open settings window");
+        }
     }
 
     private void ShowFilters_Click(object sender, RoutedEventArgs e)
@@ -1610,26 +1637,38 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
-    private void QuickArchive_Click(object sender, RoutedEventArgs e)
+    private async void QuickArchive_Click(object sender, RoutedEventArgs e)
     {
-        // Get the OrderItem from the button's DataContext (inherited from card template)
+        // Get the OrderItem from the sender's DataContext
         OrderItem? order = null;
-        if (sender is Button btn)
+        if (sender is FrameworkElement fe)
         {
-            order = btn.DataContext as OrderItem;
+            order = fe.DataContext as OrderItem;
         }
 
-        if (order == null) return;
+        if (order == null)
+        {
+            Log.Warning("QuickArchive_Click: order is null, sender type={Type}", sender?.GetType().Name);
+            return;
+        }
         if (DataContext is not OrderLogViewModel vm) return;
 
-        // Toggle archive state based on current state
-        if (order.IsArchived)
+        try
         {
-            _ = vm.UnarchiveOrderAsync(order);
+            // Toggle archive state based on current state
+            if (order.IsArchived)
+            {
+                Log.Information("QuickArchive_Click: Unarchiving {Id} '{Vendor}'", order.Id, order.VendorName);
+                await vm.UnarchiveOrderAsync(order);
+            }
+            else
+            {
+                await vm.ArchiveOrderAsync(order);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _ = vm.ArchiveOrderAsync(order);
+            Log.Error(ex, "QuickArchive_Click failed for {Id}", order.Id);
         }
     }
 
@@ -2071,14 +2110,9 @@ public partial class OrderLogWidgetView : UserControl
             if (fe.DataContext is not ViewModels.OrderItemGroup group) return;
             if (DataContext is not OrderLogViewModel vm) return;
 
-            // SetStatusAsync handles linked groups - just call once with representative
             var representative = group.First;
             if (representative != null)
-            {
-                var restoreStatus = representative.PreviousStatus ?? OrderItem.OrderStatus.InProgress;
-                await vm.SetStatusAsync(representative, restoreStatus);
-            }
-            vm.StatusMessage = "Restored group";
+                await vm.UnarchiveOrderAsync(representative);
         }
         catch (Exception ex)
         {
@@ -2091,20 +2125,14 @@ public partial class OrderLogWidgetView : UserControl
         try
         {
             if (sender is not MenuItem menuItem) return;
-            // Get group from context menu's placement target
             var contextMenu = menuItem.Parent as ContextMenu;
             if (contextMenu?.PlacementTarget is not FrameworkElement target) return;
             if (target.DataContext is not ViewModels.OrderItemGroup group) return;
             if (DataContext is not OrderLogViewModel vm) return;
 
-            // SetStatusAsync handles linked groups - just call once with representative
             var representative = group.First;
             if (representative != null)
-            {
-                var restoreStatus = representative.PreviousStatus ?? OrderItem.OrderStatus.InProgress;
-                await vm.SetStatusAsync(representative, restoreStatus);
-            }
-            vm.StatusMessage = "Restored group";
+                await vm.UnarchiveOrderAsync(representative);
         }
         catch (Exception ex)
         {

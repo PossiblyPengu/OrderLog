@@ -15,6 +15,9 @@ namespace SOUP.Features.OrderLog.Services;
 /// </summary>
 public class OrderTemplateService
 {
+    private static readonly JsonSerializerOptions s_readOptions = new() { PropertyNameCaseInsensitive = true };
+    private static readonly JsonSerializerOptions s_writeOptions = new() { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
     private readonly ILogger<OrderTemplateService>? _logger;
     private readonly string _templatesFilePath;
     private List<OrderTemplate> _templates = new();
@@ -48,12 +51,7 @@ public class OrderTemplateService
                 return _templates;
             }
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
-            var collection = JsonSerializer.Deserialize<OrderTemplateCollection>(json, options);
+            var collection = JsonSerializer.Deserialize<OrderTemplateCollection>(json, s_readOptions);
             if (collection == null || collection.Version != 1)
             {
                 _logger?.LogWarning("Unsupported templates version: {Version}", collection?.Version ?? 0);
@@ -97,13 +95,7 @@ public class OrderTemplateService
                 Templates = _templates
             };
 
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            var json = JsonSerializer.Serialize(collection, options);
+            var json = JsonSerializer.Serialize(collection, s_writeOptions);
 
             // Atomic write: write to temp file, then move
             var tempFile = _templatesFilePath + ".tmp";

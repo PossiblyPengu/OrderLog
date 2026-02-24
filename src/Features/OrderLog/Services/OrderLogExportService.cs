@@ -22,6 +22,8 @@ public interface IOrderLogExportService
 
 public class OrderLogExportService : IOrderLogExportService
 {
+    private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
     private readonly ILogger<OrderLogExportService>? _logger;
 
     public OrderLogExportService(ILogger<OrderLogExportService>? logger = null)
@@ -62,13 +64,7 @@ public class OrderLogExportService : IOrderLogExportService
         try
         {
             var itemsList = items.ToList();
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            var jsonContent = JsonSerializer.Serialize(itemsList, options);
+            var jsonContent = JsonSerializer.Serialize(itemsList, s_jsonOptions);
             await File.WriteAllTextAsync(filePath, jsonContent);
 
             _logger?.LogInformation("Exported {Count} orders to JSON: {FilePath}", itemsList.Count, filePath);
