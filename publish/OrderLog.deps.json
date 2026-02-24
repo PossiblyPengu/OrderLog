@@ -18,7 +18,8 @@
           "Serilog.Extensions.Hosting": "8.0.0",
           "Serilog.Sinks.File": "6.0.0",
           "runtimepack.Microsoft.NETCore.App.Runtime.win-x64": "8.0.11",
-          "runtimepack.Microsoft.WindowsDesktop.App.Runtime.win-x64": "8.0.11"
+          "runtimepack.Microsoft.WindowsDesktop.App.Runtime.win-x64": "8.0.11",
+          "runtimepack.Microsoft.Windows.SDK.NET.Ref": "10.0.19041.53"
         },
         "runtime": {
           "OrderLog.dll": {}
@@ -969,6 +970,18 @@
           }
         }
       },
+      "runtimepack.Microsoft.Windows.SDK.NET.Ref/10.0.19041.53": {
+        "runtime": {
+          "Microsoft.Windows.SDK.NET.dll": {
+            "assemblyVersion": "10.0.19041.38",
+            "fileVersion": "10.0.19041.52"
+          },
+          "WinRT.Runtime.dll": {
+            "assemblyVersion": "2.1.0.0",
+            "fileVersion": "2.1.6.47881"
+          }
+        }
+      },
       "ClosedXML/0.104.2": {
         "dependencies": {
           "ClosedXML.Parser": "1.2.0",
@@ -994,7 +1007,7 @@
       },
       "CommunityToolkit.Mvvm/8.4.0": {
         "runtime": {
-          "lib/net8.0/CommunityToolkit.Mvvm.dll": {
+          "lib/net8.0-windows10.0.17763/CommunityToolkit.Mvvm.dll": {
             "assemblyVersion": "8.4.0.0",
             "fileVersion": "8.4.0.1"
           }
@@ -1542,6 +1555,11 @@
       "sha512": ""
     },
     "runtimepack.Microsoft.WindowsDesktop.App.Runtime.win-x64/8.0.11": {
+      "type": "runtimepack",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "runtimepack.Microsoft.Windows.SDK.NET.Ref/10.0.19041.53": {
       "type": "runtimepack",
       "serviceable": false,
       "sha512": ""
