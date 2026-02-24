@@ -766,12 +766,11 @@ public partial class OrderLogWidgetView : UserControl
 
     private void OpenSettings_Click(object sender, RoutedEventArgs e)
     {
-        // Settings not available in standalone mode
-    }
+        if (DataContext is not OrderLogViewModel vm) return;
 
-    private void OpenLauncher_Click(object sender, RoutedEventArgs e)
-    {
-        // Launcher not available in standalone mode
+        var settingsWindow = new Windows.OrderLogSettingsWindow(vm);
+        settingsWindow.Owner = Window.GetWindow(this);
+        settingsWindow.ShowDialog();
     }
 
     private void ShowFilters_Click(object sender, RoutedEventArgs e)
@@ -837,15 +836,15 @@ public partial class OrderLogWidgetView : UserControl
         try
         {
             var themePath = isDarkMode
-                ? "pack://application:,,,/SOUP;component/Themes/DarkTheme.xaml"
-                : "pack://application:,,,/SOUP;component/Themes/LightTheme.xaml";
+                ? "pack://application:,,,/OrderLog;component/Themes/DarkTheme.xaml"
+                : "pack://application:,,,/OrderLog;component/Themes/LightTheme.xaml";
 
             Resources.MergedDictionaries.Clear();
 
             // Add ModernStyles first (base styles including SurfaceBrush fallback)
-            var modernStyles = new ResourceDictionary { Source = new Uri("pack://application:,,,/SOUP;component/Themes/ModernStyles.xaml") };
+            var modernStyles = new ResourceDictionary { Source = new Uri("pack://application:,,,/OrderLog;component/Themes/ModernStyles.xaml") };
             var themeDict = new ResourceDictionary { Source = new Uri(themePath) };
-            var widgetTheme = new ResourceDictionary { Source = new Uri("pack://application:,,,/SOUP;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml") };
+            var widgetTheme = new ResourceDictionary { Source = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml") };
 
             Resources.MergedDictionaries.Add(modernStyles);
             Resources.MergedDictionaries.Add(themeDict);
@@ -869,9 +868,9 @@ public partial class OrderLogWidgetView : UserControl
                         return false;
                     }
 
-                    var modernUri = new Uri("pack://application:,,,/SOUP;component/Themes/ModernStyles.xaml");
+                    var modernUri = new Uri("pack://application:,,,/OrderLog;component/Themes/ModernStyles.xaml");
                     var themeUriLocal = new Uri(themePath);
-                    var widgetUri = new Uri("pack://application:,,,/SOUP;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml");
+                    var widgetUri = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml");
 
                     if (!HasSource(appRes, modernUri)) appRes.MergedDictionaries.Add(modernStyles);
                     if (!HasSource(appRes, themeUriLocal)) appRes.MergedDictionaries.Add(themeDict);

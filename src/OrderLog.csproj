@@ -5,7 +5,7 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>SOUP</RootNamespace>
     <AssemblyName>OrderLog</AssemblyName>
-    <ApplicationIcon>Assets\soup.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\orderlog.ico</ApplicationIcon>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

@@ -3194,12 +3194,6 @@
                            VerticalAlignment="Center"/>
                 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Click="OpenLauncher_Click"
-                            Style="{StaticResource WidgetIconButtonStyle}"
-                            ToolTip="Open S.O.U.P Launcher"
-                            Margin="0,0,4,0">
-                        <TextBlock Text="🏠" FontSize="{DynamicResource CardFontSize}"/>
-                    </Button>
                     <Button Click="OpenSettings_Click"
                             Style="{StaticResource WidgetIconButtonStyle}"
                             ToolTip="Settings"

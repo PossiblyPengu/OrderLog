@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet --list-sdks:*)",
+      "Bash(where:*)",
+      "Bash(dotnet:*)",
+      "Bash(sqlite3:*)",
+      "Bash(\"D:/CODE/important files/DB.Browser.for.SQLite-v3.13.1-win64/DB Browser for SQLite.exe\" --version)",
+      "Bash(\"D:/CODE/important files/dotnet-sdk-8.0.404-win-x64/dotnet.exe\" --list-sdks)",
+      "Bash(DOTNET_ROOT=\"D:/CODE/important files/dotnet-sdk-8.0.404-win-x64\" \"D:/CODE/important files/dotnet-sdk-8.0.404-win-x64/dotnet.exe\" build:*)",
+      "Bash(grep:*)"
+    ]
+  }
+}

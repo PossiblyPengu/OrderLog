@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Background rounded square -->
+  <rect x="16" y="16" width="224" height="224" rx="40" ry="40" fill="#1e1e1e"/>
+
+  <!-- Notepad body -->
+  <rect x="60" y="44" width="136" height="176" rx="10" ry="10" fill="#2d2d2d" stroke="#444" stroke-width="3"/>
+
+  <!-- Notepad top binding strip -->
+  <rect x="60" y="44" width="136" height="28" rx="10" ry="10" fill="#383838"/>
+  <rect x="60" y="62" width="136" height="10" fill="#383838"/>
+
+  <!-- Binding rings -->
+  <circle cx="92" cy="54" r="6" fill="none" stroke="#666" stroke-width="3"/>
+  <circle cx="128" cy="54" r="6" fill="none" stroke="#666" stroke-width="3"/>
+  <circle cx="164" cy="54" r="6" fill="none" stroke="#666" stroke-width="3"/>
+
+  <!-- Lines on notepad -->
+  <line x1="80" y1="96" x2="176" y2="96" stroke="#4a4a4a" stroke-width="2" stroke-linecap="round"/>
+  <line x1="80" y1="118" x2="176" y2="118" stroke="#4a4a4a" stroke-width="2" stroke-linecap="round"/>
+  <line x1="80" y1="140" x2="176" y2="140" stroke="#4a4a4a" stroke-width="2" stroke-linecap="round"/>
+  <line x1="80" y1="162" x2="150" y2="162" stroke="#4a4a4a" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Checkmarks on first two lines -->
+  <polyline points="82,94 88,100 100,88" fill="none" stroke="#8b8b8b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="82,116 88,122 100,110" fill="none" stroke="#8b8b8b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Text placeholders after checkmarks -->
+  <line x1="108" y1="96" x2="176" y2="96" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="108" y1="118" x2="170" y2="118" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Small pencil accent in bottom right -->
+  <g transform="translate(168, 178) rotate(-45)">
+    <rect x="0" y="0" width="8" height="32" rx="1" fill="#888"/>
+    <polygon points="0,32 4,40 8,32" fill="#aaa"/>
+    <rect x="0" y="0" width="8" height="6" rx="1" fill="#666"/>
+  </g>
+</svg>

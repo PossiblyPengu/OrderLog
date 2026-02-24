@@ -230,12 +230,6 @@ public partial class OrderLogWidgetWindow : Window
                 WidgetView.InvalidateVisual();
                 WidgetView.UpdateLayout();
             }, System.Windows.Threading.DispatcherPriority.Loaded);
-
-            // Hide update badge - no UpdateService in standalone mode
-            await Dispatcher.InvokeAsync(() =>
-            {
-                UpdateBadge.Visibility = Visibility.Collapsed;
-            });
         }
         catch (Exception ex)
         {
@@ -554,12 +548,6 @@ public partial class OrderLogWidgetWindow : Window
         {
             PositionAppBar();
         }
-    }
-
-    private void UpdateBadge_Click(object sender, MouseButtonEventArgs e)
-    {
-        // No-op in standalone mode - no UpdateService
-        e.Handled = true;
     }
 
     #endregion

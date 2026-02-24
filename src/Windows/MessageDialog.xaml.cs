@@ -47,8 +47,8 @@ public partial class MessageDialog : Window
     private void ApplyTheme()
     {
         var themePath = ThemeService.Instance.IsDarkMode
-            ? "pack://application:,,,/SOUP;component/Themes/DarkTheme.xaml"
-            : "pack://application:,,,/SOUP;component/Themes/LightTheme.xaml";
+            ? "pack://application:,,,/OrderLog;component/Themes/DarkTheme.xaml"
+            : "pack://application:,,,/OrderLog;component/Themes/LightTheme.xaml";
 
         Resources.MergedDictionaries.Clear();
         Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(themePath) });

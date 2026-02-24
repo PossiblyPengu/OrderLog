@@ -4,7 +4,7 @@ using System.IO;
 namespace SOUP.Core;
 
 /// <summary>
-/// Centralized application paths for consistent directory access across all modules.
+/// Centralized application paths for consistent directory access.
 /// </summary>
 public static class AppPaths
 {
@@ -27,11 +27,6 @@ public static class AppPaths
         Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
     /// <summary>
-    /// Main database directory: %APPDATA%\SOUP\Data
-    /// </summary>
-    public static string DataDir { get; } = Path.Combine(AppData, "Data");
-
-    /// <summary>
     /// Shared dictionary database directory: %APPDATA%\SOUP\Shared
     /// </summary>
     public static string SharedDir { get; } = Path.Combine(AppData, "Shared");
@@ -45,26 +40,6 @@ public static class AppPaths
     /// OrderLog module directory: %APPDATA%\SOUP\OrderLog
     /// </summary>
     public static string OrderLogDir { get; } = Path.Combine(AppData, "OrderLog");
-
-    /// <summary>
-    /// AllocationBuddy module directory: %APPDATA%\SOUP\AllocationBuddy
-    /// </summary>
-    public static string AllocationBuddyDir { get; } = Path.Combine(AppData, "AllocationBuddy");
-
-    /// <summary>
-    /// ExpireWise module directory: %APPDATA%\SOUP\ExpireWise
-    /// </summary>
-    public static string ExpireWiseDir { get; } = Path.Combine(AppData, "ExpireWise");
-
-    /// <summary>
-    /// EssentialsBuddy module directory: %APPDATA%\SOUP\EssentialsBuddy
-    /// </summary>
-    public static string EssentialsBuddyDir { get; } = Path.Combine(AppData, "EssentialsBuddy");
-
-    /// <summary>
-    /// Main database path: %APPDATA%\SOUP\Data\SOUP.db
-    /// </summary>
-    public static string MainDbPath { get; } = Path.Combine(DataDir, "SOUP.db");
 
     /// <summary>
     /// Shared dictionary database path: %APPDATA%\SOUP\Shared\dictionaries.db
@@ -82,12 +57,8 @@ public static class AppPaths
     public static void EnsureDirectoriesExist()
     {
         Directory.CreateDirectory(AppData);
-        Directory.CreateDirectory(DataDir);
         Directory.CreateDirectory(SharedDir);
         Directory.CreateDirectory(LogsDir);
         Directory.CreateDirectory(OrderLogDir);
-        Directory.CreateDirectory(AllocationBuddyDir);
-        Directory.CreateDirectory(ExpireWiseDir);
-        Directory.CreateDirectory(EssentialsBuddyDir);
     }
 }
