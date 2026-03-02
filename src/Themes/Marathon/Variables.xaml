@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       MARATHON DESIGN SYSTEM — Variables / Dark Mode Tokens
+       Deep space · Neon · Holographic · Angular HUD
+       Based on DESIGN_SYSTEM.md (Runner palette, dark mode)
+  ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- ─── Typography ──────────────────────────────────────────────────────── -->
+  <FontFamily x:Key="FontMain">Inter, Segoe UI Variable Display, Segoe UI, sans-serif</FontFamily>
+  <FontFamily x:Key="FontMono">JetBrains Mono, Cascadia Code, Consolas, Courier New, monospace</FontFamily>
+
+  <!-- ─── Spacing ──────────────────────────────────────────────────────────── -->
+  <sys:Double x:Key="Sp2xs">2</sys:Double>
+  <sys:Double x:Key="SpXs">4</sys:Double>
+  <sys:Double x:Key="SpSm">8</sys:Double>
+  <sys:Double x:Key="SpMd">16</sys:Double>
+  <sys:Double x:Key="SpLg">24</sys:Double>
+  <sys:Double x:Key="SpXl">32</sys:Double>
+  <sys:Double x:Key="Sp2xl">48</sys:Double>
+  <sys:Double x:Key="Sp3xl">64</sys:Double>
+
+  <!-- ─── Border radii (angular/aggressive) ───────────────────────────────── -->
+  <CornerRadius x:Key="RadiusXs">2</CornerRadius>
+  <CornerRadius x:Key="RadiusSm">3</CornerRadius>
+  <CornerRadius x:Key="RadiusMd">4</CornerRadius>
+  <CornerRadius x:Key="RadiusLg">6</CornerRadius>
+  <!-- Backwards-compat aliases used by existing widget templates -->
+  <CornerRadius x:Key="XSmallCornerRadius">2</CornerRadius>
+  <CornerRadius x:Key="SmallCornerRadius">3</CornerRadius>
+  <CornerRadius x:Key="MediumCornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="LargeCornerRadius">6</CornerRadius>
+  <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="CardCornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="NavItemCornerRadius">3</CornerRadius>
+  <CornerRadius x:Key="BadgeCornerRadius">3</CornerRadius>
+  <CornerRadius x:Key="OverlayCornerRadius">6</CornerRadius>
+  <CornerRadius x:Key="WindowCornerRadius">6</CornerRadius>
+  <CornerRadius x:Key="TitleBarCornerRadius">6,6,0,0</CornerRadius>
+
+  <!-- ─── Card / Widget specific dims ─────────────────────────────────────── -->
+  <sys:Double x:Key="CardColorBarHeight">3</sys:Double>
+  <sys:Double x:Key="CardFontSize">12</sys:Double>
+
+  <!-- ─── Color Tokens — Dark Mode (default) ──────────────────────────────── -->
+
+  <!-- Backgrounds -->
+  <Color x:Key="BackgroundColor">#06080E</Color>
+  <Color x:Key="SurfaceColor">#0C0E18</Color>
+  <Color x:Key="SurfaceHoverColor">#121522</Color>
+  <Color x:Key="SurfaceActiveColor">#1A1E30</Color>
+  <Color x:Key="SurfaceSunkenColor">#04060A</Color>
+  <Color x:Key="SolidBackgroundFillColorBase">#06080E</Color>
+  <Color x:Key="SolidBackgroundFillColorSecondary">#0C0E18</Color>
+  <Color x:Key="SolidBackgroundFillColorTertiary">#121522</Color>
+
+  <!-- Text -->
+  <Color x:Key="TextPrimaryColor">#E4E8F4</Color>
+  <Color x:Key="TextSecondaryColor">#8892AD</Color>
+  <Color x:Key="TextTertiaryColor">#505A74</Color>
+  <Color x:Key="TextDisabledColor">#2A3040</Color>
+  <Color x:Key="TextFillColorPrimary">#E4E8F4</Color>
+  <Color x:Key="TextFillColorSecondary">#8892AD</Color>
+  <Color x:Key="TextFillColorTertiary">#505A74</Color>
+  <Color x:Key="TextFillColorDisabled">#2A3040</Color>
+  <Color x:Key="TextFillColorOnAccent">#FFFFFF</Color>
+  <Color x:Key="TextOnPrimaryColor">#FFFFFF</Color>
+
+  <!-- Borders -->
+  <Color x:Key="BorderColor">#1E2438</Color>
+  <Color x:Key="BorderLightColor">#181D2E</Color>
+  <Color x:Key="BorderAccentColor">#2EFF2D55</Color>
+  <Color x:Key="DividerStrokeColorDefault">#1E2438</Color>
+
+  <!-- Primary / Accent (Runner = #FF2D55) -->
+  <Color x:Key="PrimaryColor">#FF2D55</Color>
+  <Color x:Key="PrimaryHoverColor">#FF4D6F</Color>
+  <Color x:Key="PrimaryDarkColor">#FF6B8A</Color>
+  <Color x:Key="PrimaryLightColor_Alpha">#1AFF2D55</Color>
+  <Color x:Key="AccentColor">#FF2D55</Color>
+  <Color x:Key="AccentColorPrimary">#FF2D55</Color>
+
+  <!-- Status / Semantic -->
+  <Color x:Key="SuccessColor">#30D158</Color>
+  <Color x:Key="WarningColor">#FFD60A</Color>
+  <Color x:Key="DangerColor">#FF453A</Color>
+  <Color x:Key="InfoColor">#64D2FF</Color>
+  <Color x:Key="SuccessDarkColor">#25A845</Color>
+  <Color x:Key="WarningDarkColor">#CC9D00</Color>
+  <Color x:Key="DangerDarkColor">#CC2F27</Color>
+  <Color x:Key="InfoDarkColor">#3DAAE5</Color>
+  <Color x:Key="SystemCriticalColor">#FF453A</Color>
+  <Color x:Key="SystemCautionColor">#FFD60A</Color>
+  <Color x:Key="SystemSuccessColor">#30D158</Color>
+  <Color x:Key="SystemAttentionColor">#64D2FF</Color>
+
+  <!-- Header / Tab -->
+  <Color x:Key="HeaderBgColor">#E006080E</Color>
+  <Color x:Key="TabBgColor">#EB06080E</Color>
+  <Color x:Key="TabActiveBgColor">#14FF2D55</Color>
+
+  <!-- Overlay -->
+  <Color x:Key="OverlayBgColor">#99060F0F</Color>
+  <Color x:Key="OverlayHeavyColor">#BF060F0F</Color>
+
+  <!-- Widget Status Colors -->
+  <Color x:Key="WidgetStatusNotReadyColor">#FF453A</Color>
+  <Color x:Key="WidgetStatusOnDeckColor">#FFD60A</Color>
+  <Color x:Key="WidgetStatusInProgressColor">#FF2D55</Color>
+  <Color x:Key="WidgetStatusDoneColor">#30D158</Color>
+  <Color x:Key="WidgetStatusNotReadyBgColor">#33FF2D55</Color>
+  <Color x:Key="WidgetStatusOnDeckBgColor">#33FFD60A</Color>
+  <Color x:Key="WidgetStatusInProgressBgColor">#1AFF2D55</Color>
+  <Color x:Key="WidgetStatusDoneBgColor">#1A30D158</Color>
+
+  <!-- Widget Note Colors (dark tints) -->
+  <Color x:Key="WidgetNoteYellowColor">#2A1E00</Color>
+  <Color x:Key="WidgetNotePinkColor">#2A001A</Color>
+  <Color x:Key="WidgetNoteBlueColor">#001A2A</Color>
+  <Color x:Key="WidgetNoteGreenColor">#001A0A</Color>
+  <Color x:Key="WidgetNotePurpleColor">#14001A</Color>
+
+  <!-- Card background per order status (surfaces) -->
+  <SolidColorBrush x:Key="OrderLogCardNotReadyBrush"  Color="#0C0E18"/>
+  <SolidColorBrush x:Key="OrderLogCardOnDeckBrush"    Color="#0C0E18"/>
+  <SolidColorBrush x:Key="OrderLogCardInProgressBrush" Color="#0C0E18"/>
+  <SolidColorBrush x:Key="OrderLogCardDoneBrush"      Color="#0C0E18"/>
+  <SolidColorBrush x:Key="OrderLogCardNoteBrush"      Color="#0C0E18"/>
+
+  <!-- ─── Brushes ──────────────────────────────────────────────────────────── -->
+
+  <!-- Backgrounds -->
+  <SolidColorBrush x:Key="BackgroundBrush"    Color="{StaticResource BackgroundColor}"/>
+  <SolidColorBrush x:Key="SurfaceBrush"       Color="{StaticResource SurfaceColor}"/>
+  <SolidColorBrush x:Key="SurfaceHoverBrush"  Color="{StaticResource SurfaceHoverColor}"/>
+  <SolidColorBrush x:Key="SurfaceActiveBrush" Color="{StaticResource SurfaceActiveColor}"/>
+  <SolidColorBrush x:Key="SurfaceSunkenBrush" Color="{StaticResource SurfaceSunkenColor}"/>
+
+  <!-- Text -->
+  <SolidColorBrush x:Key="TextPrimaryBrush"   Color="{StaticResource TextPrimaryColor}"/>
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}"/>
+  <SolidColorBrush x:Key="TextTertiaryBrush"  Color="{StaticResource TextTertiaryColor}"/>
+  <SolidColorBrush x:Key="TextDisabledBrush"  Color="{StaticResource TextDisabledColor}"/>
+  <SolidColorBrush x:Key="TextOnPrimaryBrush" Color="{StaticResource TextOnPrimaryColor}"/>
+
+  <!-- Borders -->
+  <SolidColorBrush x:Key="BorderBrush"        Color="{StaticResource BorderColor}"/>
+  <SolidColorBrush x:Key="BorderLightBrush"   Color="{StaticResource BorderLightColor}"/>
+  <SolidColorBrush x:Key="BorderDarkBrush"    Color="{StaticResource BorderLightColor}"/>
+  <SolidColorBrush x:Key="BorderAccentBrush"  Color="{StaticResource BorderAccentColor}"/>
+
+  <!-- Primary / Accent -->
+  <SolidColorBrush x:Key="PrimaryBrush"       Color="{StaticResource PrimaryColor}"/>
+  <SolidColorBrush x:Key="PrimaryHoverBrush"  Color="{StaticResource PrimaryHoverColor}"/>
+  <SolidColorBrush x:Key="PrimaryDarkBrush"   Color="{StaticResource PrimaryDarkColor}"/>
+  <SolidColorBrush x:Key="PrimaryLightBrush"  Color="#1AFF2D55"/>
+  <SolidColorBrush x:Key="AccentBrush"        Color="{StaticResource AccentColor}"/>
+  <SolidColorBrush x:Key="AccentDarkBrush"    Color="{StaticResource PrimaryDarkColor}"/>
+  <SolidColorBrush x:Key="AccentLightBrush"   Color="{StaticResource PrimaryHoverColor}"/>
+
+  <!-- Status -->
+  <SolidColorBrush x:Key="SuccessBrush"       Color="{StaticResource SuccessColor}"/>
+  <SolidColorBrush x:Key="SuccessDarkBrush"   Color="{StaticResource SuccessDarkColor}"/>
+  <SolidColorBrush x:Key="SuccessLightBrush"  Color="{StaticResource SuccessColor}"/>
+  <SolidColorBrush x:Key="WarningBrush"       Color="{StaticResource WarningColor}"/>
+  <SolidColorBrush x:Key="WarningDarkBrush"   Color="{StaticResource WarningDarkColor}"/>
+  <SolidColorBrush x:Key="WarningLightBrush"  Color="{StaticResource WarningColor}"/>
+  <SolidColorBrush x:Key="DangerBrush"        Color="{StaticResource DangerColor}"/>
+  <SolidColorBrush x:Key="DangerDarkBrush"    Color="{StaticResource DangerDarkColor}"/>
+  <SolidColorBrush x:Key="DangerLightBrush"   Color="{StaticResource DangerColor}"/>
+  <SolidColorBrush x:Key="InfoBrush"          Color="{StaticResource InfoColor}"/>
+  <SolidColorBrush x:Key="InfoDarkBrush"      Color="{StaticResource InfoDarkColor}"/>
+  <SolidColorBrush x:Key="InfoLightBrush"     Color="{StaticResource InfoColor}"/>
+
+  <!-- Widget Status Brushes -->
+  <SolidColorBrush x:Key="WidgetStatusNotReadyBrush"     Color="{StaticResource WidgetStatusNotReadyColor}"/>
+  <SolidColorBrush x:Key="WidgetStatusOnDeckBrush"       Color="{StaticResource WidgetStatusOnDeckColor}"/>
+  <SolidColorBrush x:Key="WidgetStatusInProgressBrush"   Color="{StaticResource WidgetStatusInProgressColor}"/>
+  <SolidColorBrush x:Key="WidgetStatusDoneBrush"         Color="{StaticResource WidgetStatusDoneColor}"/>
+  <SolidColorBrush x:Key="WidgetStatusNotReadyBgBrush"   Color="{StaticResource WidgetStatusNotReadyBgColor}"/>
+  <SolidColorBrush x:Key="WidgetStatusOnDeckBgBrush"     Color="{StaticResource WidgetStatusOnDeckBgColor}"/>
+  <SolidColorBrush x:Key="WidgetStatusInProgressBgBrush" Color="{StaticResource WidgetStatusInProgressBgColor}"/>
+  <SolidColorBrush x:Key="WidgetStatusDoneBgBrush"       Color="{StaticResource WidgetStatusDoneBgColor}"/>
+
+  <!-- Overlay -->
+  <SolidColorBrush x:Key="OverlayBrush"       Color="{StaticResource OverlayBgColor}"/>
+  <SolidColorBrush x:Key="OverlayHeavyBrush"  Color="{StaticResource OverlayHeavyColor}"/>
+
+  <!-- ─── Drop-shadow effects ──────────────────────────────────────────────── -->
+  <!-- Card resting shadow (dark + faint accent) -->
+  <DropShadowEffect x:Key="ShadowCard"
+                    BlurRadius="8" ShadowDepth="0" Opacity="0.6" Color="#000000"/>
+  <!-- Card hover shadow (elevated) -->
+  <DropShadowEffect x:Key="ShadowCardHover"
+                    BlurRadius="20" ShadowDepth="0" Opacity="0.55" Color="#000000"/>
+  <!-- Neon primary glow -->
+  <DropShadowEffect x:Key="ShadowNeon"
+                    BlurRadius="16" ShadowDepth="0" Opacity="0.45" Color="#FF2D55"/>
+  <!-- Subtle button glow -->
+  <DropShadowEffect x:Key="ShadowGlow"
+                    BlurRadius="20" ShadowDepth="0" Opacity="0.25" Color="#FF2D55"/>
+  <!-- Focus ring glow -->
+  <DropShadowEffect x:Key="ShadowFocus"
+                    BlurRadius="12" ShadowDepth="0" Opacity="0.4" Color="#FF2D55"/>
+
+  <!-- Legacy keys used by OrderLogWidgetTheme -->
+  <DropShadowEffect x:Key="WidgetCardShadow"
+                    BlurRadius="8" ShadowDepth="0" Opacity="0.5" Color="#000000"/>
+  <DropShadowEffect x:Key="WidgetCardHoverShadow"
+                    BlurRadius="20" ShadowDepth="0" Opacity="0.55" Color="#000000"/>
+  <DropShadowEffect x:Key="WidgetCardDragShadow"
+                    BlurRadius="28" ShadowDepth="0" Opacity="0.65" Color="#000000"/>
+  <DropShadowEffect x:Key="WidgetButtonShadow"
+                    BlurRadius="10" ShadowDepth="0" Opacity="0.4" Color="#000000"/>
+  <DropShadowEffect x:Key="WidgetAccentGlow"
+                    BlurRadius="16" ShadowDepth="0" Opacity="0.5" Color="#FF2D55"/>
+
+  <!-- ─── Legacy module color aliases (used across the app) ────────────────── -->
+  <Color x:Key="ExpireWiseColor">#FFD60A</Color>
+  <Color x:Key="AllocationBuddyColor">#FF2D55</Color>
+  <Color x:Key="EssentialsBuddyColor">#30D158</Color>
+  <Color x:Key="SwiftLabelColor">#FF453A</Color>
+  <SolidColorBrush x:Key="ExpireWiseBrush"        Color="{StaticResource ExpireWiseColor}"/>
+  <SolidColorBrush x:Key="AllocationBuddyBrush"   Color="{StaticResource AllocationBuddyColor}"/>
+  <SolidColorBrush x:Key="EssentialsBuddyBrush"   Color="{StaticResource EssentialsBuddyColor}"/>
+  <SolidColorBrush x:Key="SwiftLabelBrush"         Color="{StaticResource SwiftLabelColor}"/>
+
+  <!-- TextLink -->
+  <Color x:Key="TextLinkColor">#FF2D55</Color>
+  <SolidColorBrush x:Key="TextLinkBrush" Color="{StaticResource TextLinkColor}"/>
+
+</ResourceDictionary>

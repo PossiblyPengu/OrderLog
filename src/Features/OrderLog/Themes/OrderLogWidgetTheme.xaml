@@ -3,11 +3,630 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <!-- ═══════════════════════════════════════════════════════════════════════════ -->
-    <!-- ORDER LOG WIDGET THEME - Modern Material Design 3 Inspired                  -->
+    <!-- ORDER LOG WIDGET THEME — Marathon Design System                             -->
+    <!-- Angular · Neon · Deep-space dark                                            -->
     <!-- ═══════════════════════════════════════════════════════════════════════════ -->
-    
-    <!-- High-visibility caret color - bright cyan for contrast on any background -->
-    <SolidColorBrush x:Key="HighVisibilityCaretBrush" Color="#00D4FF"/>
+
+    <!-- Caret — accent colored for Marathon -->
+    <SolidColorBrush x:Key="HighVisibilityCaretBrush" Color="#FF2D55"/>
+
+    <!-- Default TextBox caret override -->
+    <Style TargetType="TextBox">
+        <Setter Property="CaretBrush"       Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="SelectionBrush"   Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="SelectionOpacity" Value="0.35"/>
+    </Style>
+
+    <Style TargetType="RichTextBox">
+        <Setter Property="CaretBrush"       Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="SelectionBrush"   Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="SelectionOpacity" Value="0.35"/>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- SPACING &amp; LAYOUT CONSTANTS (Marathon Scale)                             -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <Thickness x:Key="WidgetPadding">16,16,16,16</Thickness>
+    <Thickness x:Key="WidgetContentPadding">16,12,16,12</Thickness>
+
+    <!-- Card dims -->
+    <sys:Double x:Key="WidgetCardWidth">Auto</sys:Double>
+    <sys:Double x:Key="WidgetCardMinWidth">280</sys:Double>
+    <sys:Double x:Key="WidgetCardMaxWidth">400</sys:Double>
+    <sys:Double x:Key="WidgetCardColorBarHeight">3</sys:Double>
+    <CornerRadius x:Key="WidgetCardCornerRadius">4</CornerRadius>
+    <CornerRadius x:Key="WidgetCardTopCornerRadius">4,4,0,0</CornerRadius>
+    <CornerRadius x:Key="WidgetCardBottomCornerRadius">0,0,4,4</CornerRadius>
+    <Thickness x:Key="WidgetCardMargin">6,0,6,10</Thickness>
+    <Thickness x:Key="WidgetCardPadding">0</Thickness>
+    <Thickness x:Key="WidgetCardHeaderPadding">14,10,14,10</Thickness>
+    <Thickness x:Key="WidgetCardBodyPadding">14,12,14,14</Thickness>
+    <Thickness x:Key="WidgetCardFooterPadding">12,8,12,8</Thickness>
+    <Thickness x:Key="WidgetListItemSpacing">0,0,0,10</Thickness>
+    <sys:Double x:Key="WidgetSectionGap">20</sys:Double>
+    <sys:Double x:Key="WidgetElementGap">8</sys:Double>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- TYPOGRAPHY — Mono everywhere for Marathon                                   -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <sys:Double x:Key="WidgetTitleFontSize">14</sys:Double>
+    <sys:Double x:Key="WidgetSubtitleFontSize">12</sys:Double>
+    <sys:Double x:Key="WidgetBodyFontSize">12</sys:Double>
+    <sys:Double x:Key="WidgetCaptionFontSize">11</sys:Double>
+    <sys:Double x:Key="WidgetBadgeFontSize">10</sys:Double>
+
+    <FontWeight x:Key="WidgetTitleFontWeight">SemiBold</FontWeight>
+    <FontWeight x:Key="WidgetSubtitleFontWeight">Medium</FontWeight>
+    <FontWeight x:Key="WidgetBodyFontWeight">Normal</FontWeight>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- WIDGET STATUS BRUSHES (aliases from Variables.xaml)                         -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <SolidColorBrush x:Key="WidgetStatusNotReadyBrush"     Color="{DynamicResource WidgetStatusNotReadyColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusOnDeckBrush"       Color="{DynamicResource WidgetStatusOnDeckColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusInProgressBrush"   Color="{DynamicResource WidgetStatusInProgressColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusDoneBrush"         Color="{DynamicResource WidgetStatusDoneColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusNotReadyBgBrush"   Color="{DynamicResource WidgetStatusNotReadyBgColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusOnDeckBgBrush"     Color="{DynamicResource WidgetStatusOnDeckBgColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusInProgressBgBrush" Color="{DynamicResource WidgetStatusInProgressBgColor}"/>
+    <SolidColorBrush x:Key="WidgetStatusDoneBgBrush"       Color="{DynamicResource WidgetStatusDoneBgColor}"/>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- ELEVATION / SHADOWS (neon-accented for Marathon dark)                       -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <DropShadowEffect x:Key="WidgetCardShadow"
+                      BlurRadius="8" ShadowDepth="0" Opacity="0.5" Color="#000000"/>
+    <DropShadowEffect x:Key="WidgetCardHoverShadow"
+                      BlurRadius="14" ShadowDepth="0" Opacity="0.45" Color="#FF2D55"/>
+    <DropShadowEffect x:Key="WidgetCardDragShadow"
+                      BlurRadius="24" ShadowDepth="0" Opacity="0.6" Color="#000000"/>
+    <DropShadowEffect x:Key="WidgetButtonShadow"
+                      BlurRadius="10" ShadowDepth="0" Opacity="0.4" Color="#000000"/>
+    <DropShadowEffect x:Key="WidgetAccentGlow"
+                      BlurRadius="16" ShadowDepth="0" Opacity="0.5" Color="#FF2D55"/>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- CARD STYLES                                                                  -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <!-- Base elevated card -->
+    <Style x:Key="ElevatedCardStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="{StaticResource WidgetCardCornerRadius}"/>
+        <Setter Property="Effect"          Value="{StaticResource WidgetCardShadow}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderAccentBrush}"/>
+                <Setter Property="Effect"      Value="{StaticResource WidgetCardHoverShadow}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Primary widget card style -->
+    <Style x:Key="OrderLogWidgetElevatedCardStyle" TargetType="Border" BasedOn="{StaticResource ElevatedCardStyle}">
+        <Setter Property="Margin"  Value="{StaticResource WidgetCardMargin}"/>
+        <Setter Property="Padding" Value="{StaticResource WidgetCardPadding}"/>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- TAB BAR STYLES — Angular + neon underline                                   -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <CornerRadius x:Key="WidgetTabContainerRadius">3</CornerRadius>
+    <CornerRadius x:Key="WidgetTabItemRadius">3</CornerRadius>
+    <Thickness x:Key="WidgetTabContainerPadding">3</Thickness>
+    <Thickness x:Key="WidgetTabItemPadding">14,7</Thickness>
+    <sys:Double x:Key="WidgetTabHeight">34</sys:Double>
+
+    <Style x:Key="WidgetTabContainerStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceSunkenBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="{StaticResource WidgetTabContainerRadius}"/>
+        <Setter Property="Padding"         Value="{StaticResource WidgetTabContainerPadding}"/>
+    </Style>
+
+    <!-- Inactive tab button -->
+    <Style x:Key="WidgetTabButtonStyle" TargetType="Button">
+        <Setter Property="Background"             Value="Transparent"/>
+        <Setter Property="Foreground"             Value="{DynamicResource TextSecondaryBrush}"/>
+        <Setter Property="BorderThickness"        Value="0"/>
+        <Setter Property="FontFamily"             Value="{DynamicResource FontMono}"/>
+        <Setter Property="FontSize"               Value="11"/>
+        <Setter Property="FontWeight"             Value="SemiBold"/>
+        <Setter Property="Padding"                Value="14,7"/>
+        <Setter Property="Cursor"                 Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment"   Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="TabBorder"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{StaticResource WidgetTabItemRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Active tab button — neon accent -->
+    <Style x:Key="WidgetTabButtonActiveStyle" TargetType="Button" BasedOn="{StaticResource WidgetTabButtonStyle}">
+        <Setter Property="Background"  Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="Foreground"  Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderAccentBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Effect"      Value="{StaticResource WidgetAccentGlow}"/>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- STATUS BADGE STYLES                                                          -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <CornerRadius x:Key="WidgetBadgeCornerRadius">3</CornerRadius>
+    <Thickness x:Key="WidgetBadgePadding">8,4,8,4</Thickness>
+
+    <Style x:Key="WidgetStatusBadgeBaseStyle" TargetType="Border">
+        <Setter Property="CornerRadius"        Value="{StaticResource WidgetBadgeCornerRadius}"/>
+        <Setter Property="Padding"             Value="{StaticResource WidgetBadgePadding}"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <Style x:Key="WidgetStatusNotReadyBadgeStyle"   TargetType="Border" BasedOn="{StaticResource WidgetStatusBadgeBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource WidgetStatusNotReadyBgBrush}"/>
+    </Style>
+    <Style x:Key="WidgetStatusOnDeckBadgeStyle"     TargetType="Border" BasedOn="{StaticResource WidgetStatusBadgeBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource WidgetStatusOnDeckBgBrush}"/>
+    </Style>
+    <Style x:Key="WidgetStatusInProgressBadgeStyle" TargetType="Border" BasedOn="{StaticResource WidgetStatusBadgeBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource WidgetStatusInProgressBgBrush}"/>
+    </Style>
+    <Style x:Key="WidgetStatusDoneBadgeStyle"       TargetType="Border" BasedOn="{StaticResource WidgetStatusBadgeBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource WidgetStatusDoneBgBrush}"/>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- ACTION BUTTON STYLES                                                         -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <!-- Primary action — neon fill -->
+    <Style x:Key="WidgetPrimaryActionButtonStyle" TargetType="Button">
+        <Setter Property="Background"      Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="Foreground"      Value="#FFFFFF"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontFamily"      Value="{DynamicResource FontMono}"/>
+        <Setter Property="FontSize"        Value="11"/>
+        <Setter Property="FontWeight"      Value="SemiBold"/>
+        <Setter Property="Padding"         Value="14,8"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{DynamicResource RadiusSm}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
+                            <Setter TargetName="Bd" Property="Effect"     Value="{StaticResource WidgetAccentGlow}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryDarkBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Secondary action -->
+    <Style x:Key="WidgetSecondaryActionButtonStyle" TargetType="Button">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceHoverBrush}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontFamily"      Value="{DynamicResource FontMono}"/>
+        <Setter Property="FontSize"        Value="11"/>
+        <Setter Property="FontWeight"      Value="SemiBold"/>
+        <Setter Property="Padding"         Value="14,8"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource RadiusSm}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background"  Value="{DynamicResource SurfaceActiveBrush}"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource BorderAccentBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Icon button -->
+    <Style x:Key="WidgetIconButtonStyle" TargetType="Button">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="Foreground"      Value="{DynamicResource TextSecondaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Width"           Value="32"/>
+        <Setter Property="Height"          Value="32"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="Padding"         Value="6"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{DynamicResource RadiusSm}"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryLightBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- DRAG HANDLE — minimal grip dots                                              -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <Style x:Key="WidgetDragHandleStyle" TargetType="Button">
+        <Setter Property="Width"           Value="28"/>
+        <Setter Property="Height"          Value="28"/>
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor"          Value="SizeAll"/>
+        <Setter Property="ToolTip"         Value="Drag to reorder"/>
+        <Setter Property="Padding"         Value="4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{DynamicResource RadiusXs}"
+                            Padding="{TemplateBinding Padding}">
+                        <Grid x:Name="DotsGrid" Opacity="0.5"
+                              HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Vertical" Margin="0,0,3,0">
+                                    <Ellipse x:Name="D1" Width="3" Height="3"
+                                             Fill="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,3"/>
+                                    <Ellipse x:Name="D2" Width="3" Height="3"
+                                             Fill="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,3"/>
+                                    <Ellipse x:Name="D3" Width="3" Height="3"
+                                             Fill="{DynamicResource TextTertiaryBrush}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Ellipse x:Name="D4" Width="3" Height="3"
+                                             Fill="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,3"/>
+                                    <Ellipse x:Name="D5" Width="3" Height="3"
+                                             Fill="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,3"/>
+                                    <Ellipse x:Name="D6" Width="3" Height="3"
+                                             Fill="{DynamicResource TextTertiaryBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                            <Setter TargetName="DotsGrid" Property="Opacity" Value="1"/>
+                            <Setter TargetName="D1" Property="Fill" Value="{DynamicResource AccentBrush}"/>
+                            <Setter TargetName="D2" Property="Fill" Value="{DynamicResource AccentBrush}"/>
+                            <Setter TargetName="D3" Property="Fill" Value="{DynamicResource AccentBrush}"/>
+                            <Setter TargetName="D4" Property="Fill" Value="{DynamicResource AccentBrush}"/>
+                            <Setter TargetName="D5" Property="Fill" Value="{DynamicResource AccentBrush}"/>
+                            <Setter TargetName="D6" Property="Fill" Value="{DynamicResource AccentBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- INLINE INPUT STYLES                                                          -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <Style x:Key="WidgetInlineTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground"      Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="CaretBrush"      Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="SelectionBrush"  Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="Padding"         Value="0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="Root"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="0,0,0,1"
+                            Padding="{TemplateBinding Padding}">
+                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="WidgetPlaceholderTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground"      Value="{DynamicResource TextDisabledBrush}"/>
+        <Setter Property="FontStyle"       Value="Italic"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- SCROLLVIEWER — thin neon accent thumb                                       -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <Style x:Key="WidgetScrollViewerStyle" TargetType="ScrollViewer">
+        <Setter Property="Background"             Value="Transparent"/>
+        <Setter Property="VerticalScrollBarVisibility"   Value="Auto"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="PanningMode" Value="VerticalOnly"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollViewer">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ScrollContentPresenter Grid.Column="0" Margin="{TemplateBinding Padding}"/>
+                        <ScrollBar x:Name="PART_VerticalScrollBar"
+                                   Grid.Column="1"
+                                   Orientation="Vertical"
+                                   Width="3"
+                                   Margin="0,4,2,4"
+                                   Opacity="0.45"
+                                   Value="{TemplateBinding VerticalOffset}"
+                                   Maximum="{TemplateBinding ScrollableHeight}"
+                                   ViewportSize="{TemplateBinding ViewportHeight}"
+                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}">
+                            <ScrollBar.Style>
+                                <Style TargetType="ScrollBar">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ScrollBar">
+                                                <Grid>
+                                                    <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                                        <Track.DecreaseRepeatButton>
+                                                            <RepeatButton Command="ScrollBar.PageUpCommand"
+                                                                          Opacity="0" Width="0" Height="0"/>
+                                                        </Track.DecreaseRepeatButton>
+                                                        <Track.Thumb>
+                                                            <Thumb>
+                                                                <Thumb.Template>
+                                                                    <ControlTemplate TargetType="Thumb">
+                                                                        <Border CornerRadius="0"
+                                                                                Background="{DynamicResource BorderAccentBrush}"
+                                                                                Width="3"/>
+                                                                    </ControlTemplate>
+                                                                </Thumb.Template>
+                                                            </Thumb>
+                                                        </Track.Thumb>
+                                                        <Track.IncreaseRepeatButton>
+                                                            <RepeatButton Command="ScrollBar.PageDownCommand"
+                                                                          Opacity="0" Width="0" Height="0"/>
+                                                        </Track.IncreaseRepeatButton>
+                                                    </Track>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ScrollBar.Style>
+                        </ScrollBar>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- CONTEXT MENU &amp; MENU ITEM — Marathon dark                                -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <Style TargetType="ContextMenu">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceHoverBrush}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding"         Value="4"/>
+        <Setter Property="FontFamily"      Value="{DynamicResource FontMono}"/>
+        <Setter Property="FontSize"        Value="11"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource RadiusSm}"
+                            Padding="{TemplateBinding Padding}">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.55" Color="#000000"/>
+                        </Border.Effect>
+                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="MenuItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="Padding"    Value="10,7"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FontMono}"/>
+        <Setter Property="FontSize"   Value="11"/>
+        <Setter Property="Cursor"     Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{DynamicResource RadiusXs}"
+                            Padding="{TemplateBinding Padding}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter x:Name="Icon" ContentSource="Icon"
+                                              Width="14" Height="14" Margin="0,0,8,0"
+                                              VerticalAlignment="Center"/>
+                            <ContentPresenter Grid.Column="1" ContentSource="Header"
+                                              RecognizesAccessKey="True" VerticalAlignment="Center"/>
+                            <Path x:Name="SubMenuArrow" Grid.Column="2"
+                                  Data="M0,0 L4,4 L0,8"
+                                  Stroke="{DynamicResource TextSecondaryBrush}"
+                                  StrokeThickness="1.2"
+                                  VerticalAlignment="Center"
+                                  Margin="8,0,0,0"
+                                  Visibility="Collapsed"/>
+                            <Popup x:Name="PART_Popup"
+                                   IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Placement="Right"
+                                   AllowsTransparency="True"
+                                   Focusable="False">
+                                <Border Background="{DynamicResource SurfaceHoverBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="{DynamicResource RadiusSm}"
+                                        Padding="4">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.5" Color="#000000"/>
+                                    </Border.Effect>
+                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasItems" Value="True">
+                            <Setter TargetName="SubMenuArrow" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="Icon" Value="{x:Null}">
+                            <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="{DynamicResource PrimaryLightBrush}"/>
+                            <Setter Property="Foreground"                   Value="{DynamicResource AccentBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Separator">
+        <Setter Property="Height"     Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="Margin"     Value="8,3"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Border Background="{TemplateBinding Background}"
+                            Height="{TemplateBinding Height}"
+                            Margin="{TemplateBinding Margin}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- EMPTY STATE                                                                  -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <Style x:Key="WidgetEmptyStateContainerStyle" TargetType="Border">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding"    Value="32"/>
+    </Style>
+
+    <Style x:Key="WidgetEmptyStateIconStyle" TargetType="TextBlock">
+        <Setter Property="FontSize"            Value="40"/>
+        <Setter Property="Foreground"          Value="{DynamicResource TextDisabledBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin"              Value="0,0,0,12"/>
+        <Setter Property="Opacity"             Value="0.5"/>
+    </Style>
+
+    <Style x:Key="WidgetEmptyStateTitleStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily"          Value="{DynamicResource FontMono}"/>
+        <Setter Property="FontSize"            Value="{StaticResource WidgetTitleFontSize}"/>
+        <Setter Property="FontWeight"          Value="SemiBold"/>
+        <Setter Property="Foreground"          Value="{DynamicResource TextSecondaryBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin"              Value="0,0,0,6"/>
+    </Style>
+
+    <Style x:Key="WidgetEmptyStateDescriptionStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily"          Value="{DynamicResource FontMono}"/>
+        <Setter Property="FontSize"            Value="{StaticResource WidgetBodyFontSize}"/>
+        <Setter Property="Foreground"          Value="{DynamicResource TextTertiaryBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="TextWrapping"        Value="Wrap"/>
+        <Setter Property="TextAlignment"       Value="Center"/>
+    </Style>
+
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+    <!-- COMBOBOX — Marathon status dropdown                                          -->
+    <!-- ─────────────────────────────────────────────────────────────────────────── -->
+
+    <Style x:Key="WidgetStatusDropdownStyle" TargetType="ComboBox"
+           BasedOn="{StaticResource ModernComboBoxStyle}">
+        <Setter Property="MinHeight" Value="30"/>
+        <Setter Property="MinWidth"  Value="110"/>
+    </Style>
+
+</ResourceDictionary>
     
     <!-- Default TextBox style with visible caret -->
     <Style TargetType="TextBox">

@@ -12,10 +12,9 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
-            <!-- Merge themes: base styles first, then widget-specific -->
-            <!-- Color theme (DarkTheme/LightTheme) comes from the parent window's resources -->
+            <!-- Marathon Design System — deep space neon HUD -->
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/ModernStyles.xaml"/>
+                <ResourceDictionary Source="/Themes/Marathon/MarathonTheme.xaml"/>
                 <ResourceDictionary Source="../Themes/OrderLogWidgetTheme.xaml"/>
                 <ResourceDictionary Source="../Themes/ModernHeaderStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
@@ -225,7 +224,7 @@
 
                 <DataTemplate x:Key="OrderItemTemplate" DataType="{x:Type models:OrderItem}">
                     <!-- Outer border for link mode highlighting -->
-                    <Border x:Name="LinkHighlightBorder" Margin="6" CornerRadius="10" Padding="2"
+                    <Border x:Name="LinkHighlightBorder" Margin="6" CornerRadius="4" Padding="2"
                             MouseEnter="Card_MouseEnter" MouseLeave="Card_MouseLeave">
                         <Border.BorderBrush>
                             <MultiBinding Converter="{StaticResource IsLinkSourceToBrushConverter}">
@@ -271,7 +270,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <Border Grid.Row="0" Height="{StaticResource CardColorBarHeight}" CornerRadius="8,8,0,0"
+                    <Border Grid.Row="0" Height="{StaticResource CardColorBarHeight}" CornerRadius="4,4,0,0"
                             Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}" MouseLeftButtonDown="ColorBar_Click"/>
 
                     <Border Grid.Row="1" Background="{DynamicResource SurfaceHoverBrush}" Padding="14,10" Margin="0" MinHeight="36" Panel.ZIndex="50">
@@ -294,7 +293,7 @@
                             <!-- Link Count Badge -->
                             <Border Grid.Column="1"
                                     Background="{DynamicResource PrimaryBrush}"
-                                    CornerRadius="10"
+                                    CornerRadius="3"
                                     Padding="8,4"
                                     Margin="0,0,8,0"
                                     VerticalAlignment="Center"
@@ -512,7 +511,7 @@
 
         <!-- Modern Sticky Note Template - Clean, minimal design with inline toolbar -->
         <DataTemplate x:Key="StickyNoteTemplate" DataType="{x:Type models:OrderItem}">
-            <Border x:Name="NoteCard" Margin="8" CornerRadius="12" Padding="0">
+            <Border x:Name="NoteCard" Margin="6" CornerRadius="4" Padding="0">
                 <Border.Background>
                     <SolidColorBrush Color="{Binding ColorHex, Converter={StaticResource HexToColorConverter}}" Opacity="0.15"/>
                 </Border.Background>
@@ -540,7 +539,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Color accent bar -->
-                    <Border Grid.Row="0" Height="4" CornerRadius="12,12,0,0"
+                    <Border Grid.Row="0" Height="3" CornerRadius="4,4,0,0"
                             Background="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}"/>
 
                     <!-- Note content area -->
@@ -645,8 +644,8 @@
                     <!-- Compact formatting toolbar -->
                     <Border Grid.Row="2"
                             Background="{DynamicResource SurfaceBrush}"
-                            CornerRadius="0,0,12,12"
-                            Padding="8,8,8,6">
+                            CornerRadius="0,0,4,4"
+                            Padding="8,7,8,6">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -698,7 +697,7 @@
 
         <!-- Template for archived Order cards -->
         <DataTemplate x:Key="ArchivedOrderItemTemplate" DataType="{x:Type models:OrderItem}">
-            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="6" Padding="0">
+            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4" Margin="6" Padding="0">
                 <Border.ContextMenu>
                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                         <MenuItem Header="Restore" Click="UnarchiveNote_Click"/>
@@ -716,7 +715,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Color Bar (Done status = muted gray) -->
-                    <Border Grid.Row="0" CornerRadius="8,8,0,0" Height="{StaticResource CardColorBarHeight}"
+                    <Border Grid.Row="0" CornerRadius="4,4,0,0" Height="{StaticResource CardColorBarHeight}"
                             Background="{DynamicResource TextTertiaryBrush}"/>
 
                     <!-- Header -->
@@ -782,7 +781,7 @@
         <!-- Template for archived Sticky Note cards -->
         <!-- Template for archived Sticky Note - fluid body-only design -->
         <DataTemplate x:Key="ArchivedStickyNoteTemplate" DataType="{x:Type models:OrderItem}">
-            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="6" Padding="0" Opacity="0.7">
+            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4" Margin="6" Padding="0" Opacity="0.7">
                 <Border.ContextMenu>
                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                         <MenuItem Header="Restore" Click="UnarchiveNote_Click"/>
@@ -799,7 +798,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Thin color accent bar -->
-                    <Border Grid.Row="0" CornerRadius="8,8,0,0" Height="6" Margin="-16,-12,-16,0"
+                    <Border Grid.Row="0" CornerRadius="4,4,0,0" Height="6" Margin="-16,-12,-16,0"
                             Background="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}"/>
 
                     <!-- Note content area (read-only for archived) -->
@@ -877,7 +876,7 @@
         <!-- Template for merged order cards in widget view (vertical stacking) -->
         <DataTemplate x:Key="OrderItemGroupMergedTemplate" DataType="{x:Type vm:OrderItemGroup}">
             <!-- Outer border for link mode highlighting -->
-            <Border x:Name="LinkHighlightBorder" Margin="0" CornerRadius="10" Padding="2"
+            <Border x:Name="LinkHighlightBorder" Margin="0" CornerRadius="4" Padding="2"
                     MouseEnter="Card_MouseEnter" MouseLeave="Card_MouseLeave">
                 <Border.BorderBrush>
                     <MultiBinding Converter="{StaticResource IsLinkSourceToBrushConverter}">
@@ -904,7 +903,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Unified Color Bar -->
-                    <Border Grid.Row="0" Height="{StaticResource CardColorBarHeight}" CornerRadius="8,8,0,0"
+                    <Border Grid.Row="0" Height="{StaticResource CardColorBarHeight}" CornerRadius="4,4,0,0"
                             Background="{Binding First.Status, Converter={StaticResource StatusToColorConverter}}"/>
 
                     <!-- Unified Header Section -->
@@ -925,7 +924,7 @@
                                            Foreground="{DynamicResource TextSecondaryBrush}"
                                            VerticalAlignment="Center"/>
                                 <Border Background="{DynamicResource AccentBrush}"
-                                        CornerRadius="10"
+                                        CornerRadius="3"
                                         Padding="5,2"
                                         Margin="6,0,0,0">
                                     <TextBlock Text="{Binding Count, StringFormat='{}{0} orders'}"
@@ -1171,7 +1170,7 @@
 
         <!-- Template for ARCHIVED merged order cards (no status dropdown, has restore button) -->
         <DataTemplate x:Key="ArchivedOrderItemGroupMergedTemplate" DataType="{x:Type vm:OrderItemGroup}">
-            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="6" Padding="0">
+            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4" Margin="6" Padding="0">
                 <Border.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Restore All" Click="UnarchiveGroup_Click"/>
@@ -1188,7 +1187,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Unified Color Bar (Done status color) -->
-                    <Border Grid.Row="0" Height="{StaticResource CardColorBarHeight}" CornerRadius="8,8,0,0"
+                    <Border Grid.Row="0" Height="{StaticResource CardColorBarHeight}" CornerRadius="4,4,0,0"
                             Background="{DynamicResource TextTertiaryBrush}"/>
 
                     <!-- Unified Header Section -->
@@ -1207,7 +1206,7 @@
                                            Foreground="{DynamicResource TextSecondaryBrush}"
                                            VerticalAlignment="Center"/>
                                 <Border Background="{DynamicResource AccentBrush}"
-                                        CornerRadius="10"
+                                        CornerRadius="3"
                                         Padding="5,2"
                                         Margin="6,0,0,0">
                                     <TextBlock Text="{Binding Count, StringFormat='{}{0} orders'}"
@@ -1323,16 +1322,13 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Modern Gradient Toolbar -->
+        <!-- Marathon Toolbar — frosted dark header with neon accent border -->
         <Border Grid.Row="0"
-                BorderBrush="{DynamicResource BorderBrush}"
+                Background="{DynamicResource SurfaceBrush}"
                 BorderThickness="0,0,0,1">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="{DynamicResource SurfaceColor}" Offset="0"/>
-                    <GradientStop Color="{DynamicResource BackgroundColor}" Offset="1"/>
-                </LinearGradientBrush>
-            </Border.Background>
+            <Border.BorderBrush>
+                <SolidColorBrush Color="{DynamicResource BorderAccentColor}" Opacity="0.6"/>
+            </Border.BorderBrush>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -1341,53 +1337,53 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Row 1: Modern Pill Tabs (only show when ShowArchived is true) -->
-                <Border Grid.Row="0" Margin="16,16,16,0"
+                <!-- Row 1: Marathon Tabs (only show when ShowArchived is true) -->
+                <Border Grid.Row="0" Margin="16,14,16,0"
                         Visibility="{Binding ShowArchived, Converter={StaticResource BoolToVis}}">
-                    <Border Background="{DynamicResource SurfaceHoverBrush}"
-                            CornerRadius="24"
-                            Padding="4"
-                            Height="48">
-                        <Border.Effect>
-                            <DropShadowEffect Color="#20000000" BlurRadius="12" ShadowDepth="2" Opacity="0.2"/>
-                        </Border.Effect>
+                    <Border Background="{DynamicResource SurfaceSunkenBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="3"
+                            Padding="3"
+                            Height="38">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Active Tab - Pill Style -->
+                            <!-- Active Tab —  Marathon angular style -->
                             <Button x:Name="ActiveTabButton"
                                     Click="ActiveTab_Click"
                                     Style="{StaticResource WidgetTabButtonActiveStyle}"
-                                    Height="40"
+                                    Height="32"
                                     Margin="0,0,2,0">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Ellipse Width="8" Height="8" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                             Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Active" VerticalAlignment="Center"/>
-                                </StackPanel>
+                                <TextBlock Text="ACTIVE"
+                                           FontFamily="{DynamicResource FontMono}"
+                                           FontSize="10" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
                             </Button>
 
-                            <!-- Archived Tab - Pill Style -->
+                            <!-- Archived Tab -->
                             <Button x:Name="ArchivedTabButton"
                                     Grid.Column="1"
                                     Click="ArchivedTab_Click"
                                     Style="{StaticResource WidgetTabButtonStyle}"
-                                    Height="40"
+                                    Height="32"
                                     Margin="2,0,0,0">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="📦" FontSize="13" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Archived" VerticalAlignment="Center"/>
-                                </StackPanel>
+                                <TextBlock Text="ARCHIVED"
+                                           FontFamily="{DynamicResource FontMono}"
+                                           FontSize="10" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
                             </Button>
                         </Grid>
                     </Border>
                 </Border>
 
-                <!-- Row 1.5: Floating Search Bar -->
-                <Border Grid.Row="1" Padding="16,16,16,8"
+                <!-- Row 1.5: Marathon Search Bar -->
+                <Border Grid.Row="1" Padding="16,12,16,6"
                         Visibility="{Binding NotesOnlyMode, Converter={StaticResource InverseBoolToVis}}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -1395,18 +1391,22 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Floating Search TextBox -->
+                        <!-- Angular Marathon Search Box -->
                         <Border Grid.Column="0"
-                                CornerRadius="24"
-                                Height="48"
-                                Margin="0,0,12,0"
+                                CornerRadius="3"
+                                Height="36"
+                                Margin="0,0,8,0"
+                                BorderThickness="1"
                                 Cursor="IBeam"
                                 MouseLeftButtonDown="SearchBorder_MouseLeftButtonDown">
                             <Border.Background>
-                                <SolidColorBrush Color="{DynamicResource SurfaceHoverColor}" Opacity="0.95"/>
+                                <SolidColorBrush Color="{DynamicResource SurfaceHoverColor}" Opacity="0.92"/>
                             </Border.Background>
+                            <Border.BorderBrush>
+                                <SolidColorBrush Color="{DynamicResource BorderColor}"/>
+                            </Border.BorderBrush>
                             <Border.Effect>
-                                <DropShadowEffect Color="#20000000" BlurRadius="16" ShadowDepth="4" Opacity="0.2"/>
+                                <DropShadowEffect Color="#000000" BlurRadius="6" ShadowDepth="0" Opacity="0.3"/>
                             </Border.Effect>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -1482,7 +1482,7 @@
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="Button">
-                                                        <Border Background="{TemplateBinding Background}" CornerRadius="12">
+                                                        <Border Background="{TemplateBinding Background}" CornerRadius="3">
                                                             <TextBlock Text="✕" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"
                                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
                                                         </Border>
@@ -1507,7 +1507,7 @@
                                 Click="ShowFilters_Click"
                                 Visibility="Collapsed"
                                 Style="{StaticResource ModernIconButtonStyle}">
-                            <Border CornerRadius="24"
+                            <Border CornerRadius="4"
                                     Background="{DynamicResource SurfaceHoverBrush}"
                                     Width="48" Height="48">
                                 <Border.Effect>
@@ -1521,55 +1521,54 @@
                 </Border>
 
                 <!-- Row 2: Action Bar (only show on Active tab) -->
-                <Grid Grid.Row="2" x:Name="AddButtonsPanel" Margin="16,8,16,16">
+                <Grid Grid.Row="2" x:Name="AddButtonsPanel" Margin="16,6,16,14">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="12"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Modern Add Order button -->
+                    <!-- Marathon: Add Order button -->
                     <Button Click="AddBlankOrder_Click" Grid.Column="0"
                             Visibility="{Binding NotesOnlyMode, Converter={StaticResource InverseBoolToVis}}"
                             Style="{StaticResource ModernPillButtonStyle}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0">
-                            <Grid Width="26" Height="26" Margin="0,0,8,0">
-                                <Ellipse Fill="{DynamicResource AccentBrush}"/>
-                                <TextBlock Text="+" FontSize="18" FontWeight="Bold" Margin="0,-2,0,0"
-                                           VerticalAlignment="Center" HorizontalAlignment="Center"
-                                           Foreground="{DynamicResource TextOnPrimaryBrush}"/>
-                            </Grid>
-                            <TextBlock Text="Order" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="+" FontFamily="{DynamicResource FontMono}"
+                                       FontSize="14" FontWeight="Bold" Margin="0,0,6,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource AccentBrush}"/>
+                            <TextBlock Text="ORDER" FontFamily="{DynamicResource FontMono}"
+                                       FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
                     </Button>
 
-                    <!-- Modern Add Note button (normal mode) -->
+                    <!-- Marathon: Add Note button (normal mode) -->
                     <Button Click="AddBlankNote_Click" Grid.Column="2"
                             Visibility="{Binding NotesOnlyMode, Converter={StaticResource InverseBoolToVis}}"
                             Style="{StaticResource ModernPillButtonStyle}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0">
-                            <Grid Width="26" Height="26" Margin="0,0,8,0">
-                                <Ellipse Fill="{DynamicResource WarningBrush}"/>
-                                <TextBlock Text="📝" FontSize="13" 
-                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Grid>
-                            <TextBlock Text="Note" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="+" FontFamily="{DynamicResource FontMono}"
+                                       FontSize="14" FontWeight="Bold" Margin="0,0,6,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource WarningBrush}"/>
+                            <TextBlock Text="NOTE" FontFamily="{DynamicResource FontMono}"
+                                       FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
                     </Button>
 
-                    <!-- Modern Add Note button (notes-only mode) -->
+                    <!-- Marathon: Add Note button (notes-only mode) -->
                     <Button Click="AddBlankNote_Click" Grid.Column="0" Grid.ColumnSpan="3"
                             Visibility="{Binding NotesOnlyMode, Converter={StaticResource BoolToVis}}"
                             Style="{StaticResource ModernPillButtonStyle}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0">
-                            <Grid Width="26" Height="26" Margin="0,0,8,0">
-                                <Ellipse Fill="{DynamicResource WarningBrush}"/>
-                                <TextBlock Text="📝" FontSize="13" 
-                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Grid>
-                            <TextBlock Text="Note" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="+" FontFamily="{DynamicResource FontMono}"
+                                       FontSize="14" FontWeight="Bold" Margin="0,0,6,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource WarningBrush}"/>
+                            <TextBlock Text="NOTE" FontFamily="{DynamicResource FontMono}"
+                                       FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
                     </Button>
@@ -1578,7 +1577,7 @@
                     <Button Grid.Column="4" Click="SortToggle_Click" ToolTip="Toggle sort direction"
                             Visibility="Collapsed"
                             Style="{StaticResource ModernIconButtonStyle}">
-                        <Border CornerRadius="20"
+                        <Border CornerRadius="3"
                                 Background="{DynamicResource SurfaceHoverBrush}"
                                 Width="40" Height="40">
                             <TextBlock x:Name="SortSymbol" FontSize="18" FontWeight="Bold"
@@ -1605,13 +1604,15 @@
 
                 <!-- Multi-select removed -->
 
-                <!-- Row 3: Notes Header -->
+                <!-- Row 3: Notes Header — Marathon accent stripe -->
                 <Border Grid.Row="3"
-                        Padding="16,0,16,12"
+                        Padding="16,0,16,10"
                         x:Name="NotesHeaderPanel">
-                    <Border Background="{DynamicResource SurfaceHoverBrush}"
-                            CornerRadius="8"
-                            Padding="12,8"
+                    <Border Background="{DynamicResource SurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="3"
+                            Padding="12,7"
                             Cursor="Hand"
                             MouseLeftButtonDown="NotesHeader_Click">
                         <Grid>
@@ -1621,7 +1622,7 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <Border Width="3" Height="16" CornerRadius="1.5" Background="{DynamicResource WarningBrush}" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <Border Width="2" Height="12" CornerRadius="0" Background="{DynamicResource WarningBrush}" Margin="0,0,10,0" VerticalAlignment="Center"/>
                             <TextBlock Grid.Column="1" Text="Notes" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                             <TextBlock Grid.Column="2" Text="{Binding StickyNotes.Count}"
                                        FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
@@ -1643,7 +1644,6 @@
                     <Border x:Name="AddOrderCard"
                             Visibility="Collapsed"
                             Style="{StaticResource OrderLogWidgetElevatedCardStyle}"
-                            Margin="6,0,6,12"
                             Background="{DynamicResource SurfaceBrush}">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -1655,7 +1655,7 @@
                             <Border Grid.Row="0"
                                     Background="{DynamicResource SurfaceHoverBrush}"
                                     Padding="14,10"
-                                    CornerRadius="8,8,0,0">
+                                    CornerRadius="4,4,0,0">
                                 <Grid>
                                     <TextBlock Text="Add New Order"
                                                FontSize="14"
@@ -1838,8 +1838,7 @@
                                                     <ContentControl Content="{Binding First}">
                                                         <ContentControl.ContentTemplate>
                                                                 <DataTemplate>
-                                                                <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="6" Padding="0">
-                                <!-- Dynamic context menu based on NoteType -->
+                                                                <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4" Margin="6" Padding="0">
                                 <Border.ContextMenu>
                                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                                         <!-- ORDER MENU ITEMS -->
@@ -1874,8 +1873,8 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <!-- Color Bar - Status color for Orders, Custom color for Notes -->
-                                    <Border Grid.Row="0" CornerRadius="8,8,0,0"
+                                    <!-- Color Bar -->
+                                    <Border Grid.Row="0" CornerRadius="4,4,0,0"
                                             Cursor="Hand"
                                             MouseLeftButtonDown="ColorBar_Click"
                                             Height="{StaticResource CardColorBarHeight}">
@@ -2218,7 +2217,7 @@
                                                                       Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalContentAlignment="Stretch">
                                                             <ToggleButton.Template>
                                                                 <ControlTemplate TargetType="ToggleButton">
-                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="12,10" Margin="6,0"
+                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="3" Padding="12,10" Margin="6,0"
                                                                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                                                                         <Grid>
                                                                             <Grid.ColumnDefinitions>
@@ -2227,11 +2226,11 @@
                                                                                 <ColumnDefinition Width="Auto"/>
                                                                                 <ColumnDefinition Width="Auto"/>
                                                                             </Grid.ColumnDefinitions>
-                                                                            <!-- Status indicator dot -->
-                                                                            <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusInProgressBrush}" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                                                            <TextBlock Grid.Column="1" Text="In Progress" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                                                            <!-- Status accent stripe -->
+                                                                            <Border Width="3" Height="16" Background="{DynamicResource WidgetStatusInProgressBrush}" CornerRadius="1.5" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                                                            <TextBlock Grid.Column="1" Text="IN PROGRESS" FontSize="11" FontWeight="SemiBold" FontFamily="{StaticResource MonoFont}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                                                             <!-- Count badge -->
-                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusInProgressBgBrush}" CornerRadius="10" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
+                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusInProgressBgBrush}" CornerRadius="3" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
                                                                                 <TextBlock Text="{Binding DataContext.InProgressCount, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                                            FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource WidgetStatusInProgressBrush}" HorizontalAlignment="Center"/>
                                                                             </Border>
@@ -2304,7 +2303,7 @@
                                                                       Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalContentAlignment="Stretch">
                                                             <ToggleButton.Template>
                                                                 <ControlTemplate TargetType="ToggleButton">
-                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="12,10" Margin="6,0"
+                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="3" Padding="12,10" Margin="6,0"
                                                                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                                                                         <Grid>
                                                                             <Grid.ColumnDefinitions>
@@ -2313,11 +2312,11 @@
                                                                                 <ColumnDefinition Width="Auto"/>
                                                                                 <ColumnDefinition Width="Auto"/>
                                                                             </Grid.ColumnDefinitions>
-                                                                            <!-- Status indicator dot -->
-                                                                            <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusOnDeckBrush}" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                                                            <TextBlock Grid.Column="1" Text="On Deck" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                                                            <!-- Status accent stripe -->
+                                                                            <Border Width="3" Height="16" Background="{DynamicResource WidgetStatusOnDeckBrush}" CornerRadius="1.5" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                                                            <TextBlock Grid.Column="1" Text="ON DECK" FontSize="11" FontWeight="SemiBold" FontFamily="{StaticResource MonoFont}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                                                             <!-- Count badge -->
-                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusOnDeckBgBrush}" CornerRadius="10" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
+                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusOnDeckBgBrush}" CornerRadius="3" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
                                                                                 <TextBlock Text="{Binding DataContext.OnDeckCount, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                                            FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource WidgetStatusOnDeckBrush}" HorizontalAlignment="Center"/>
                                                                             </Border>
@@ -2390,7 +2389,7 @@
                                                                       Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalContentAlignment="Stretch">
                                                             <ToggleButton.Template>
                                                                 <ControlTemplate TargetType="ToggleButton">
-                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="12,10" Margin="6,0"
+                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="3" Padding="12,10" Margin="6,0"
                                                                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                                                                         <Grid>
                                                                             <Grid.ColumnDefinitions>
@@ -2399,11 +2398,11 @@
                                                                                 <ColumnDefinition Width="Auto"/>
                                                                                 <ColumnDefinition Width="Auto"/>
                                                                             </Grid.ColumnDefinitions>
-                                                                            <!-- Status indicator dot -->
-                                                                            <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusNotReadyBrush}" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                                                            <TextBlock Grid.Column="1" Text="Not Ready" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                                                            <!-- Status accent stripe -->
+                                                                            <Border Width="3" Height="16" Background="{DynamicResource WidgetStatusNotReadyBrush}" CornerRadius="1.5" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                                                            <TextBlock Grid.Column="1" Text="NOT READY" FontSize="11" FontWeight="SemiBold" FontFamily="{StaticResource MonoFont}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                                                             <!-- Count badge -->
-                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusNotReadyBgBrush}" CornerRadius="10" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
+                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusNotReadyBgBrush}" CornerRadius="3" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
                                                                                 <TextBlock Text="{Binding DataContext.NotReadyCount, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                                            FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource WidgetStatusNotReadyBrush}" HorizontalAlignment="Center"/>
                                                                             </Border>
@@ -2466,7 +2465,7 @@
                                 Background="{DynamicResource SurfaceBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="12">
+                                CornerRadius="4">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -2504,7 +2503,7 @@
                 <!-- Archived Notes Panel (separate tab) -->
                 <StackPanel x:Name="ArchivedItemsPanel" Visibility="Collapsed">
                     <!-- Archived Sort Header -->
-                    <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Margin="6,0,6,10" Padding="10,8">
+                    <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="3" Margin="6,0,6,10" Padding="10,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -2576,7 +2575,7 @@
                                                 <Setter.Value>
                                                     <DataTemplate>
                                 <!-- Archived item card -->
-                                <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="6" Padding="0">
+                                <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4" Margin="6" Padding="0">
                                     <Border.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Copy" Click="Copy_Click" DataContext="{Binding First}" InputGestureText="Ctrl+C"/>
@@ -2597,7 +2596,7 @@
                                         </Grid.RowDefinitions>
 
                                         <!-- Color Bar (muted for archived) -->
-                                        <Border Grid.Row="0" CornerRadius="8,8,0,0" Height="8"
+                                        <Border Grid.Row="0" CornerRadius="4,4,0,0" Height="8"
                                                 Background="{DynamicResource TextTertiaryBrush}"/>
 
                                         <!-- Header -->
@@ -2703,7 +2702,7 @@
                             Background="{DynamicResource SurfaceBrush}"
                             BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="12">
+                            CornerRadius="4">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -2763,7 +2762,7 @@
                     Background="{DynamicResource SurfaceBrush}"
                     BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
-                    CornerRadius="16"
+                    CornerRadius="3"
                     Padding="4">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.25" Color="#000000"/>
@@ -2776,8 +2775,8 @@
                             Background="Transparent" BorderThickness="0">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
-                                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="14">
-                                    <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusInProgressBrush}"/>
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="2">
+                                    <Border Width="8" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusInProgressBrush}"/>
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
@@ -2794,8 +2793,8 @@
                             Background="Transparent" BorderThickness="0">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
-                                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="14">
-                                    <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusOnDeckBrush}"/>
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="2">
+                                    <Border Width="8" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusOnDeckBrush}"/>
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
@@ -2812,8 +2811,8 @@
                             Background="Transparent" BorderThickness="0">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
-                                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="14">
-                                    <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusNotReadyBrush}"/>
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="2">
+                                    <Border Width="8" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusNotReadyBrush}"/>
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
@@ -2908,12 +2907,12 @@
                                     </TextBlock>
                                 </StackPanel>
                                 
-                                <!-- Playback Control Bar - Frosted pill, fades in on hover -->
+                                <!-- Playback Control Bar -->
                                 <Border x:Name="ControlBar"
                                         VerticalAlignment="Center"
                                         HorizontalAlignment="Center"
-                                        Background="#99000000"
-                                        CornerRadius="28"
+                                        Background="#CC0C0E18"
+                                        CornerRadius="4"
                                         Padding="6,4"
                                         Opacity="0">
                                     <Border.Effect>
@@ -2937,7 +2936,7 @@
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
-                                                                <Border x:Name="ButtonBorder" Background="Transparent" CornerRadius="21">
+                                                                <Border x:Name="ButtonBorder" Background="Transparent" CornerRadius="3">
                                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                                 </Border>
                                                                 <ControlTemplate.Triggers>
@@ -2973,7 +2972,7 @@
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
-                                                                <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="24">
+                                                                <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="3">
                                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                                 </Border>
                                                                 <ControlTemplate.Triggers>
@@ -3008,7 +3007,7 @@
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
-                                                                <Border x:Name="ButtonBorder" Background="Transparent" CornerRadius="21">
+                                                                <Border x:Name="ButtonBorder" Background="Transparent" CornerRadius="3">
                                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                                 </Border>
                                                                 <ControlTemplate.Triggers>
@@ -3050,7 +3049,7 @@
                         <!-- Left: Equalizer / Music Icon -->
                         <Border Grid.Column="0" 
                                 Background="{DynamicResource SurfaceHoverBrush}" 
-                                CornerRadius="12" 
+                                CornerRadius="4" 
                                 Width="24" Height="24" 
                                 Margin="0,0,10,0"
                                 VerticalAlignment="Center">
@@ -3128,7 +3127,7 @@
                         <!-- Right: Chevron toggle -->
                         <Border Grid.Column="2" 
                                 Background="{DynamicResource SurfaceHoverBrush}" 
-                                CornerRadius="10" 
+                                CornerRadius="3" 
                                 Width="20" Height="20"
                                 VerticalAlignment="Center">
                             <TextBlock x:Name="NowPlayingToggleIcon" 

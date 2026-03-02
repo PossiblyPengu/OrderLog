@@ -101,9 +101,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     private string _defaultNoteColor = OrderLogColors.DefaultNote;
 
     [ObservableProperty]
-    private bool _sortByStatus = true;
-
-    [ObservableProperty]
     private bool _sortStatusDescending = false;
 
     [ObservableProperty]
@@ -445,7 +442,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     partial void OnShowArchivedChanged(bool value) => SaveWidgetSettings();
     partial void OnDefaultOrderColorChanged(string value) => SaveWidgetSettings();
     partial void OnDefaultNoteColorChanged(string value) => SaveWidgetSettings();
-    partial void OnSortByStatusChanged(bool value) => SaveWidgetSettings();
     partial void OnSortStatusDescendingChanged(bool value) => SaveWidgetSettings();
 
     partial void OnNotesOnlyModeChanged(bool value)
@@ -499,7 +495,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             DefaultOrderColor = DefaultOrderColor,
             DefaultNoteColor = DefaultNoteColor,
             NotesOnlyMode = NotesOnlyMode,
-            SortByStatus = SortByStatus,
             SortStatusDescending = SortStatusDescending,
             AutoColorByVendor = AutoColorByVendor,
             NotReadyGroupExpanded = NotReadyGroupExpanded,
@@ -585,7 +580,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             DefaultNoteColor = string.IsNullOrEmpty(s.DefaultNoteColor) ? OrderLogColors.DefaultNote : s.DefaultNoteColor;
             NotesOnlyMode = s.NotesOnlyMode;
             // Sorting preferences
-            SortByStatus = s.SortByStatus;
             SortStatusDescending = s.SortStatusDescending;
             // Vendor auto-coloring
             AutoColorByVendor = s.AutoColorByVendor;
@@ -2347,7 +2341,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         var filteredCollection = new ObservableCollection<OrderItem>(filtered);
 
         // Use grouping service to build ordered display collection and apply it
-        var built = _groupingService.BuildDisplayCollection(filteredCollection, SortByStatus, SortStatusDescending, SortModeEnum);
+        var built = _groupingService.BuildDisplayCollection(filteredCollection, true, SortStatusDescending, SortModeEnum);
         display.Clear();
         foreach (var g in built)
         {
