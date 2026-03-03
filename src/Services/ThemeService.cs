@@ -105,22 +105,17 @@ public partial class ThemeService : ObservableObject
             app.Resources.MergedDictionaries.Clear();
             Serilog.Log.Debug("ApplyTheme: Cleared merged dictionaries");
 
-            // Load ModernStyles.xaml first (base styles), then color theme (colors override)
-            var modernStyles = new ResourceDictionary
-            {
-                Source = new Uri("pack://application:,,,/Themes/ModernStyles.xaml", UriKind.Absolute)
-            };
-            app.Resources.MergedDictionaries.Add(modernStyles);
-            Serilog.Log.Debug("ApplyTheme: Added ModernStyles.xaml");
+            // Load Marathon 2026 design system (dark or light variant)
+            var themeFile = IsDarkMode
+                ? "pack://application:,,,/Themes/Marathon/MarathonTheme.xaml"
+                : "pack://application:,,,/Themes/Marathon/MarathonLightTheme.xaml";
 
-            var colorTheme = new ResourceDictionary
+            var marathonTheme = new ResourceDictionary
             {
-                Source = new Uri(IsDarkMode
-                    ? "pack://application:,,,/Themes/DarkTheme.xaml"
-                    : "pack://application:,,,/Themes/LightTheme.xaml", UriKind.Absolute)
+                Source = new Uri(themeFile, UriKind.Absolute)
             };
-            app.Resources.MergedDictionaries.Add(colorTheme);
-            Serilog.Log.Debug("ApplyTheme: Added {ThemeName}.xaml", IsDarkMode ? "DarkTheme" : "LightTheme");
+            app.Resources.MergedDictionaries.Add(marathonTheme);
+            Serilog.Log.Debug("ApplyTheme: Added {ThemeFile}", themeFile);
 
             // Raise event for any listeners
             ThemeChanged?.Invoke(this, IsDarkMode);

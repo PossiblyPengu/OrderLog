@@ -46,12 +46,15 @@ public partial class MessageDialog : Window
 
     private void ApplyTheme()
     {
-        var themePath = ThemeService.Instance.IsDarkMode
-            ? "pack://application:,,,/OrderLog;component/Themes/DarkTheme.xaml"
-            : "pack://application:,,,/OrderLog;component/Themes/LightTheme.xaml";
-
+        var isDarkMode = ThemeService.Instance.IsDarkMode;
+        var themeFile = isDarkMode
+            ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
+            : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
         Resources.MergedDictionaries.Clear();
-        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(themePath) });
+        Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
+            Source = new Uri(themeFile)
+        });
     }
 
     private void Configure(string message, string title, DialogType type, DialogButtons buttons)

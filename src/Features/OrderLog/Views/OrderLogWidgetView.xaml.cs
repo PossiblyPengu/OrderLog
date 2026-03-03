@@ -136,6 +136,8 @@ public partial class OrderLogWidgetView : UserControl
             AddButtonsPanel.Visibility = Visibility.Collapsed;
             NotesHeaderPanel.Visibility = Visibility.Collapsed;
             QuickJumpPanel.Visibility = Visibility.Collapsed;
+            _quickJumpExpanded = false;
+            QuickJumpContent.Visibility = Visibility.Collapsed;
             if (AddOrderCard != null) AddOrderCard.Visibility = Visibility.Collapsed;
         }
         else
@@ -862,46 +864,35 @@ public partial class OrderLogWidgetView : UserControl
     {
         try
         {
-            var themePath = isDarkMode
-                ? "pack://application:,,,/OrderLog;component/Themes/DarkTheme.xaml"
-                : "pack://application:,,,/OrderLog;component/Themes/LightTheme.xaml";
+            var themeFile = isDarkMode
+                ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
+                : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
+            var marathonTheme = new Uri(themeFile);
+            var widgetUri = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml");
+            var headerUri = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/ModernHeaderStyles.xaml");
 
             Resources.MergedDictionaries.Clear();
+            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = marathonTheme });
+            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = widgetUri });
+            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = headerUri });
 
-            // Add ModernStyles first (base styles including SurfaceBrush fallback)
-            var modernStyles = new ResourceDictionary { Source = new Uri("pack://application:,,,/OrderLog;component/Themes/ModernStyles.xaml") };
-            var themeDict = new ResourceDictionary { Source = new Uri(themePath) };
-            var widgetTheme = new ResourceDictionary { Source = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml") };
-
-            Resources.MergedDictionaries.Add(modernStyles);
-            Resources.MergedDictionaries.Add(themeDict);
-            Resources.MergedDictionaries.Add(widgetTheme);
-
-            // Also merge these into Application-level resources so popups (ContextMenu/Popup)
-            // which live in their own visual tree can resolve DynamicResource lookups.
+            // Sync Application-level resources so popups/context menus resolve DynamicResource
             try
             {
                 if (Application.Current != null)
                 {
                     var appRes = Application.Current.Resources;
-
-                    // Avoid adding duplicates by checking Source URI match
                     bool HasSource(ResourceDictionary rd, Uri src)
                     {
                         foreach (var m in rd.MergedDictionaries)
-                        {
                             if (m.Source != null && m.Source == src) return true;
-                        }
                         return false;
                     }
-
-                    var modernUri = new Uri("pack://application:,,,/OrderLog;component/Themes/ModernStyles.xaml");
-                    var themeUriLocal = new Uri(themePath);
-                    var widgetUri = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml");
-
-                    if (!HasSource(appRes, modernUri)) appRes.MergedDictionaries.Add(modernStyles);
-                    if (!HasSource(appRes, themeUriLocal)) appRes.MergedDictionaries.Add(themeDict);
-                    if (!HasSource(appRes, widgetUri)) appRes.MergedDictionaries.Add(widgetTheme);
+                    if (!HasSource(appRes, marathonTheme))
+                    {
+                        appRes.MergedDictionaries.Clear();
+                        appRes.MergedDictionaries.Add(new ResourceDictionary { Source = marathonTheme });
+                    }
                 }
             }
             catch (Exception exApp)
@@ -2825,6 +2816,17 @@ public partial class OrderLogWidgetView : UserControl
         {
             Log.Debug(ex, "Failed to jump to Not Ready section");
         }
+    }
+
+    private bool _quickJumpExpanded = false;
+
+    private void QuickJumpHandle_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        _quickJumpExpanded = !_quickJumpExpanded;
+        QuickJumpContent.Visibility = _quickJumpExpanded ? Visibility.Visible : Visibility.Collapsed;
+        QuickJumpHandle.CornerRadius = _quickJumpExpanded
+            ? new CornerRadius(0, 3, 3, 0)
+            : new CornerRadius(0, 3, 3, 0);
     }
 
     #endregion

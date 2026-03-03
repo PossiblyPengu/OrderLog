@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!--
+    MARATHON 2026 — Light Theme
+    Merges the full dark component library first, then overrides all
+    color/brush tokens with light values. Because every component style
+    uses DynamicResource, WPF's reverse-order MergedDictionary lookup
+    automatically picks up the light values from LightVariables.
+  -->
+  <ResourceDictionary.MergedDictionaries>
+    <!-- 1. Full dark design system (Reset + all component styles) -->
+    <ResourceDictionary Source="./MarathonTheme.xaml"/>
+    <!-- 2. Light color/brush overrides — searched first, shadows dark tokens -->
+    <ResourceDictionary Source="./MarathonLightVariables.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

@@ -452,16 +452,14 @@ public partial class OrderLogWidgetWindow : Window
     {
         Resources.MergedDictionaries.Clear();
 
+        // Marathon 2026 design system — dark or light variant
+        var themeFile = isDarkMode
+            ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
+            : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
         Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri("pack://application:,,,/OrderLog;component/Themes/ModernStyles.xaml")
+            Source = new Uri(themeFile)
         });
-
-        var themePath = isDarkMode
-            ? "pack://application:,,,/OrderLog;component/Themes/DarkTheme.xaml"
-            : "pack://application:,,,/OrderLog;component/Themes/LightTheme.xaml";
-
-        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(themePath) });
 
         if (_viewModel.CardFontSize > 0)
         {

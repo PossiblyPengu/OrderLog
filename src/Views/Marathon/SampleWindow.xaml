@@ -18,7 +18,7 @@
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
-    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
       <TextBlock FontFamily="{StaticResource FontMono}" FontSize="18" Text="MARATHON UI" Foreground="{StaticResource PrimaryBrush}"/>
       <Button Style="{StaticResource MarathonPrimaryButton}" Content="Primary Action"/>
     </StackPanel>

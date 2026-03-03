@@ -14,8 +14,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/OrderLog;component/Themes/ModernStyles.xaml" />
-                <ResourceDictionary Source="/OrderLog;component/Themes/DarkTheme.xaml" />
+                <ResourceDictionary Source="/OrderLog;component/Themes/Marathon/MarathonTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Status Chip Style (matching main widget design) -->
@@ -23,7 +22,7 @@
                 <Setter Property="CornerRadius" Value="10"/>
                 <Setter Property="Padding" Value="8,3"/>
                 <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="Background" Value="#2A1F1F"/>
+                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
             </Style>
 
             <!-- Modern Checkbox Style -->
@@ -72,16 +71,16 @@
                 <Setter Property="CornerRadius" Value="2"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.NotReady}">
-                        <Setter Property="Background" Value="#FF6B6B"/>
+                        <Setter Property="Background" Value="{DynamicResource WidgetStatusNotReadyBgBrush}"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.OnDeck}">
-                        <Setter Property="Background" Value="#FFB347"/>
+                        <Setter Property="Background" Value="{DynamicResource WidgetStatusOnDeckBgBrush}"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.InProgress}">
-                        <Setter Property="Background" Value="#4ECDC4"/>
+                        <Setter Property="Background" Value="{DynamicResource WidgetStatusInProgressBgBrush}"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.Done}">
-                        <Setter Property="Background" Value="#71717A"/>
+                        <Setter Property="Background" Value="{DynamicResource WidgetStatusDoneBgBrush}"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -108,19 +107,19 @@
                     <Border Grid.Row="0" Grid.Column="0" CornerRadius="10" Padding="8,4" HorizontalAlignment="Left" Margin="0,0,0,8">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="#2A1F1F"/>
+                                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.NotReady}">
-                                        <Setter Property="Background" Value="#2A1F1F"/>
+                                        <Setter Property="Background" Value="{DynamicResource WidgetStatusNotReadyBgBrush}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.OnDeck}">
-                                        <Setter Property="Background" Value="#2A261F"/>
+                                        <Setter Property="Background" Value="{DynamicResource WidgetStatusOnDeckBgBrush}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.InProgress}">
-                                        <Setter Property="Background" Value="#1F2A2A"/>
+                                        <Setter Property="Background" Value="{DynamicResource WidgetStatusInProgressBgBrush}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.Done}">
-                                        <Setter Property="Background" Value="#1F1F1F"/>
+                                        <Setter Property="Background" Value="{DynamicResource WidgetStatusDoneBgBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -130,19 +129,19 @@
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Text" Value="○"/>
-                                        <Setter Property="Foreground" Value="#FF6B6B"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.OnDeck}">
                                                 <Setter Property="Text" Value="◐"/>
-                                                <Setter Property="Foreground" Value="#FFB347"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.InProgress}">
                                                 <Setter Property="Text" Value="●"/>
-                                                <Setter Property="Foreground" Value="#4ECDC4"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.Done}">
                                                 <Setter Property="Text" Value="✓"/>
-                                                <Setter Property="Foreground" Value="#71717A"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -152,19 +151,19 @@
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Text" Value="Not Ready"/>
-                                        <Setter Property="Foreground" Value="#FF6B6B"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.OnDeck}">
                                                 <Setter Property="Text" Value="On Deck"/>
-                                                <Setter Property="Foreground" Value="#FFB347"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.InProgress}">
                                                 <Setter Property="Text" Value="In Progress"/>
-                                                <Setter Property="Foreground" Value="#4ECDC4"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static models:OrderItem+OrderStatus.Done}">
                                                 <Setter Property="Text" Value="Done"/>
-                                                <Setter Property="Foreground" Value="#71717A"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>

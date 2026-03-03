@@ -13,26 +13,27 @@ public partial class OrderLogSettingsWindow : Window
         InitializeComponent();
         SettingsView.DataContext = viewModel;
         ApplyTheme();
+        ThemeService.Instance.ThemeChanged += OnThemeChanged;
+        Unloaded += (s, e) => ThemeService.Instance.ThemeChanged -= OnThemeChanged;
+    }
+
+    private void OnThemeChanged(object? sender, bool isDarkMode)
+    {
+        Dispatcher.Invoke(ApplyTheme);
     }
 
     private void ApplyTheme()
     {
         try
         {
-            var isDarkMode = ThemeService.Instance.IsDarkMode;
-            var themePath = isDarkMode
-                ? "pack://application:,,,/OrderLog;component/Themes/DarkTheme.xaml"
-                : "pack://application:,,,/OrderLog;component/Themes/LightTheme.xaml";
-
+            var isDarkMode = SOUP.Services.ThemeService.Instance.IsDarkMode;
+            var themeFile = isDarkMode
+                ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
+                : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
             Resources.MergedDictionaries.Clear();
             Resources.MergedDictionaries.Add(new ResourceDictionary
             {
-                Source = new Uri("pack://application:,,,/OrderLog;component/Themes/ModernStyles.xaml")
-            });
-            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(themePath) });
-            Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml")
+                Source = new Uri(themeFile)
             });
         }
         catch (Exception ex)

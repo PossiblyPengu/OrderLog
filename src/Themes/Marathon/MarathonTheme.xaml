@@ -174,7 +174,7 @@
                   CornerRadius="{DynamicResource RadiusSm}"
                   Padding="{TemplateBinding Padding}">
             <Border.Effect>
-              <DropShadowEffect x:Name="Shadow" BlurRadius="0" ShadowDepth="0" Opacity="0" Color="#FF2D55"/>
+              <DropShadowEffect x:Name="Shadow" BlurRadius="0" ShadowDepth="0" Opacity="0" Color="#00E07A"/>
             </Border.Effect>
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -299,7 +299,7 @@
                   CornerRadius="{DynamicResource RadiusXs}"
                   Padding="{TemplateBinding Padding}">
             <Border.Effect>
-              <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.45" Color="#FF2D55"/>
+              <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.45" Color="#00E07A"/>
             </Border.Effect>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Border>
@@ -434,6 +434,7 @@
                 <ContentPresenter Grid.Column="0"
                                   Content="{TemplateBinding SelectionBoxItem}"
                                   ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                  TextElement.Foreground="{TemplateBinding Foreground}"
                                   VerticalAlignment="Center"/>
                 <Path Grid.Column="1" Data="M0,0 L4,4 L8,0"
                       Stroke="{DynamicResource TextSecondaryBrush}"
@@ -503,7 +504,6 @@
                        FontSize="{TemplateBinding FontSize}"
                        FontWeight="{TemplateBinding FontWeight}"
                        Foreground="{TemplateBinding Foreground}"
-                       TextTransform="None"
                        VerticalAlignment="Center"/>
           </Border>
           <ControlTemplate.Triggers>
