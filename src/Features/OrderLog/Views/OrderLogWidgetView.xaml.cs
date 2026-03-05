@@ -11,13 +11,13 @@ using System.Windows.Documents;
 using System.Windows.Controls.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using SOUP.Features.OrderLog.Constants;
-using SOUP.Features.OrderLog.Models;
-using SOUP.Features.OrderLog.ViewModels;
-using SOUP.Features.OrderLog.Helpers;
-using SOUP.Services;
+using OrderLog.Features.Constants;
+using OrderLog.Features.Models;
+using OrderLog.Features.ViewModels;
+using OrderLog.Features.Helpers;
+using OrderLog.Services;
 
-namespace SOUP.Features.OrderLog.Views;
+namespace OrderLog.Features.Views;
 
 /// <summary>
 /// Full-featured widget view for Order Log - designed for AppBar docking
@@ -25,7 +25,7 @@ namespace SOUP.Features.OrderLog.Views;
 public partial class OrderLogWidgetView : UserControl
 {
     private bool _nowPlayingExpanded = false;
-    private bool _notesExpanded = true;
+    private bool _notesExpanded = false;
     private bool _showingArchivedTab = false;
     private double _activeTabScrollPosition = 0;
     private double _archivedTabScrollPosition = 0;
@@ -131,12 +131,11 @@ public partial class OrderLogWidgetView : UserControl
             // Apply active style to Archived tab
             ArchivedTabButton.Style = FindResource("WidgetTabButtonActiveStyle") as Style;
 
-            // Animate tab transition
-            AnimateTabTransition(ActiveItemsPanel, ArchivedItemsPanel);
+            // Animate tab transition — going right (Active → Archived)
+            // Mirror direction when docked left so the slide always feels "inward"
+            AnimateTabTransition(ActiveItemsPanel, ArchivedItemsPanel, goingRight: !_isDockedLeft);
             AddButtonsPanel.Visibility = Visibility.Collapsed;
-            NotesHeaderPanel.Visibility = Visibility.Collapsed;
-            QuickJumpPanel.Visibility = Visibility.Collapsed;
-            _quickJumpExpanded = false;
+            SideHandlePanel.Visibility = Visibility.Collapsed;
             QuickJumpContent.Visibility = Visibility.Collapsed;
             if (AddOrderCard != null) AddOrderCard.Visibility = Visibility.Collapsed;
         }
@@ -147,105 +146,161 @@ public partial class OrderLogWidgetView : UserControl
             // Apply inactive style to Archived tab
             ArchivedTabButton.Style = FindResource("WidgetTabButtonStyle") as Style;
 
-            // Animate tab transition
-            AnimateTabTransition(ArchivedItemsPanel, ActiveItemsPanel);
+            // Animate tab transition — going left (Archived → Active)
+            // Mirror direction when docked left so the slide always feels "inward"
+            AnimateTabTransition(ArchivedItemsPanel, ActiveItemsPanel, goingRight: _isDockedLeft);
             AddButtonsPanel.Visibility = Visibility.Visible;
-            NotesHeaderPanel.Visibility = Visibility.Visible;
-            QuickJumpPanel.Visibility = Visibility.Visible;
+            SideHandlePanel.Visibility = Visibility.Visible;
         }
     }
 
-    private void AnimateTabTransition(FrameworkElement outgoing, FrameworkElement incoming)
+    private void AnimateTabTransition(FrameworkElement outgoing, FrameworkElement incoming, bool goingRight)
     {
-        // Fade out outgoing panel
-        var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(100))
-        {
-            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-        };
+        const double slideOffset = 36.0;
+        double exitX  = goingRight ? -slideOffset :  slideOffset;
+        double enterX = goingRight ?  slideOffset : -slideOffset;
 
+        var outTransform = outgoing.RenderTransform as TranslateTransform;
+        var inTransform  = incoming.RenderTransform as TranslateTransform;
+
+        // Reset incoming transform to the off-screen start position before revealing it
+        if (inTransform != null) inTransform.X = enterX;
+
+        // Make incoming panel visible but transparent so its layout is measured
+        incoming.Visibility = Visibility.Visible;
+        incoming.Opacity = 0;
+
+        // --- Outgoing: slide out + fade out (130 ms, EaseIn) ---
+        var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(130))
+        {
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+        };
         fadeOut.Completed += (s, _) =>
         {
             outgoing.Visibility = Visibility.Collapsed;
             outgoing.BeginAnimation(OpacityProperty, null);
-
-            // Fade in incoming panel
-            incoming.Visibility = Visibility.Visible;
-            incoming.Opacity = 0;
-
-            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150))
+            if (outTransform != null)
             {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-            };
-
-            incoming.BeginAnimation(OpacityProperty, fadeIn);
+                outTransform.BeginAnimation(TranslateTransform.XProperty, null);
+                outTransform.X = 0;
+            }
         };
 
+        if (outTransform != null)
+        {
+            var slideOut = new DoubleAnimation(0, exitX, TimeSpan.FromMilliseconds(130))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+            outTransform.BeginAnimation(TranslateTransform.XProperty, slideOut);
+        }
         outgoing.BeginAnimation(OpacityProperty, fadeOut);
+
+        // --- Incoming: slide in + fade in (210 ms, EaseOut) ---
+        var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(210))
+        {
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+        };
+        fadeIn.Completed += (s, _) =>
+        {
+            incoming.BeginAnimation(OpacityProperty, null);
+            if (inTransform != null)
+            {
+                inTransform.BeginAnimation(TranslateTransform.XProperty, null);
+                inTransform.X = 0;
+            }
+        };
+
+        if (inTransform != null)
+        {
+            var slideIn = new DoubleAnimation(enterX, 0, TimeSpan.FromMilliseconds(210))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            inTransform.BeginAnimation(TranslateTransform.XProperty, slideIn);
+        }
+        incoming.BeginAnimation(OpacityProperty, fadeIn);
     }
 
-    private void NotesHeader_Click(object sender, MouseButtonEventArgs e)
+    private void NotesToggle_Click(object sender, RoutedEventArgs e)
     {
         if (DataContext is not OrderLogViewModel vm) return;
+        bool opening = !vm.NotesExpanded;
+        // Set guard BEFORE updating vm.NotesExpanded so that when PropertyChanged fires
+        // UpdateNotesHeaderState sees _notesExpanded already in sync and returns early,
+        // preventing an immediate Visibility = Collapsed that would kill the animation.
+        _notesExpanded = opening;
+        UpdateNotesToggleButtonState(opening);
+        vm.NotesExpanded = opening;
+        if (opening) OpenNotesDrawer(); else AnimateDrawerClose();
+    }
 
-        vm.NotesExpanded = !vm.NotesExpanded;
-        _notesExpanded = vm.NotesExpanded;
+    private void NotesDrawerClose_Click(object sender, RoutedEventArgs e) => CloseNotesDrawer(true);
 
-        if (NotesArrow is { } arrow)
+    private void NotesScrim_Click(object sender, MouseButtonEventArgs e) => CloseNotesDrawer(true);
+
+    private void OpenNotesDrawer()
+    {
+        if (NotesDrawerOverlay == null) return;
+        double slideOffset = _isDockedLeft ? -(NotesDrawer?.ActualWidth > 0 ? NotesDrawer.ActualWidth : 600) : (NotesDrawer?.ActualWidth > 0 ? NotesDrawer.ActualWidth : 600);
+
+        NotesDrawerOverlay.Visibility = Visibility.Visible;
+        NotesDrawerTransform.X = slideOffset;
+        if (SideHandlePanel != null) SideHandlePanel.Visibility = Visibility.Collapsed;
+
+        var slideIn = new DoubleAnimation(slideOffset, 0, TimeSpan.FromMilliseconds(240))
         {
-            arrow.Text = vm.NotesExpanded ? "▼" : "▶";
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+        };
+        var fadeScrim = new DoubleAnimation(0, 0.7, TimeSpan.FromMilliseconds(200));
+        NotesDrawerTransform.BeginAnimation(TranslateTransform.XProperty, slideIn);
+        NotesScrim.BeginAnimation(OpacityProperty, fadeScrim);
+    }
+
+    private void CloseNotesDrawer(bool syncViewModel = false)
+    {
+        if (NotesDrawerOverlay == null) return;
+
+        // Set guard BEFORE triggering PropertyChanged so UpdateNotesHeaderState returns early
+        // and does not immediately set Visibility = Collapsed, which would swallow the animation.
+        _notesExpanded = false;
+        UpdateNotesToggleButtonState(false);
+
+        if (syncViewModel && DataContext is OrderLogViewModel vm)
+        {
+            vm.NotesExpanded = false; // PropertyChanged fires here, but guard prevents double-collapse
         }
 
-        if (NotesSection is { } section)
+        AnimateDrawerClose();
+    }
+
+    private void AnimateDrawerClose()
+    {
+        if (NotesDrawerOverlay == null || NotesDrawerOverlay.Visibility != Visibility.Visible) return;
+
+        double slideOffset = _isDockedLeft
+            ? -(NotesDrawer?.ActualWidth > 0 ? NotesDrawer.ActualWidth : 600)
+            : (NotesDrawer?.ActualWidth > 0 ? NotesDrawer.ActualWidth : 600);
+
+        var slideOut = new DoubleAnimation(0, slideOffset, TimeSpan.FromMilliseconds(200))
         {
-            if (vm.NotesExpanded)
-            {
-                // Expand animation
-                section.Visibility = Visibility.Visible;
-                section.Opacity = 0;
-                section.RenderTransform = new TranslateTransform(0, -10);
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+        };
+        slideOut.Completed += (s, _) =>
+        {
+            NotesDrawerOverlay.Visibility = Visibility.Collapsed;
+            if (SideHandlePanel != null) SideHandlePanel.Visibility = Visibility.Visible;
+        };
+        var fadeScrim = new DoubleAnimation(0.7, 0, TimeSpan.FromMilliseconds(160));
+        NotesDrawerTransform.BeginAnimation(TranslateTransform.XProperty, slideOut);
+        NotesScrim.BeginAnimation(OpacityProperty, fadeScrim);
+    }
 
-                var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200))
-                {
-                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-                };
-
-                var slideDown = new DoubleAnimation(-10, 0, TimeSpan.FromMilliseconds(200))
-                {
-                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-                };
-
-                section.BeginAnimation(OpacityProperty, fadeIn);
-                if (section.RenderTransform is TranslateTransform transform)
-                {
-                    transform.BeginAnimation(TranslateTransform.YProperty, slideDown);
-                }
-            }
-            else
-            {
-                // Collapse animation
-                var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150))
-                {
-                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-                };
-
-                var slideUp = new DoubleAnimation(0, -10, TimeSpan.FromMilliseconds(150))
-                {
-                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-                };
-
-                fadeOut.Completed += (s, _) =>
-                {
-                    section.Visibility = Visibility.Collapsed;
-                    section.BeginAnimation(OpacityProperty, null);
-                };
-
-                section.BeginAnimation(OpacityProperty, fadeOut);
-                if (section.RenderTransform is TranslateTransform transform)
-                {
-                    transform.BeginAnimation(TranslateTransform.YProperty, slideUp);
-                }
-            }
-        }
+    private void UpdateNotesToggleButtonState(bool isOpen)
+    {
+        // Hide the whole side handle when the drawer is open (drawer covers the widget anyway)
+        if (SideHandlePanel != null)
+            SideHandlePanel.Visibility = isOpen ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private void InitializeEqualizerTimer()
@@ -395,6 +450,17 @@ public partial class OrderLogWidgetView : UserControl
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        // Page load fade-in
+        if (this.Content is UIElement root)
+        {
+            root.Opacity = 0;
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(280))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            root.BeginAnimation(OpacityProperty, fadeIn);
+        }
+
         // Initialize Spotify service asynchronously
         InitializeSpotifyAndWireUpAsync();
 
@@ -431,21 +497,84 @@ public partial class OrderLogWidgetView : UserControl
 
     private void UpdateNotesHeaderState(bool isExpanded)
     {
+        // Guard: if already in sync (e.g. CloseNotesDrawer already updated _notesExpanded),
+        // don't interfere with an in-progress animation.
+        if (_notesExpanded == isExpanded) return;
         _notesExpanded = isExpanded;
-        if (NotesArrow is { } arrow)
+        UpdateNotesToggleButtonState(isExpanded);
+        if (NotesDrawerOverlay != null)
         {
-            arrow.Text = isExpanded ? "▼" : "▶";
+            if (isExpanded)
+            {
+                // Instant open on initial state restore (no entrance animation needed)
+                NotesDrawerOverlay.Visibility = Visibility.Visible;
+                NotesDrawerTransform.X = 0;
+                NotesScrim.Opacity = 0.7;
+            }
+            else if (NotesDrawerOverlay.Visibility == Visibility.Visible)
+            {
+                // Drawer is open — animate it closed (covers ViewModel-side changes e.g. keyboard shortcuts)
+                AnimateDrawerClose();
+            }
+            else
+            {
+                // Already collapsed (initial state) — no animation needed
+                NotesDrawerOverlay.Visibility = Visibility.Collapsed;
+            }
         }
-        if (NotesSection is { } section)
+    }
+
+    private bool _isDockedLeft = false;
+
+    public void ApplyDockSide(bool isDockedLeft)
+    {
+        _isDockedLeft = isDockedLeft;
+
+        if (SideHandlePanel != null)
         {
-            section.Visibility = isExpanded ? Visibility.Visible : Visibility.Collapsed;
-            section.Opacity = isExpanded ? 1 : 0;
+            SideHandlePanel.HorizontalAlignment = isDockedLeft ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+
+            var cols = SideHandlePanel.ColumnDefinitions;
+            if (cols.Count == 2)
+            {
+                // Left dock: col0 = handle strip, col1 = expanding content
+                // Right dock: col0 = expanding content, col1 = handle strip
+                cols[0].Width = isDockedLeft ? GridLength.Auto : GridLength.Auto;
+                cols[1].Width = isDockedLeft ? GridLength.Auto : GridLength.Auto;
+            }
+
+            Grid.SetColumn(SideHandleStrip, isDockedLeft ? 0 : 1);
+            Grid.SetColumn(QuickJumpContent, isDockedLeft ? 1 : 0);
+
+            SideHandleStrip.CornerRadius = isDockedLeft
+                ? new CornerRadius(0, 4, 4, 0)
+                : new CornerRadius(4, 0, 0, 4);
+
+            QuickJumpContent.CornerRadius = isDockedLeft
+                ? new CornerRadius(0, 3, 3, 0)
+                : new CornerRadius(3, 0, 0, 3);
+            QuickJumpContent.BorderThickness = isDockedLeft
+                ? new Thickness(0, 1, 1, 1)
+                : new Thickness(1, 1, 0, 1);
         }
     }
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(OrderLogViewModel.ShowNowPlaying))
+        if (e.PropertyName == nameof(OrderLogViewModel.StatusMessage))
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                if (StatusMessageText == null) return;
+                StatusMessageText.BeginAnimation(OpacityProperty, null);
+                var flash = new DoubleAnimation(0.3, 1.0, TimeSpan.FromMilliseconds(200))
+                {
+                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                };
+                StatusMessageText.BeginAnimation(OpacityProperty, flash);
+            });
+        }
+        else if (e.PropertyName == nameof(OrderLogViewModel.ShowNowPlaying))
         {
             Dispatcher.Invoke(() => UpdateNowPlayingUI());
         }
@@ -471,8 +600,43 @@ public partial class OrderLogWidgetView : UserControl
 
     private async void ViewModel_ItemAdded(OrderItem item)
     {
-        // Scroll to and focus the newly added item (for notes, orders added via dialog don't need focus)
+        // Sticky notes live in the drawer's own ScrollViewer – routing through
+        // MainScrollViewer would throw/hang because the note element is not in that visual tree.
+        if (item.NoteType == NoteType.StickyNote)
+        {
+            await FocusNewNoteInDrawerAsync();
+            return;
+        }
+
         await ScrollToAndFocusNewItemAsync(item);
+    }
+
+    private async Task FocusNewNoteInDrawerAsync()
+    {
+        // Give the ItemsControl time to render the new note
+        await Task.Delay(80);
+
+        await Dispatcher.InvokeAsync(() =>
+        {
+            try
+            {
+                // NotesSection is the StackPanel inside the drawer's ScrollViewer.
+                // Walk its visual tree to find the first editable text input.
+                var rtb = FindVisualChild<RichTextBox>(NotesSection);
+                if (rtb != null)
+                {
+                    rtb.Focus();
+                    return;
+                }
+
+                var tb = FindVisualChild<TextBox>(NotesSection);
+                tb?.Focus();
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Failed to focus new note in drawer");
+            }
+        }, System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     private async void InitializeSpotifyAndWireUpAsync()
@@ -1263,8 +1427,8 @@ public partial class OrderLogWidgetView : UserControl
                 var hWnd = processes[0].MainWindowHandle;
                 if (hWnd != IntPtr.Zero)
                 {
-                    SOUP.Helpers.NativeMethods.SetForegroundWindow(hWnd);
-                    SOUP.Helpers.NativeMethods.ShowWindow(hWnd, SOUP.Helpers.NativeMethods.ShowWindowCommands.SW_RESTORE);
+                    OrderLog.Helpers.NativeMethods.SetForegroundWindow(hWnd);
+                    OrderLog.Helpers.NativeMethods.ShowWindow(hWnd, OrderLog.Helpers.NativeMethods.ShowWindowCommands.SW_RESTORE);
                 }
             }
             else
@@ -2093,6 +2257,27 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
+    private void SetNoteCategory_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var order = GetOrderItemFromContextMenu(sender);
+            if (order == null) return;
+
+            var tag = (sender as MenuItem)?.Tag?.ToString();
+            if (Enum.TryParse<NoteCategory>(tag, out var category))
+            {
+                order.NoteCategory = category;
+                if (DataContext is OrderLogViewModel vm)
+                    _ = vm.SaveAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to set note category");
+        }
+    }
+
     private async void RestoreGroup_Click(object sender, RoutedEventArgs e)
     {
         try
@@ -2818,15 +3003,25 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
-    private bool _quickJumpExpanded = false;
-
-    private void QuickJumpHandle_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    private void QuickJumpHandle_MouseEnter(object sender, MouseEventArgs e)
     {
-        _quickJumpExpanded = !_quickJumpExpanded;
-        QuickJumpContent.Visibility = _quickJumpExpanded ? Visibility.Visible : Visibility.Collapsed;
-        QuickJumpHandle.CornerRadius = _quickJumpExpanded
-            ? new CornerRadius(0, 3, 3, 0)
-            : new CornerRadius(0, 3, 3, 0);
+        QuickJumpContent.Visibility = Visibility.Visible;
+        QuickJumpContent.BeginAnimation(OpacityProperty, null);
+        var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150))
+        {
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+        };
+        QuickJumpContent.BeginAnimation(OpacityProperty, fadeIn);
+    }
+
+    private void SideHandlePanel_MouseLeave(object sender, MouseEventArgs e)
+    {
+        var fadeOut = new DoubleAnimation(0, TimeSpan.FromMilliseconds(120))
+        {
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+        };
+        fadeOut.Completed += (_, _) => QuickJumpContent.Visibility = Visibility.Collapsed;
+        QuickJumpContent.BeginAnimation(OpacityProperty, fadeOut);
     }
 
     #endregion

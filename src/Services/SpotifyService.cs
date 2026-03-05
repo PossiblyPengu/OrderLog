@@ -8,11 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Serilog;
-using SOUP.Helpers;
+using OrderLog.Helpers;
 using Windows.Media.Control;
 using Windows.Storage.Streams;
 
-namespace SOUP.Services;
+namespace OrderLog.Services;
 
 /// <summary>
 /// Service for controlling Spotify playback using Windows Media Session API for metadata

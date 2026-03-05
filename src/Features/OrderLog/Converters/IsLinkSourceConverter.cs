@@ -2,9 +2,9 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using SOUP.Features.OrderLog.Models;
+using OrderLog.Features.Models;
 
-namespace SOUP.Features.OrderLog.Converters;
+namespace OrderLog.Features.Converters;
 
 /// <summary>
 /// Multi-value converter that returns a highlight brush if the item is the link mode source.

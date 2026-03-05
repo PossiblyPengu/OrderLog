@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SOUP.Infrastructure.Services;
+namespace OrderLog.Infrastructure.Services;
 
 /// <summary>
 /// Event args for settings changed notifications.
@@ -64,10 +64,13 @@ public sealed class SettingsService
                 Serilog.Log.Warning("SettingsService: Reading settings for {AppName} timed out (>5s), using defaults", appName);
                 return new T();
             }
-            var json = await readTask.ConfigureAwait(false);
-            sw.Stop();
-            Serilog.Log.Information("SettingsService: Loaded settings for {AppName} in {Ms}ms", appName, sw.ElapsedMilliseconds);
-            return JsonSerializer.Deserialize<T>(json, _jsonOptions) ?? new T();
+            else
+            {
+                var json = await readTask.ConfigureAwait(false);
+                sw.Stop();
+                Serilog.Log.Information("SettingsService: Loaded settings for {AppName} in {Ms}ms", appName, sw.ElapsedMilliseconds);
+                return JsonSerializer.Deserialize<T>(json, _jsonOptions) ?? new T();
+            }
         }
         catch (Exception ex)
         {

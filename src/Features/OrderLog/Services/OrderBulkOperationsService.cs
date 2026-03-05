@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SOUP.Features.OrderLog.Models;
+using OrderLog.Features.Models;
 
-namespace SOUP.Features.OrderLog.Services;
+namespace OrderLog.Features.Services;
 
 /// <summary>
 /// Result of a bulk operation

@@ -7,10 +7,10 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using Serilog;
-using SOUP.Features.OrderLog.Models;
-using SOUP.Features.OrderLog.Services;
+using OrderLog.Features.Models;
+using OrderLog.Features.Services;
 
-namespace SOUP.Features.OrderLog.Views;
+namespace OrderLog.Features.Views;
 
 public partial class OrderTemplateManagerDialog : Window
 {

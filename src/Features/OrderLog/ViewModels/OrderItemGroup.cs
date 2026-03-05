@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Linq;
-using SOUP.Features.OrderLog.Models;
+using OrderLog.Features.Models;
 
-namespace SOUP.Features.OrderLog.ViewModels;
+namespace OrderLog.Features.ViewModels;
 
 public class OrderItemGroup
 {

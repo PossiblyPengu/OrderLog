@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SOUP.Data.Entities;
+namespace OrderLog.Data.Entities;
 
 /// <summary>
 /// Entity for dictionary items (item number to description mapping)

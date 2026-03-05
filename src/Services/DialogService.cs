@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using Microsoft.Win32;
-using SOUP.Windows;
+using OrderLog.Windows;
 
-namespace SOUP.Services;
+namespace OrderLog.Services;
 
 /// <summary>
 /// Service for displaying dialogs, message boxes, and file pickers in WPF.

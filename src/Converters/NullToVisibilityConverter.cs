@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace SOUP.Converters;
+namespace OrderLog.Converters;
 
 /// <summary>
 /// Converts null values to Visibility
@@ -12,19 +12,10 @@ public class NullToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        // If parameter is "Invert", show when null, hide when not null
         bool invert = parameter?.ToString() == "Invert";
-
         bool isNull = value == null;
-
-        if (invert)
-        {
-            return isNull ? Visibility.Visible : Visibility.Collapsed;
-        }
-        else
-        {
-            return isNull ? Visibility.Collapsed : Visibility.Visible;
-        }
+        bool visible = invert ? isNull : !isNull;
+        return visible ? Visibility.Visible : Visibility.Collapsed;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

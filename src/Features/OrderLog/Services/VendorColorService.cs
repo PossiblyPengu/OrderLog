@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using SOUP.Core;
-using SOUP.Helpers;
+using OrderLog.Core;
+using OrderLog.Helpers;
 
-namespace SOUP.Features.OrderLog.Services;
+namespace OrderLog.Features.Services;
 
 /// <summary>
 /// Service for managing automatic color assignment to vendors

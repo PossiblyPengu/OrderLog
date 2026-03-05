@@ -2,15 +2,15 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using SOUP.Features.OrderLog.Models;
+using OrderLog.Features.Models;
+using OrderLog.Helpers;
 
-namespace SOUP.Features.OrderLog.Views;
+namespace OrderLog.Features.Views;
 
-public partial class OrderTemplateEditorDialog : Window
+public partial class OrderTemplateEditorDialog : AnimatedWindow
 {
     public new OrderTemplate Template { get; private set; }
     private string _currentColorHex = "#B56576";
-
     /// <summary>
     /// Create a new template from scratch
     /// </summary>
@@ -142,14 +142,13 @@ public partial class OrderTemplateEditorDialog : Window
             };
         }
 
-        DialogResult = true;
-        Close();
+        BeginCloseAnimation(true);
+        return;
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = false;
-        Close();
+        BeginCloseAnimation(false);
     }
 
     private void ColorPreview_MouseDown(object sender, MouseButtonEventArgs e)
@@ -189,4 +188,5 @@ public partial class OrderTemplateEditorDialog : Window
             ColorPreviewBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B56576"));
         }
     }
+
 }

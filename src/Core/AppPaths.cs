@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace SOUP.Core;
+namespace OrderLog.Core;
 
 /// <summary>
 /// Centralized application paths for consistent directory access.

@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using SOUP.Features.OrderLog.Services;
-using SOUP.Features.OrderLog.ViewModels;
+using OrderLog.Features.Services;
+using OrderLog.Features.ViewModels;
 
-namespace SOUP.Features.OrderLog.Views;
+namespace OrderLog.Features.Views;
 
 /// <summary>
 /// Interaction logic for UndoHistoryPanel.xaml

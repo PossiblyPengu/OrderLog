@@ -8,10 +8,10 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using SOUP.Features.OrderLog.Models;
-using SOUP.Features.OrderLog.ViewModels;
+using OrderLog.Features.Models;
+using OrderLog.Features.ViewModels;
 
-namespace SOUP.Features.OrderLog.Helpers;
+namespace OrderLog.Features.Helpers;
 
 /// <summary>
 /// Helper class for text formatting operations on note content TextBoxes.

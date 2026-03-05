@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SOUP.Features.OrderLog.Models;
+namespace OrderLog.Features.Models;
 
 /// <summary>
 /// Represents a reusable template for creating orders

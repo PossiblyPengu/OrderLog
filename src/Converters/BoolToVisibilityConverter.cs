@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace SOUP.Converters;
+namespace OrderLog.Converters;
 
 /// <summary>
 /// Converts a boolean value to <see cref="Visibility"/>.

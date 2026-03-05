@@ -8,15 +8,15 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using SOUP.Features.OrderLog.Constants;
-using SOUP.Features.OrderLog.Models;
-using SOUP.Helpers;
-using SOUP.Features.OrderLog.Services;
-using SOUP.Infrastructure.Services;
-using SOUP.Services;
+using OrderLog.Features.Constants;
+using OrderLog.Features.Models;
+using OrderLog.Helpers;
+using OrderLog.Features.Services;
+using OrderLog.Infrastructure.Services;
+using OrderLog.Services;
 using Microsoft.Win32;
 
-namespace SOUP.Features.OrderLog.ViewModels;
+namespace OrderLog.Features.ViewModels;
 
 public partial class OrderLogViewModel : ObservableObject, IDisposable
 {
@@ -32,7 +32,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     private readonly DialogService _dialogService;
     private readonly ILogger<OrderLogViewModel>? _logger;
     private readonly OrderSearchService _searchService;
-    private readonly OrderBulkOperationsService _bulkOperationsService;
     private readonly OrderLogClipboardService _clipboardService;
     private readonly VendorColorService _vendorColorService;
     private readonly UndoRedoStack _undoRedoStack;
@@ -42,6 +41,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     private DispatcherTimer? _undoCountdownTimer;
     private DispatcherTimer? _statusClearTimer;
     private System.Threading.CancellationTokenSource? _saveDebounceCts;
+    private System.Threading.CancellationTokenSource? _settingsSaveCts;
 
     // Lock for thread-safe access to HashSets
     private readonly object _collectionLock = new();
@@ -231,7 +231,10 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
                 rk.DeleteValue(name, false);
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to set run-at-startup registry key");
+        }
     }
 
     partial void OnColorFiltersChanged(string[]? value)
@@ -403,7 +406,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         _dialogService = dialogService;
         _logger = logger;
         _searchService = new OrderSearchService();
-        _bulkOperationsService = new OrderBulkOperationsService();
         _clipboardService = new OrderLogClipboardService(null);
         _vendorColorService = new VendorColorService(null);
         _undoRedoStack = new UndoRedoStack(maxHistorySize: 50);
@@ -486,6 +488,10 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
     private void SaveWidgetSettings()
     {
+        _settingsSaveCts?.Cancel();
+        _settingsSaveCts?.Dispose();
+        _settingsSaveCts = new System.Threading.CancellationTokenSource();
+        var cts = _settingsSaveCts;
         var settings = new OrderLogWidgetSettings
         {
             CardFontSize = CardFontSize,
@@ -503,7 +509,11 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             NotesExpanded = NotesExpanded,
             RunAtStartup = RunAtStartup
         };
-        _settingsService.SaveSettingsAsync("OrderLogWidget", settings).SafeFireAndForget("SaveWidgetSettings");
+        Task.Delay(300).ContinueWith(_ =>
+        {
+            if (!cts.IsCancellationRequested)
+                _settingsService.SaveSettingsAsync("OrderLogWidget", settings).SafeFireAndForget("SaveWidgetSettings");
+        }, System.Threading.Tasks.TaskScheduler.Default);
     }
 
     private void OnTimerTick(object? sender, EventArgs e)
@@ -718,6 +728,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         try
         {
             _saveDebounceCts?.Cancel();
+            _saveDebounceCts?.Dispose();
             _saveDebounceCts = new System.Threading.CancellationTokenSource();
             var token = _saveDebounceCts.Token;
             await Task.Delay(debounceMs, token);
@@ -751,9 +762,10 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         // Check for items that should be archived:
         // 1. Status is Done (completed)
         // 2. PreviousStatus is set (meaning they were archived at some point)
-        var itemsToRepair = Items.Where(i => 
-            i.Status == OrderItem.OrderStatus.Done || 
-            i.PreviousStatus != null).ToList();
+        // Only repair items that are flagged active but have a PreviousStatus set,
+        // meaning they were archived at some point but ended up back in the active list.
+        var itemsToRepair = Items.Where(i =>
+            i.IsArchived == false && i.PreviousStatus != null).ToList();
         
         // Log diagnostic info
         var totalActive = Items.Count;
@@ -1385,10 +1397,20 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
         var itemsToDelete = SelectedItems.ToList();
 
-        // Determine which collection to use for delete action
-        var collection = itemsToDelete.Any(i => _itemIds.Contains(i.Id)) ? Items : ArchivedItems;
-        var action = new DeleteAction(itemsToDelete, collection);
-        _undoRedoStack.ExecuteAction(action);
+        // Split across active vs archived collections so each DeleteAction targets the right list
+        var activeToDelete = itemsToDelete.Where(i => _itemIds.Contains(i.Id)).ToList();
+        var archivedToDelete = itemsToDelete.Where(i => _archivedItemIds.Contains(i.Id)).ToList();
+
+        if (activeToDelete.Count > 0)
+        {
+            var action = new DeleteAction(activeToDelete, Items);
+            _undoRedoStack.ExecuteAction(action);
+        }
+        if (archivedToDelete.Count > 0)
+        {
+            var action = new DeleteAction(archivedToDelete, ArchivedItems);
+            _undoRedoStack.ExecuteAction(action);
+        }
 
         SelectedItems.Clear();
         RefreshDisplayItems();
@@ -2464,6 +2486,8 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
             _saveDebounceCts?.Cancel();
             _saveDebounceCts?.Dispose();
+            _settingsSaveCts?.Cancel();
+            _settingsSaveCts?.Dispose();
 
             _undoRedoStack.StackChanged -= OnUndoRedoStackChanged;
 

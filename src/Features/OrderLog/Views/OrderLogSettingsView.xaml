@@ -1,9 +1,9 @@
-<UserControl x:Class="SOUP.Features.OrderLog.Views.OrderLogSettingsView"
+<UserControl x:Class="OrderLog.Features.Views.OrderLogSettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:SOUP.Features.OrderLog.Views"
-             xmlns:vm="clr-namespace:SOUP.Features.OrderLog.ViewModels"
-             xmlns:converters="clr-namespace:SOUP.Features.OrderLog.Converters"
+             xmlns:local="clr-namespace:OrderLog.Features.Views"
+             xmlns:vm="clr-namespace:OrderLog.Features.ViewModels"
+             xmlns:converters="clr-namespace:OrderLog.Features.Converters"
              MinHeight="400" MinWidth="400">
 
     <UserControl.Resources>

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace SOUP.Converters;
+namespace OrderLog.Converters;
 
 /// <summary>
 /// Converts string values to Visibility - visible when string has content, collapsed when empty/null
@@ -14,15 +14,7 @@ public class StringToVisibilityConverter : IValueConverter
     {
         bool invert = parameter?.ToString() == "Invert";
         bool hasContent = !string.IsNullOrWhiteSpace(value as string);
-
-        if (invert)
-        {
-            return hasContent ? Visibility.Collapsed : Visibility.Visible;
-        }
-        else
-        {
-            return hasContent ? Visibility.Visible : Visibility.Collapsed;
-        }
+        return (invert ? !hasContent : hasContent) ? Visibility.Visible : Visibility.Collapsed;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

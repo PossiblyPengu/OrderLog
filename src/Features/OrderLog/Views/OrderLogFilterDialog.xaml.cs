@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using SOUP.Features.OrderLog.Models;
+using OrderLog.Features.Models;
+using OrderLog.Helpers;
 
-namespace SOUP.Features.OrderLog.Views;
+namespace OrderLog.Features.Views;
 
-public partial class OrderLogFilterDialog : Window
+public partial class OrderLogFilterDialog : AnimatedWindow
 {
     public OrderItem.OrderStatus[]? SelectedStatuses { get; private set; }
     public DateTime? StartDate { get; private set; }
@@ -144,14 +145,12 @@ public partial class OrderLogFilterDialog : Window
             SelectedNoteCategory = null;
         }
 
-        DialogResult = true;
-        Close();
+        BeginCloseAnimation(true);
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = false;
-        Close();
+        BeginCloseAnimation(false);
     }
 
     private void ClearAll_Click(object sender, RoutedEventArgs e)
@@ -172,4 +171,5 @@ public partial class OrderLogFilterDialog : Window
         // Reset to "All" for note category
         CategoryAllRadio.IsChecked = true;
     }
+
 }

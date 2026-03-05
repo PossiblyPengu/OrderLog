@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using SOUP.Features.OrderLog.Models;
-using SOUP.Features.OrderLog.ViewModels;
+using OrderLog.Features.Models;
+using OrderLog.Features.ViewModels;
 
-namespace SOUP.Features.OrderLog.Services;
+namespace OrderLog.Features.Services;
 
 /// <summary>
 /// Helper service to build grouped display collections and status groups

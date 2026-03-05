@@ -1,4 +1,4 @@
-namespace SOUP.Features.OrderLog.Models;
+namespace OrderLog.Features.Models;
 
 public class OrderLogWidgetSettings
 {

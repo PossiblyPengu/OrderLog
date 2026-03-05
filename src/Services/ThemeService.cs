@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SOUP.Services;
+namespace OrderLog.Services;
 
 /// <summary>
 /// Service for managing application theme (light/dark mode) in WPF.
@@ -46,7 +46,7 @@ public partial class ThemeService : ObservableObject
     /// </summary>
     public event EventHandler<bool>? ThemeChanged;
 
-    public ThemeService()
+    private ThemeService()
     {
         _settingsPath = Path.Combine(Core.AppPaths.AppData, SettingsFileName);
 

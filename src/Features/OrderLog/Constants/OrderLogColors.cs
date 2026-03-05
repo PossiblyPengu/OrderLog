@@ -1,4 +1,4 @@
-namespace SOUP.Features.OrderLog.Constants;
+namespace OrderLog.Features.Constants;
 
 /// <summary>
 /// Centralized color constants for OrderLog feature.

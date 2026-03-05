@@ -116,8 +116,9 @@
   <SolidColorBrush x:Key="PrimaryBrush"       Color="{StaticResource PrimaryColor}"/>
   <SolidColorBrush x:Key="PrimaryHoverBrush"  Color="{StaticResource PrimaryHoverColor}"/>
   <SolidColorBrush x:Key="PrimaryDarkBrush"   Color="{StaticResource PrimaryDarkColor}"/>
-  <SolidColorBrush x:Key="PrimaryLightBrush"  Color="#1800AA44"/>
-  <SolidColorBrush x:Key="AccentBrush"        Color="{StaticResource AccentColor}"/>
+  <SolidColorBrush x:Key="PrimaryLightBrush"   Color="#1800AA44"/>
+  <SolidColorBrush x:Key="PrimaryPressedBrush" Color="#3000AA44"/>
+  <SolidColorBrush x:Key="AccentBrush"         Color="{StaticResource AccentColor}"/>
   <SolidColorBrush x:Key="AccentDarkBrush"    Color="{StaticResource PrimaryDarkColor}"/>
   <SolidColorBrush x:Key="AccentLightBrush"   Color="{StaticResource PrimaryHoverColor}"/>
 
@@ -191,6 +192,7 @@
   <SolidColorBrush x:Key="SidebarActiveBrush"          Color="#DCDCDC"/>
   <SolidColorBrush x:Key="TextLinkBrush"               Color="#007830"/>
   <SolidColorBrush x:Key="CloseButtonHoverBrush"       Color="#CC0020"/>
+  <SolidColorBrush x:Key="CloseButtonHoverSubtleBrush" Color="#22DD0025"/>
   <SolidColorBrush x:Key="AccentHoverBrush"            Color="{StaticResource PrimaryHoverColor}"/>
 
 </ResourceDictionary>

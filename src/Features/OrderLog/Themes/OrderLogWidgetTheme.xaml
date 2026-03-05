@@ -95,16 +95,46 @@
 
     <!-- Base elevated card -->
     <Style x:Key="ElevatedCardStyle" TargetType="Border">
-        <Setter Property="Background"      Value="{DynamicResource SurfaceBrush}"/>
-        <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius"    Value="{StaticResource WidgetCardCornerRadius}"/>
-        <Setter Property="Effect"          Value="{StaticResource WidgetCardShadow}"/>
+        <Setter Property="Background"               Value="{DynamicResource SurfaceBrush}"/>
+        <Setter Property="BorderBrush"              Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness"          Value="1"/>
+        <Setter Property="CornerRadius"             Value="{StaticResource WidgetCardCornerRadius}"/>
+        <Setter Property="Effect"                   Value="{StaticResource WidgetCardShadow}"/>
+        <Setter Property="RenderTransformOrigin"    Value="0.5,0.5"/>
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform/>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderBrush" Value="{DynamicResource BorderAccentBrush}"/>
                 <Setter Property="Effect"      Value="{StaticResource WidgetCardHoverShadow}"/>
             </Trigger>
+            <EventTrigger RoutedEvent="Border.MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.01" Duration="0:0:0.15">
+                            <DoubleAnimation.EasingFunction><QuadraticEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.01" Duration="0:0:0.15">
+                            <DoubleAnimation.EasingFunction><QuadraticEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Border.MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.15">
+                            <DoubleAnimation.EasingFunction><QuadraticEase EasingMode="EaseIn"/></DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.15">
+                            <DoubleAnimation.EasingFunction><QuadraticEase EasingMode="EaseIn"/></DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
         </Style.Triggers>
     </Style>
 
@@ -150,13 +180,51 @@
                     <Border x:Name="TabBorder"
                             Background="{TemplateBinding Background}"
                             CornerRadius="{StaticResource WidgetTabItemRadius}"
-                            Padding="{TemplateBinding Padding}">
+                            Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="TabScale"/>
+                        </Border.RenderTransform>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
                             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="TabScale" Storyboard.TargetProperty="ScaleX" To="1.04" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetName="TabScale" Storyboard.TargetProperty="ScaleY" To="1.04" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="TabScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                                        <DoubleAnimation Storyboard.TargetName="TabScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="TabScale" Storyboard.TargetProperty="ScaleX" To="0.96" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="TabScale" Storyboard.TargetProperty="ScaleY" To="0.96" Duration="0:0:0.08"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="TabScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetName="TabScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -219,16 +287,52 @@
                     <Border x:Name="Bd"
                             Background="{TemplateBinding Background}"
                             CornerRadius="{DynamicResource RadiusSm}"
-                            Padding="{TemplateBinding Padding}">
+                            Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="BdScale"/>
+                        </Border.RenderTransform>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
                             <Setter TargetName="Bd" Property="Effect"     Value="{StaticResource WidgetAccentGlow}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.03" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.03" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryDarkBrush}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="0.95" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="0.95" Duration="0:0:0.08"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -255,13 +359,51 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{DynamicResource RadiusSm}"
-                            Padding="{TemplateBinding Padding}">
+                            Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="BdScale"/>
+                        </Border.RenderTransform>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Bd" Property="Background"  Value="{DynamicResource SurfaceActiveBrush}"/>
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource BorderAccentBrush}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.03" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.03" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="0.96" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="0.96" Duration="0:0:0.08"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -286,13 +428,51 @@
                             CornerRadius="{DynamicResource RadiusSm}"
                             Width="{TemplateBinding Width}"
                             Height="{TemplateBinding Height}"
-                            Padding="{TemplateBinding Padding}">
+                            Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="BdScale"/>
+                        </Border.RenderTransform>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryLightBrush}"/>
                             <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.12" Duration="0:0:0.12"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.12" Duration="0:0:0.12"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="0.9" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="0.9" Duration="0:0:0.08"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

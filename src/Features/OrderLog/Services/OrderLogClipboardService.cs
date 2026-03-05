@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Windows;
 using Microsoft.Extensions.Logging;
-using SOUP.Features.OrderLog.Models;
+using OrderLog.Features.Models;
 
-namespace SOUP.Features.OrderLog.Services;
+namespace OrderLog.Features.Services;
 
 /// <summary>
 /// Service for copying and pasting OrderLog items via clipboard.

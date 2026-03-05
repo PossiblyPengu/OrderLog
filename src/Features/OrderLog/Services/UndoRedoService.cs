@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SOUP.Features.OrderLog.Models;
+using OrderLog.Features.Models;
 
-namespace SOUP.Features.OrderLog.Services;
+namespace OrderLog.Features.Services;
 
 /// <summary>
 /// Base class for all undoable actions
@@ -348,7 +348,7 @@ public class ReorderAction : UndoableAction
     private readonly int _oldIndex;
     private readonly int _newIndex;
 
-    public override string Description => $"Move item";
+    public override string Description => "Move item";
 
     public ReorderAction(OrderItem item, IList<OrderItem> collection, int oldIndex, int newIndex)
     {
@@ -512,16 +512,13 @@ public class UndoRedoStack
         _undoStack.Push(action);
         _redoStack.Clear(); // Clear redo stack when new action is executed
 
-        // Trim stack if it exceeds max size
-        while (_undoStack.Count > _maxHistorySize)
+        // Trim to max size (since we push one at a time, count can exceed by at most 1)
+        if (_undoStack.Count > _maxHistorySize)
         {
-            var items = _undoStack.ToList();
-            items.RemoveAt(items.Count - 1);
+            var trimmed = _undoStack.Take(_maxHistorySize).ToArray();
             _undoStack.Clear();
-            foreach (var item in Enumerable.Reverse(items))
-            {
+            foreach (var item in trimmed.Reverse())
                 _undoStack.Push(item);
-            }
         }
 
         StackChanged?.Invoke();

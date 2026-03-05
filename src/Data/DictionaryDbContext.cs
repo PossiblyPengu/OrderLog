@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Microsoft.Data.Sqlite;
-using SOUP.Data.Entities;
+using OrderLog.Data.Entities;
 
-namespace SOUP.Data;
+namespace OrderLog.Data;
 
 /// <summary>
 /// Shared SQLite context for dictionary data (items and stores).

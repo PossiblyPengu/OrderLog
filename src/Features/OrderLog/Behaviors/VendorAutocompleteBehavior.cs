@@ -6,9 +6,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Xaml.Behaviors;
-using SOUP.Features.OrderLog.Services;
+using OrderLog.Features.Services;
 
-namespace SOUP.Features.OrderLog.Behaviors;
+namespace OrderLog.Features.Behaviors;
 
 /// <summary>
 /// Attached behavior that adds vendor autocomplete functionality to a TextBox.

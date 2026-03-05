@@ -1,6 +1,6 @@
 using Serilog;
 
-namespace SOUP.Helpers;
+namespace OrderLog.Helpers;
 
 /// <summary>
 /// Extension methods for fire-and-forget async operations with error logging.

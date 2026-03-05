@@ -1,13 +1,17 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
-using SOUP.Features.OrderLog.ViewModels;
-using SOUP.Services;
+using OrderLog.Features.ViewModels;
+using OrderLog.Helpers;
+using OrderLog.Services;
 
-namespace SOUP.Windows;
+namespace OrderLog.Windows;
 
-public partial class OrderLogSettingsWindow : Window
+public partial class OrderLogSettingsWindow : AnimatedWindow
 {
+    protected override double CloseAnimDurationMs => 160.0;
+    protected override double CloseAnimScale => 0.95;
+
     public OrderLogSettingsWindow(OrderLogViewModel viewModel)
     {
         InitializeComponent();
@@ -26,7 +30,7 @@ public partial class OrderLogSettingsWindow : Window
     {
         try
         {
-            var isDarkMode = SOUP.Services.ThemeService.Instance.IsDarkMode;
+            var isDarkMode = OrderLog.Services.ThemeService.Instance.IsDarkMode;
             var themeFile = isDarkMode
                 ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
                 : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
@@ -53,4 +57,5 @@ public partial class OrderLogSettingsWindow : Window
     {
         Close();
     }
+
 }

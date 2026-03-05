@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace SOUP.Converters;
+namespace OrderLog.Converters;
 
 public class IntToVisibilityConverter : IValueConverter
 {

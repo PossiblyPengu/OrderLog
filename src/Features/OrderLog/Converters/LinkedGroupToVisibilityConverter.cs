@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace SOUP.Features.OrderLog.Converters;
+namespace OrderLog.Features.Converters;
 
 /// <summary>
 /// Returns Visible when a Guid? is non-null and not Guid.Empty, otherwise Collapsed.

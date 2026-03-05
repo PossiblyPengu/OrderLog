@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Documents;
 
-namespace SOUP.Features.OrderLog.Converters;
+namespace OrderLog.Features.Converters;
 
 /// <summary>
 /// Converts XAML FlowDocument content to plain text for display in TextBox/TextBlock.

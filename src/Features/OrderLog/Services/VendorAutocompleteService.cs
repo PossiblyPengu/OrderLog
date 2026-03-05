@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SOUP.Data;
-using SOUP.Data.Entities;
+using OrderLog.Data;
+using OrderLog.Data.Entities;
 
-namespace SOUP.Features.OrderLog.Services;
+namespace OrderLog.Features.Services;
 
 /// <summary>
 /// Provides vendor autocomplete functionality by searching the dictionary database.

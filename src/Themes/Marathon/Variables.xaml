@@ -156,8 +156,9 @@
   <SolidColorBrush x:Key="PrimaryBrush"       Color="{StaticResource PrimaryColor}"/>
   <SolidColorBrush x:Key="PrimaryHoverBrush"  Color="{StaticResource PrimaryHoverColor}"/>
   <SolidColorBrush x:Key="PrimaryDarkBrush"   Color="{StaticResource PrimaryDarkColor}"/>
-  <SolidColorBrush x:Key="PrimaryLightBrush"  Color="#2200FF88"/>
-  <SolidColorBrush x:Key="AccentBrush"        Color="{StaticResource AccentColor}"/>
+  <SolidColorBrush x:Key="PrimaryLightBrush"   Color="#2200FF88"/>
+  <SolidColorBrush x:Key="PrimaryPressedBrush" Color="#4400FF88"/>
+  <SolidColorBrush x:Key="AccentBrush"         Color="{StaticResource AccentColor}"/>
   <SolidColorBrush x:Key="AccentDarkBrush"    Color="{StaticResource PrimaryDarkColor}"/>
   <SolidColorBrush x:Key="AccentLightBrush"   Color="{StaticResource PrimaryHoverColor}"/>
 
@@ -191,26 +192,26 @@
 
   <!-- ─── Drop-shadow effects — dark resting, vivid neon on hover/focus ────────── -->
   <DropShadowEffect x:Key="ShadowCard"
-                    BlurRadius="10" ShadowDepth="0" Opacity="0.8" Color="#000000"/>
+                    BlurRadius="10" ShadowDepth="0" Opacity="0.65" Color="#000000"/>
   <DropShadowEffect x:Key="ShadowCardHover"
-                    BlurRadius="28" ShadowDepth="0" Opacity="0.9" Color="#00FF88"/>
+                    BlurRadius="22" ShadowDepth="0" Opacity="0.7" Color="#00FF88"/>
   <DropShadowEffect x:Key="ShadowNeon"
-                    BlurRadius="26" ShadowDepth="0" Opacity="0.85" Color="#00FF88"/>
+                    BlurRadius="22" ShadowDepth="0" Opacity="0.75" Color="#00FF88"/>
   <DropShadowEffect x:Key="ShadowGlow"
-                    BlurRadius="24" ShadowDepth="0" Opacity="0.7" Color="#00FF88"/>
+                    BlurRadius="20" ShadowDepth="0" Opacity="0.65" Color="#00FF88"/>
   <DropShadowEffect x:Key="ShadowFocus"
-                    BlurRadius="18" ShadowDepth="0" Opacity="0.8" Color="#00FF88"/>
+                    BlurRadius="16" ShadowDepth="0" Opacity="0.7" Color="#00FF88"/>
 
   <DropShadowEffect x:Key="WidgetCardShadow"
-                    BlurRadius="10" ShadowDepth="0" Opacity="0.8" Color="#000000"/>
+                    BlurRadius="10" ShadowDepth="0" Opacity="0.65" Color="#000000"/>
   <DropShadowEffect x:Key="WidgetCardHoverShadow"
-                    BlurRadius="28" ShadowDepth="0" Opacity="0.9" Color="#00FF88"/>
+                    BlurRadius="22" ShadowDepth="0" Opacity="0.7" Color="#00FF88"/>
   <DropShadowEffect x:Key="WidgetCardDragShadow"
-                    BlurRadius="36" ShadowDepth="0" Opacity="1.0" Color="#000000"/>
+                    BlurRadius="32" ShadowDepth="0" Opacity="0.85" Color="#000000"/>
   <DropShadowEffect x:Key="WidgetButtonShadow"
-                    BlurRadius="14" ShadowDepth="0" Opacity="0.6" Color="#00FF88"/>
+                    BlurRadius="12" ShadowDepth="0" Opacity="0.5" Color="#00FF88"/>
   <DropShadowEffect x:Key="WidgetAccentGlow"
-                    BlurRadius="26" ShadowDepth="0" Opacity="0.85" Color="#00FF88"/>
+                    BlurRadius="20" ShadowDepth="0" Opacity="0.65" Color="#00FF88"/>
 
   <!-- ─── Legacy module color aliases ─────────────────────────────────────────────── -->
   <Color x:Key="ExpireWiseColor">#FFD000</Color>
@@ -247,6 +248,7 @@
   <SolidColorBrush x:Key="SidebarHoverBrush"           Color="#1E1E1E"/>
   <SolidColorBrush x:Key="SidebarActiveBrush"          Color="#282828"/>
   <SolidColorBrush x:Key="CloseButtonHoverBrush"       Color="#CC1020"/>
+  <SolidColorBrush x:Key="CloseButtonHoverSubtleBrush" Color="#22FF1050"/>
   <SolidColorBrush x:Key="AccentHoverBrush"            Color="{StaticResource PrimaryHoverColor}"/>
 
 </ResourceDictionary>

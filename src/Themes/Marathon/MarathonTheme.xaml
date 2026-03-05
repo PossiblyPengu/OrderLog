@@ -34,7 +34,11 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   CornerRadius="{DynamicResource RadiusSm}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="RootScale"/>
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
           </Border>
@@ -43,9 +47,41 @@
               <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
               <Setter TargetName="Root" Property="Background"  Value="{DynamicResource SurfaceActiveBrush}"/>
               <Setter TargetName="Root" Property="Effect"      Value="{DynamicResource ShadowGlow}"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.03" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.03" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
               <Setter TargetName="Root" Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="0.95" Duration="0:0:0.08"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="0.95" Duration="0:0:0.08"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.38"/>
@@ -60,7 +96,7 @@
   <Style x:Key="MarathonBtnPrimary" TargetType="Button" BasedOn="{StaticResource MarathonBtn}">
     <Setter Property="Background"  Value="{DynamicResource PrimaryBrush}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
-    <Setter Property="Foreground"  Value="#FFFFFF"/>
+    <Setter Property="Foreground"  Value="{DynamicResource TextOnPrimaryBrush}"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
@@ -69,7 +105,11 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   CornerRadius="{DynamicResource RadiusSm}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="RootScale"/>
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
           </Border>
@@ -77,9 +117,41 @@
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="Root" Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
               <Setter TargetName="Root" Property="Effect"     Value="{DynamicResource ShadowNeon}"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.03" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.03" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
               <Setter TargetName="Root" Property="Background" Value="{DynamicResource PrimaryDarkBrush}"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="0.95" Duration="0:0:0.08"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="0.95" Duration="0:0:0.08"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.38"/>
@@ -103,7 +175,11 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="1"
                   CornerRadius="{DynamicResource RadiusSm}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="RootScale"/>
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
           </Border>
@@ -111,6 +187,40 @@
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="Root" Property="Background"  Value="{DynamicResource DangerBrush}"/>
               <Setter Property="Foreground" Value="White"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.03" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.03" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="0.95" Duration="0:0:0.08"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="0.95" Duration="0:0:0.08"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -132,7 +242,11 @@
           <Border x:Name="Root"
                   Background="{TemplateBinding Background}"
                   CornerRadius="{DynamicResource RadiusSm}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="RootScale"/>
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Border>
           <ControlTemplate.Triggers>
@@ -141,6 +255,40 @@
               <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource BorderAccentBrush}"/>
               <Setter TargetName="Root" Property="BorderThickness" Value="1"/>
               <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.1" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.1" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="0.9" Duration="0:0:0.08"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="0.9" Duration="0:0:0.08"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -172,9 +320,13 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   CornerRadius="{DynamicResource RadiusSm}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="BorderScale"/>
+            </Border.RenderTransform>
             <Border.Effect>
-              <DropShadowEffect x:Name="Shadow" BlurRadius="0" ShadowDepth="0" Opacity="0" Color="#00E07A"/>
+              <DropShadowEffect x:Name="Shadow" BlurRadius="0" ShadowDepth="0" Opacity="0" Color="#00FF88"/>
             </Border.Effect>
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -192,6 +344,8 @@
                     <DoubleAnimation Storyboard.TargetName="Shadow"
                                      Storyboard.TargetProperty="Opacity"
                                      To="0.35" Duration="0:0:0.15"/>
+                    <DoubleAnimation Storyboard.TargetName="BorderScale" Storyboard.TargetProperty="ScaleX" To="1.02" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="BorderScale" Storyboard.TargetProperty="ScaleY" To="1.02" Duration="0:0:0.12"/>
                   </Storyboard>
                 </BeginStoryboard>
               </Trigger.EnterActions>
@@ -204,12 +358,30 @@
                     <DoubleAnimation Storyboard.TargetName="Shadow"
                                      Storyboard.TargetProperty="Opacity"
                                      To="0" Duration="0:0:0.15"/>
+                    <DoubleAnimation Storyboard.TargetName="BorderScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="BorderScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
                   </Storyboard>
                 </BeginStoryboard>
               </Trigger.ExitActions>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
               <Setter TargetName="Border" Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="BorderScale" Storyboard.TargetProperty="ScaleX" To="0.96" Duration="0:0:0.08"/>
+                    <DoubleAnimation Storyboard.TargetName="BorderScale" Storyboard.TargetProperty="ScaleY" To="0.96" Duration="0:0:0.08"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="BorderScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="BorderScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -236,13 +408,51 @@
           <Border x:Name="Root"
                   Background="{TemplateBinding Background}"
                   CornerRadius="{DynamicResource RadiusXs}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="RootScale"/>
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="Root" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
               <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="0.92" Duration="0:0:0.08"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="0.92" Duration="0:0:0.08"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -299,7 +509,7 @@
                   CornerRadius="{DynamicResource RadiusXs}"
                   Padding="{TemplateBinding Padding}">
             <Border.Effect>
-              <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.45" Color="#00E07A"/>
+              <DropShadowEffect BlurRadius="10" ShadowDepth="0" Opacity="0.5" Color="#00FF88"/>
             </Border.Effect>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Border>
@@ -327,7 +537,11 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   CornerRadius="{DynamicResource RadiusXs}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="RootScale"/>
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Border>
           <ControlTemplate.Triggers>
@@ -335,6 +549,40 @@
               <Setter TargetName="Root" Property="Background"  Value="{DynamicResource SurfaceHoverBrush}"/>
               <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
               <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.04" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.04" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="0.96" Duration="0:0:0.08"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="0.96" Duration="0:0:0.08"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -382,7 +630,7 @@
                               <Thumb>
                                 <Thumb.Template>
                                   <ControlTemplate TargetType="Thumb">
-                                    <Border CornerRadius="0" Background="{DynamicResource BorderAccentBrush}" Width="4"/>
+                                    <Border CornerRadius="2" Background="{DynamicResource BorderAccentBrush}" Width="4"/>
                                   </ControlTemplate>
                                 </Thumb.Template>
                               </Thumb>
@@ -498,7 +746,11 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   CornerRadius="{DynamicResource RadiusSm}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="RootScale"/>
+            </Border.RenderTransform>
             <TextBlock Text="{TemplateBinding Content}"
                        FontFamily="{TemplateBinding FontFamily}"
                        FontSize="{TemplateBinding FontSize}"
@@ -511,6 +763,40 @@
               <Setter TargetName="Root" Property="Background"  Value="{DynamicResource PrimaryLightBrush}"/>
               <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
               <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.04" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.04" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="0.95" Duration="0:0:0.08"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="0.95" Duration="0:0:0.08"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1"/>
+                    <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

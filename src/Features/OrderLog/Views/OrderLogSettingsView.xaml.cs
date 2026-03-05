@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Serilog;
-using SOUP.Features.OrderLog.ViewModels;
+using OrderLog.Features.ViewModels;
 
-namespace SOUP.Features.OrderLog.Views;
+namespace OrderLog.Features.Views;
 
 public partial class OrderLogSettingsView : UserControl
 {

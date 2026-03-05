@@ -1,8 +1,9 @@
 using System.Windows;
 using System.Windows.Media;
-using SOUP.Services;
+using OrderLog.Helpers;
+using OrderLog.Services;
 
-namespace SOUP.Windows;
+namespace OrderLog.Windows;
 
 /// <summary>
 /// Dialog type determines the icon and color scheme
@@ -29,7 +30,7 @@ public enum DialogButtons
 /// Themed message dialog that matches the application's dark/light theme.
 /// Use this instead of MessageBox for a consistent look.
 /// </summary>
-public partial class MessageDialog : Window
+public partial class MessageDialog : AnimatedWindow
 {
     private MessageDialog()
     {
@@ -110,14 +111,12 @@ public partial class MessageDialog : Window
 
     private void PrimaryButton_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = true;
-        Close();
+        BeginCloseAnimation(true);
     }
 
     private void SecondaryButton_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = false;
-        Close();
+        BeginCloseAnimation(false);
     }
 
     /// <summary>

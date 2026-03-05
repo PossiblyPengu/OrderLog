@@ -1,9 +1,9 @@
 using System.Windows;
 using System.Windows.Input;
-using SOUP.Features.OrderLog.ViewModels;
-using SOUP.Features.OrderLog.Models;
+using OrderLog.Features.ViewModels;
+using OrderLog.Features.Models;
 
-namespace SOUP.Features.OrderLog.Helpers;
+namespace OrderLog.Features.Helpers;
 
 /// <summary>
 /// Manages keyboard shortcuts for the Order Log widget

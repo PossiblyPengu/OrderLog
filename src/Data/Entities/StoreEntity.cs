@@ -1,4 +1,4 @@
-namespace SOUP.Data.Entities;
+namespace OrderLog.Data.Entities;
 
 /// <summary>
 /// Entity for store entries (store code to name/rank mapping)

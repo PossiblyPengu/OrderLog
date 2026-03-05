@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 
-namespace SOUP.Features.OrderLog.Services;
+namespace OrderLog.Features.Services;
 
 /// <summary>
 /// Persists group expand/collapse states for the orders UI.

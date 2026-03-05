@@ -4,10 +4,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using OrderLog.Helpers;
 
-namespace SOUP.Features.OrderLog.Views;
+namespace OrderLog.Features.Views;
 
-public partial class OrderColorPickerWindow : Window
+public partial class OrderColorPickerWindow : AnimatedWindow
 {
     public string SelectedColor { get; private set; }
 
@@ -133,16 +134,20 @@ public partial class OrderColorPickerWindow : Window
         }
     }
 
+    private void CustomColorPreview_Click(object sender, RoutedEventArgs e)
+    {
+        HexBox.Focus();
+        HexBox.SelectAll();
+    }
+
     private void Apply_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = true;
-        Close();
+        BeginCloseAnimation(true);
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = false;
-        Close();
+        BeginCloseAnimation(false);
     }
 
     private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
@@ -150,4 +155,5 @@ public partial class OrderColorPickerWindow : Window
         if (e.LeftButton == MouseButtonState.Pressed)
             DragMove();
     }
+
 }

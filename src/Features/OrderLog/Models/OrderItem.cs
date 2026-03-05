@@ -2,7 +2,7 @@ using System;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SOUP.Features.OrderLog.Models;
+namespace OrderLog.Features.Models;
 
 public enum NoteType
 {
@@ -89,6 +89,12 @@ public partial class OrderItem : ObservableObject
     [ObservableProperty]
     private Guid? _linkedGroupId;
 
+    partial void OnLinkedGroupIdChanged(Guid? value)
+    {
+        if (value == Guid.Empty)
+            _linkedGroupId = null;
+    }
+
     /// <summary>
     /// Number of other items linked to this item (excluding itself).
     /// Updated by the ViewModel when linked groups change.
@@ -99,7 +105,7 @@ public partial class OrderItem : ObservableObject
     [ObservableProperty]
     private bool _isArchived = false;
 
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? OnDeckAt { get; set; }
     public DateTime? StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
@@ -156,31 +162,17 @@ public partial class OrderItem : ObservableObject
     [JsonIgnore]
     public TimeSpan TimeInProgress
     {
-        get
-        {
-            // Current lap time only — count only overlap with work hours
-            if (StartedAt == null) return TimeSpan.Zero;
-            if (Status == OrderStatus.InProgress)
-            {
-                return CalculateWorkTimeBetween(StartedAt.Value, DateTime.Now);
-            }
-            return TimeSpan.Zero;
-        }
+        get => StartedAt != null && Status == OrderStatus.InProgress
+            ? CalculateWorkTimeBetween(StartedAt.Value, DateTime.Now)
+            : TimeSpan.Zero;
     }
 
     [JsonIgnore]
     public TimeSpan TimeOnDeck
     {
-        get
-        {
-            // If currently OnDeck, calculate live duration
-            if (Status == OrderStatus.OnDeck && OnDeckAt != null)
-            {
-                return DateTime.Now - OnDeckAt.Value;
-            }
-            // Otherwise, return the stored duration from when it was OnDeck
-            return OnDeckDuration;
-        }
+        get => Status == OrderStatus.OnDeck && OnDeckAt != null
+            ? DateTime.Now - OnDeckAt.Value
+            : OnDeckDuration;
     }
 
     [JsonIgnore]
@@ -189,8 +181,7 @@ public partial class OrderItem : ObservableObject
         get
         {
             var time = TimeOnDeck;
-            if (time == TimeSpan.Zero) return string.Empty;
-            return FormatTimeSpan(time);
+            return time == TimeSpan.Zero ? string.Empty : FormatTimeSpan(time);
         }
     }
 
@@ -214,19 +205,10 @@ public partial class OrderItem : ObservableObject
             var current = TimeInProgress;
             var total = TotalTimeInProgress;
 
-            // If there are previous laps, show "current (total)"
+            // If there are previous laps and currently running, show "current (total)"
             if (HasPreviousLaps && Status == OrderStatus.InProgress)
-            {
                 return $"{FormatTimeSpan(current)} ({FormatTimeSpan(total)})";
-            }
 
-            // For Done status with laps, just show total
-            if (HasPreviousLaps && Status == OrderStatus.Done)
-            {
-                return FormatTimeSpan(total);
-            }
-
-            // No laps, just show current/total
             return FormatTimeSpan(total);
         }
     }
@@ -273,8 +255,13 @@ public partial class OrderItem : ObservableObject
         }
     }
 
+    private string? _lastOnDeckDisplay;
+
     public void RefreshTimeOnDeck()
     {
+        var currentDisplay = TimeOnDeckDisplay;
+        if (currentDisplay == _lastOnDeckDisplay) return;
+        _lastOnDeckDisplay = currentDisplay;
         OnPropertyChanged(nameof(TimeOnDeck));
         OnPropertyChanged(nameof(TimeOnDeckDisplay));
     }
@@ -474,6 +461,13 @@ public partial class OrderItem : ObservableObject
 
         while (day <= lastDay)
         {
+            // Skip weekends
+            if (day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
+            {
+                day = day.AddDays(1);
+                continue;
+            }
+
             var dayWorkStart = day + workStart;
             var dayWorkEnd = day + workEnd;
 

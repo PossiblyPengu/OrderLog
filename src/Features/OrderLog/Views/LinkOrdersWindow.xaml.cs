@@ -5,12 +5,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using SOUP.Features.OrderLog.Models;
-using SOUP.Features.OrderLog.ViewModels;
+using OrderLog.Features.Models;
+using OrderLog.Features.ViewModels;
+using OrderLog.Helpers;
 
-namespace SOUP.Features.OrderLog.Views;
+namespace OrderLog.Features.Views;
 
-public partial class LinkOrdersWindow : Window
+public partial class LinkOrdersWindow : AnimatedWindow
 {
     private readonly OrderItem _source;
     private readonly OrderLogViewModel _vm;
@@ -46,8 +47,7 @@ public partial class LinkOrdersWindow : Window
 
     private void CloseBtn_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = false;
-        Close();
+        BeginCloseAnimation(false);
     }
     private void ApplyFilters(object sender, FilterEventArgs e)
     {
@@ -126,8 +126,7 @@ public partial class LinkOrdersWindow : Window
 
     private void CancelBtn_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = false;
-        Close();
+        BeginCloseAnimation(false);
     }
 
     private void LinkBtn_Click(object sender, RoutedEventArgs e)
@@ -188,7 +187,7 @@ public partial class LinkOrdersWindow : Window
             MessageBoxButton.OK,
             MessageBoxImage.Information);
 
-        DialogResult = true;
-        Close();
+        BeginCloseAnimation(true);
     }
+
 }

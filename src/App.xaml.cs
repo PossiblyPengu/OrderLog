@@ -6,12 +6,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
-using SOUP.Features.OrderLog.Services;
-using SOUP.Features.OrderLog.ViewModels;
-using SOUP.Services;
-using SOUP.Windows;
+using OrderLog.Features.Services;
+using OrderLog.Features.ViewModels;
+using OrderLog.Services;
+using OrderLog.Windows;
 
-namespace SOUP;
+namespace OrderLog;
 
 public partial class App : Application
 {

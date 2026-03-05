@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace SOUP.Helpers;
+namespace OrderLog.Helpers;
 
 /// <summary>
 /// Contains P/Invoke declarations for native Windows API methods.

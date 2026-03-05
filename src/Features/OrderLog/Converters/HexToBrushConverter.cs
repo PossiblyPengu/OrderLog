@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace SOUP.Features.OrderLog.Converters;
+namespace OrderLog.Features.Converters;
 
 public class HexToBrushConverter : IValueConverter
 {

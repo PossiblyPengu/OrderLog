@@ -7,9 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
-using SOUP.Features.OrderLog.Models;
+using OrderLog.Features.Models;
 
-namespace SOUP.Features.OrderLog.Services;
+namespace OrderLog.Features.Services;
 
 /// <summary>
 /// SQLite-backed repository for orders persistence.
@@ -182,17 +182,16 @@ public sealed class OrderLogRepository : IOrderLogService
                         }
                     }
 
-                    foreach (var id in idsToDelete)
-                    {
-                        using var cmd = connection.CreateCommand();
-                        cmd.Transaction = transaction;
-                        cmd.CommandText = "DELETE FROM Orders WHERE Id = @Id";
-                        cmd.Parameters.AddWithValue("@Id", id.ToString());
-                        cmd.ExecuteNonQuery();
-                    }
-
                     if (idsToDelete.Count > 0)
                     {
+                        // Build a single DELETE ... IN (...) statement instead of one per row
+                        var paramNames = idsToDelete.Select((_, i) => $"@id{i}").ToArray();
+                        using var cmd = connection.CreateCommand();
+                        cmd.Transaction = transaction;
+                        cmd.CommandText = $"DELETE FROM Orders WHERE Id IN ({string.Join(", ", paramNames)})";
+                        for (int i = 0; i < idsToDelete.Count; i++)
+                            cmd.Parameters.AddWithValue(paramNames[i], idsToDelete[i].ToString());
+                        cmd.ExecuteNonQuery();
                         _logger?.LogDebug("Deleted {Count} obsolete records", idsToDelete.Count);
                     }
                 }

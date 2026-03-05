@@ -1,4 +1,4 @@
-namespace SOUP.Core;
+namespace OrderLog.Core;
 
 /// <summary>
 /// Application version information.

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -7,19 +8,23 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using SOUP.Features.OrderLog.ViewModels;
-using SOUP.Services;
-using SOUP.Helpers;
+using OrderLog.Features.ViewModels;
+using OrderLog.Services;
+using OrderLog.Helpers;
 
-namespace SOUP.Windows;
+namespace OrderLog.Windows;
 
-public partial class OrderLogWidgetWindow : Window
+public partial class OrderLogWidgetWindow : AnimatedWindow
 {
     private readonly OrderLogViewModel _viewModel;
     private readonly IServiceProvider _serviceProvider;
+
+    protected override double CloseAnimDurationMs => 180.0;
+    protected override double CloseAnimScale => 0.97;
 
     // AppBar state
     private bool _isAppBarRegistered;
@@ -98,7 +103,6 @@ public partial class OrderLogWidgetWindow : Window
         WidgetView.DataContext = _viewModel;
 
         Loaded += OnLoaded;
-        Closing += OnClosing;
         SourceInitialized += OnSourceInitialized;
         StateChanged += OnStateChanged;
 
@@ -247,8 +251,11 @@ public partial class OrderLogWidgetWindow : Window
         }
     }
 
-    private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
+    protected override void OnClosing(CancelEventArgs e)
     {
+        base.OnClosing(e);
+        if (e.Cancel) return;
+
         ClearTaskbarOverlay();
 
         try
@@ -419,6 +426,7 @@ public partial class OrderLogWidgetWindow : Window
 
         _currentEdge = edge;
         PositionAppBar();
+        WidgetView.ApplyDockSide(edge == AppBarEdge.Left);
 
         Log.Debug("Docked to {Edge}", edge);
     }
@@ -473,7 +481,7 @@ public partial class OrderLogWidgetWindow : Window
         {
             try
             {
-                Features.OrderLog.Converters.StatusToColorConverter.InvalidateCache();
+                Features.Converters.StatusToColorConverter.InvalidateCache();
                 ApplyThemeResources(isDarkMode);
             }
             catch (Exception ex)
