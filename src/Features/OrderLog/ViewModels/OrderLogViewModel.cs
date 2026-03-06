@@ -174,6 +174,51 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _autoColorByVendor = true;
 
+    // ─── Theme proxy properties ─────────────────────────────────────────────
+    // Delegate to ThemeService so the settings view can bind directly to the VM.
+
+    /// <summary>Gets or sets whether dark mode is active (live proxy to ThemeService).</summary>
+    public bool IsDarkMode
+    {
+        get => OrderLog.Services.ThemeService.Instance.IsDarkMode;
+        set
+        {
+            if (OrderLog.Services.ThemeService.Instance.IsDarkMode != value)
+            {
+                OrderLog.Services.ThemeService.Instance.SetTheme(value);
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>Gets or sets the active shape profile (live proxy to ThemeService).</summary>
+    public OrderLog.Services.ShapeVariant ShapeVariant
+    {
+        get => OrderLog.Services.ThemeService.Instance.ShapeVariant;
+        set
+        {
+            if (OrderLog.Services.ThemeService.Instance.ShapeVariant != value)
+            {
+                OrderLog.Services.ThemeService.Instance.SetShapeVariant(value);
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>Gets or sets the active colour palette (live proxy to ThemeService).</summary>
+    public OrderLog.Services.ColourTheme ColourTheme
+    {
+        get => OrderLog.Services.ThemeService.Instance.ColourTheme;
+        set
+        {
+            if (OrderLog.Services.ThemeService.Instance.ColourTheme != value)
+            {
+                OrderLog.Services.ThemeService.Instance.SetColourTheme(value);
+                OnPropertyChanged();
+            }
+        }
+    }
+
     // Navigation properties for enhanced navigation
     [ObservableProperty]
     private OrderItem? _currentNavigationItem = null;

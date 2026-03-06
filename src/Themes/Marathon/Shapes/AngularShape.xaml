@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SHAPE PROFILE — Angular (Marathon default)
+       Aggressive, military-industrial aesthetic.
+       Small radii · Hard edges · Tactical feel.
+  ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- ─── Semantic scale ───────────────────────────────────────────────── -->
+  <CornerRadius x:Key="RadiusXs">2</CornerRadius>
+  <CornerRadius x:Key="RadiusSm">3</CornerRadius>
+  <CornerRadius x:Key="RadiusMd">4</CornerRadius>
+  <CornerRadius x:Key="RadiusLg">6</CornerRadius>
+
+  <!-- ─── Compat aliases ───────────────────────────────────────────────── -->
+  <CornerRadius x:Key="XSmallCornerRadius">2</CornerRadius>
+  <CornerRadius x:Key="SmallCornerRadius">3</CornerRadius>
+  <CornerRadius x:Key="MediumCornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="LargeCornerRadius">6</CornerRadius>
+
+  <!-- ─── Component-specific ───────────────────────────────────────────── -->
+  <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="CardCornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="NavItemCornerRadius">3</CornerRadius>
+  <CornerRadius x:Key="BadgeCornerRadius">3</CornerRadius>
+  <CornerRadius x:Key="OverlayCornerRadius">6</CornerRadius>
+
+  <!-- ─── Window chrome ────────────────────────────────────────────────── -->
+  <CornerRadius x:Key="WindowCornerRadius">6</CornerRadius>
+  <CornerRadius x:Key="TitleBarCornerRadius">6,6,0,0</CornerRadius>
+  <CornerRadius x:Key="SidebarCornerRadius">0,0,0,6</CornerRadius>
+
+  <!-- ─── Decorative ───────────────────────────────────────────────────── -->
+  <CornerRadius x:Key="IconCornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="AppLogoCornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="SplashIconCornerRadius">8</CornerRadius>
+
+</ResourceDictionary>

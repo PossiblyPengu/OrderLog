@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       COLOUR PALETTE — Cyan · Light Mode
+       Teal #0088AA — deep cyan on white canvas
+  ═══════════════════════════════════════════════════════════════════════ -->
+
+  <Color x:Key="PrimaryColor">#0088AA</Color>
+  <Color x:Key="PrimaryHoverColor">#00AACC</Color>
+  <Color x:Key="PrimaryDarkColor">#005A75</Color>
+  <Color x:Key="PrimaryLightColor_Alpha">#180088AA</Color>
+  <Color x:Key="AccentColor">#0088AA</Color>
+  <Color x:Key="AccentColorPrimary">#0088AA</Color>
+  <Color x:Key="BorderAccentColor">#800088AA</Color>
+  <Color x:Key="TabActiveBgColor">#180088AA</Color>
+  <Color x:Key="TextLinkColor">#0088AA</Color>
+
+  <SolidColorBrush x:Key="PrimaryBrush"             Color="#0088AA"/>
+  <SolidColorBrush x:Key="PrimaryHoverBrush"        Color="#00AACC"/>
+  <SolidColorBrush x:Key="PrimaryDarkBrush"         Color="#005A75"/>
+  <SolidColorBrush x:Key="PrimaryLightBrush"        Color="#180088AA"/>
+  <SolidColorBrush x:Key="PrimaryPressedBrush"      Color="#300088AA"/>
+  <SolidColorBrush x:Key="AccentBrush"              Color="#0088AA"/>
+  <SolidColorBrush x:Key="AccentDarkBrush"          Color="#005A75"/>
+  <SolidColorBrush x:Key="AccentLightBrush"         Color="#00AACC"/>
+  <SolidColorBrush x:Key="AccentHoverBrush"         Color="#00AACC"/>
+  <SolidColorBrush x:Key="BorderAccentBrush"        Color="#800088AA"/>
+  <SolidColorBrush x:Key="FocusStrokeOuterBrush"    Color="#0088AA"/>
+  <SolidColorBrush x:Key="TextLinkBrush"            Color="#0088AA"/>
+  <SolidColorBrush x:Key="HighVisibilityCaretBrush" Color="#0088AA"/>
+  <SolidColorBrush x:Key="TextOnAccentBrush"        Color="#FFFFFF"/>
+
+  <DropShadowEffect x:Key="ShadowCardHover"      BlurRadius="18" ShadowDepth="0" Opacity="0.45" Color="#0088AA"/>
+  <DropShadowEffect x:Key="ShadowNeon"           BlurRadius="20" ShadowDepth="0" Opacity="0.50" Color="#0088AA"/>
+  <DropShadowEffect x:Key="ShadowGlow"           BlurRadius="16" ShadowDepth="0" Opacity="0.40" Color="#0088AA"/>
+  <DropShadowEffect x:Key="ShadowFocus"          BlurRadius="12" ShadowDepth="0" Opacity="0.50" Color="#0088AA"/>
+  <DropShadowEffect x:Key="WidgetCardHoverShadow" BlurRadius="18" ShadowDepth="0" Opacity="0.45" Color="#0088AA"/>
+  <DropShadowEffect x:Key="WidgetButtonShadow"   BlurRadius="12" ShadowDepth="0" Opacity="0.30" Color="#0088AA"/>
+  <DropShadowEffect x:Key="WidgetAccentGlow"     BlurRadius="20" ShadowDepth="0" Opacity="0.55" Color="#0088AA"/>
+
+</ResourceDictionary>

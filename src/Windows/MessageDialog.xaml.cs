@@ -47,15 +47,22 @@ public partial class MessageDialog : AnimatedWindow
 
     private void ApplyTheme()
     {
-        var isDarkMode = ThemeService.Instance.IsDarkMode;
-        var themeFile = isDarkMode
+        var svc = ThemeService.Instance;
+        var themeFile = svc.IsDarkMode
             ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
             : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
-        Resources.MergedDictionaries.Clear();
-        Resources.MergedDictionaries.Add(new ResourceDictionary
+        var shapeFile = svc.ShapeVariant switch
         {
-            Source = new Uri(themeFile)
-        });
+            ShapeVariant.Rounded => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/RoundedShape.xaml",
+            ShapeVariant.Sharp   => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/SharpShape.xaml",
+            _                    => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/AngularShape.xaml",
+        };
+        Resources.MergedDictionaries.Clear();
+        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(themeFile) });
+        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(shapeFile) });
+        var colourUri = ThemeService.GetColourPaletteUri(svc.ColourTheme, svc.IsDarkMode);
+        if (colourUri != null)
+            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(colourUri) });
     }
 
     private void Configure(string message, string title, DialogType type, DialogButtons buttons)

@@ -460,14 +460,25 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
     {
         Resources.MergedDictionaries.Clear();
 
-        // Marathon 2026 design system — dark or light variant
+        // Marathon 2026 design system — dark or light colour variant
         var themeFile = isDarkMode
             ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
             : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
-        Resources.MergedDictionaries.Add(new ResourceDictionary
+        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(themeFile) });
+
+        // Shape profile overlay
+        var shapeFile = OrderLog.Services.ThemeService.Instance.ShapeVariant switch
         {
-            Source = new Uri(themeFile)
-        });
+            OrderLog.Services.ShapeVariant.Rounded => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/RoundedShape.xaml",
+            OrderLog.Services.ShapeVariant.Sharp   => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/SharpShape.xaml",
+            _                                      => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/AngularShape.xaml",
+        };
+        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(shapeFile) });
+
+        // Colour palette overlay
+        var colourUri = OrderLog.Services.ThemeService.GetColourPaletteUri(OrderLog.Services.ThemeService.Instance.ColourTheme, isDarkMode);
+        if (colourUri != null)
+            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(colourUri) });
 
         if (_viewModel.CardFontSize > 0)
         {

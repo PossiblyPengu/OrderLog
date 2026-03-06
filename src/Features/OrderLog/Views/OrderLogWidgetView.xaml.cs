@@ -1035,8 +1035,24 @@ public partial class OrderLogWidgetView : UserControl
             var widgetUri = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml");
             var headerUri = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/ModernHeaderStyles.xaml");
 
+            var shapeFile = OrderLog.Services.ThemeService.Instance.ShapeVariant switch
+            {
+                OrderLog.Services.ShapeVariant.Rounded => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/RoundedShape.xaml",
+                OrderLog.Services.ShapeVariant.Sharp   => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/SharpShape.xaml",
+                _                                      => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/AngularShape.xaml",
+            };
+            var shapeUri = new Uri(shapeFile);
+
             Resources.MergedDictionaries.Clear();
             Resources.MergedDictionaries.Add(new ResourceDictionary { Source = marathonTheme });
+            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = shapeUri });
+
+            // Colour palette overlay
+            var colourPaletteUri = OrderLog.Services.ThemeService.GetColourPaletteUri(
+                OrderLog.Services.ThemeService.Instance.ColourTheme, isDarkMode);
+            if (colourPaletteUri != null)
+                Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(colourPaletteUri) });
+
             Resources.MergedDictionaries.Add(new ResourceDictionary { Source = widgetUri });
             Resources.MergedDictionaries.Add(new ResourceDictionary { Source = headerUri });
 
@@ -1056,6 +1072,9 @@ public partial class OrderLogWidgetView : UserControl
                     {
                         appRes.MergedDictionaries.Clear();
                         appRes.MergedDictionaries.Add(new ResourceDictionary { Source = marathonTheme });
+                        appRes.MergedDictionaries.Add(new ResourceDictionary { Source = shapeUri });
+                        if (colourPaletteUri != null)
+                            appRes.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(colourPaletteUri) });
                     }
                 }
             }

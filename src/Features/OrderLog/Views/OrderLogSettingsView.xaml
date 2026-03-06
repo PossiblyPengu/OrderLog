@@ -10,6 +10,33 @@
         <converters:HexToBrushConverter x:Key="HexToBrush"/>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
+        <!-- Theme option button style -->
+        <Style x:Key="ThemeOptionButton" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource RadiusSm}"
+                                Padding="10,8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceActiveBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Section Header Style -->
         <Style x:Key="SectionHeader" TargetType="TextBlock">
             <Setter Property="FontSize" Value="13"/>
@@ -172,7 +199,190 @@
             <!-- Appearance Section -->
             <TextBlock Text="APPEARANCE" Style="{StaticResource SectionHeader}"/>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <!-- ─── Colour Mode ────────────────────────────────────────────── -->
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Dark Mode" Style="{StaticResource SettingLabel}"/>
+                        <TextBlock Text="Switch between dark and light interface" Style="{StaticResource SettingDescription}"/>
+                    </StackPanel>
+                    <CheckBox Grid.Column="1" Style="{StaticResource ModernToggle}" VerticalAlignment="Center"
+                              IsChecked="{Binding IsDarkMode, Mode=TwoWay}"/>
+                </Grid>
+            </Border>
+
+            <!-- ─── Shape Profile ──────────────────────────────────────────── -->
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="Shape Profile" Style="{StaticResource SettingLabel}" Margin="0,0,0,4"/>
+                    <TextBlock Text="Controls the corner roundness of UI elements" Style="{StaticResource SettingDescription}" Margin="0,0,0,12"/>
+                    <UniformGrid Columns="3">
+
+                        <!-- Angular -->
+                        <Button x:Name="ShapeAngularBtn"
+                                Style="{StaticResource ThemeOptionButton}"
+                                Margin="0,0,4,0"
+                                Click="ShapeAngular_Click"
+                                ToolTip="Angular — small radii, tactical feel">
+                            <StackPanel>
+                                <Border Width="48" Height="28" Background="{DynamicResource SurfaceBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                        CornerRadius="3" HorizontalAlignment="Center">
+                                    <Grid Margin="4">
+                                        <Border Width="14" Height="8" Background="{DynamicResource AccentBrush}"
+                                                CornerRadius="1" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <Border Height="3" Background="{DynamicResource BorderBrush}"
+                                                CornerRadius="0" VerticalAlignment="Bottom"/>
+                                    </Grid>
+                                </Border>
+                                <TextBlock Text="Angular" FontSize="10" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Rounded -->
+                        <Button x:Name="ShapeRoundedBtn"
+                                Style="{StaticResource ThemeOptionButton}"
+                                Margin="2,0,2,0"
+                                Click="ShapeRounded_Click"
+                                ToolTip="Rounded — generous radii, Fluent/WinUI feel">
+                            <StackPanel>
+                                <Border Width="48" Height="28" Background="{DynamicResource SurfaceBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                        CornerRadius="8" HorizontalAlignment="Center">
+                                    <Grid Margin="5">
+                                        <Border Width="14" Height="8" Background="{DynamicResource AccentBrush}"
+                                                CornerRadius="4" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <Border Height="3" Background="{DynamicResource BorderBrush}"
+                                                CornerRadius="2" VerticalAlignment="Bottom"/>
+                                    </Grid>
+                                </Border>
+                                <TextBlock Text="Rounded" FontSize="10" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Sharp -->
+                        <Button x:Name="ShapeSharpBtn"
+                                Style="{StaticResource ThemeOptionButton}"
+                                Margin="4,0,0,0"
+                                Click="ShapeSharp_Click"
+                                ToolTip="Sharp — zero radii, brutalist feel">
+                            <StackPanel>
+                                <Border Width="48" Height="28" Background="{DynamicResource SurfaceBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                        CornerRadius="0" HorizontalAlignment="Center">
+                                    <Grid Margin="4">
+                                        <Border Width="14" Height="8" Background="{DynamicResource AccentBrush}"
+                                                CornerRadius="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <Border Height="3" Background="{DynamicResource BorderBrush}"
+                                                CornerRadius="0" VerticalAlignment="Bottom"/>
+                                    </Grid>
+                                </Border>
+                                <TextBlock Text="Sharp" FontSize="10" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- Colour Palette -->
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="Colour Palette" Style="{StaticResource SettingLabel}"/>
+                    <TextBlock Text="Choose the accent colour used across the app" Style="{StaticResource SettingDescription}" Margin="0,2,0,12"/>
+                    <UniformGrid Rows="1" HorizontalAlignment="Left">
+
+                        <!-- Neon -->
+                        <Button x:Name="ColourNeonBtn"
+                                Style="{StaticResource ThemeOptionButton}"
+                                Margin="0,0,4,0"
+                                Click="ColourNeon_Click"
+                                ToolTip="Neon — default Marathon green">
+                            <StackPanel>
+                                <Ellipse Width="28" Height="28" Fill="#00FF88" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Neon" FontSize="10" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Blue -->
+                        <Button x:Name="ColourBlueBtn"
+                                Style="{StaticResource ThemeOptionButton}"
+                                Margin="4,0,4,0"
+                                Click="ColourBlue_Click"
+                                ToolTip="Blue — electric WinUI accent">
+                            <StackPanel>
+                                <Ellipse Width="28" Height="28" Fill="#60CDFF" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Blue" FontSize="10" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Amber -->
+                        <Button x:Name="ColourAmberBtn"
+                                Style="{StaticResource ThemeOptionButton}"
+                                Margin="4,0,4,0"
+                                Click="ColourAmber_Click"
+                                ToolTip="Amber — solar scanner yellow">
+                            <StackPanel>
+                                <Ellipse Width="28" Height="28" Fill="#FFD000" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Amber" FontSize="10" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Red -->
+                        <Button x:Name="ColourRedBtn"
+                                Style="{StaticResource ThemeOptionButton}"
+                                Margin="4,0,4,0"
+                                Click="ColourRed_Click"
+                                ToolTip="Red — critical alert accent">
+                            <StackPanel>
+                                <Ellipse Width="28" Height="28" Fill="#FF1050" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Red" FontSize="10" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Purple -->
+                        <Button x:Name="ColourPurpleBtn"
+                                Style="{StaticResource ThemeOptionButton}"
+                                Margin="4,0,4,0"
+                                Click="ColourPurple_Click"
+                                ToolTip="Purple — aeon violet plasma">
+                            <StackPanel>
+                                <Ellipse Width="28" Height="28" Fill="#C060FF" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Purple" FontSize="10" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Cyan -->
+                        <Button x:Name="ColourCyanBtn"
+                                Style="{StaticResource ThemeOptionButton}"
+                                Margin="4,0,0,0"
+                                Click="ColourCyan_Click"
+                                ToolTip="Cyan — cryo ice scanner">
+                            <StackPanel>
+                                <Ellipse Width="28" Height="28" Fill="#00E5FF" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Cyan" FontSize="10" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- Card Font Size -->
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -199,7 +409,7 @@
             <!-- Behavior Section -->
             <TextBlock Text="BEHAVIOR" Style="{StaticResource SectionHeader}"/>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -214,7 +424,7 @@
                 </Grid>
             </Border>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -229,7 +439,7 @@
                 </Grid>
             </Border>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -244,7 +454,7 @@
                 </Grid>
             </Border>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -268,7 +478,7 @@
                 </Grid>
             </Border>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -283,7 +493,7 @@
                 </Grid>
             </Border>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -301,7 +511,7 @@
             <!-- Default Colors Section -->
             <TextBlock Text="DEFAULT COLORS" Style="{StaticResource SectionHeader}"/>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -318,7 +528,7 @@
                 </Grid>
             </Border>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -338,7 +548,7 @@
             <!-- System Section -->
             <TextBlock Text="SYSTEM" Style="{StaticResource SectionHeader}"/>
 
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8">
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
