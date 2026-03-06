@@ -91,7 +91,7 @@
             <Border Background="{DynamicResource SurfaceBrush}"
                     BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
-                    CornerRadius="6"
+                    CornerRadius="{DynamicResource RadiusLg}"
                     Margin="4"
                     Padding="14,12">
                 <Grid>
@@ -105,7 +105,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Status Chip -->
-                    <Border Grid.Row="0" Grid.Column="0" CornerRadius="10" Padding="8,4" HorizontalAlignment="Left" Margin="0,0,0,8">
+                    <Border Grid.Row="0" Grid.Column="0" CornerRadius="{DynamicResource BadgeCornerRadius}" Padding="8,4" HorizontalAlignment="Left" Margin="0,0,0,8">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
@@ -176,7 +176,7 @@
                     <!-- Linked Group Badge -->
                     <Border Grid.Row="0" Grid.Column="1"
                             Background="{DynamicResource AccentBrush}"
-                            CornerRadius="10"
+                            CornerRadius="{DynamicResource BadgeCornerRadius}"
                             Padding="8,4"
                             Visibility="{Binding LinkedGroupId, Converter={StaticResource NullToVisibilityConverter}}">
                         <TextBlock Text="🔗 Linked" FontSize="10" Foreground="{DynamicResource TextOnPrimaryBrush}"/>
@@ -202,7 +202,7 @@
             Background="{DynamicResource BackgroundBrush}" 
             BorderBrush="{DynamicResource BorderBrush}" 
             BorderThickness="1" 
-            CornerRadius="12"
+            CornerRadius="{DynamicResource OverlayCornerRadius}"
             RenderTransformOrigin="0.5,0.5">
         <Border.RenderTransform>
             <ScaleTransform/>
@@ -219,7 +219,7 @@
             <!-- Custom Title Bar -->
             <Border Grid.Row="0" 
                     Background="{DynamicResource SurfaceBrush}" 
-                    CornerRadius="12,12,0,0"
+                    CornerRadius="{DynamicResource OverlayTitleCornerRadius}"
                     MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid Margin="16,12">
                     <TextBlock Text="🔗 Link Orders" 
@@ -241,7 +241,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}">
                                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Border>
                                         </ControlTemplate>
@@ -291,7 +291,7 @@
                 Background="{DynamicResource SurfaceBrush}" 
                 BorderBrush="{DynamicResource BorderBrush}" 
                 BorderThickness="1" 
-                CornerRadius="6" 
+                CornerRadius="{DynamicResource RadiusLg}" 
                 Margin="0,0,0,8">
             <TextBox x:Name="SearchBox"
                      Padding="8,8"
@@ -332,7 +332,7 @@
                       Foreground="{DynamicResource TextSecondaryBrush}"
                       Margin="0,0,16,0"
                       Style="{StaticResource ModernCheckboxStyle}"/>
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="4" Padding="8,3"
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource RadiusMd}" Padding="8,3"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                 <TextBlock Text="{Binding ElementName=OrdersList, Path=Items.Count, StringFormat='{}{0} orders'}"
                            VerticalAlignment="Center"
@@ -348,7 +348,7 @@
                 Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="1"
-                CornerRadius="6"
+                CornerRadius="{DynamicResource RadiusLg}"
                 Margin="0,0,8,0">
             <ListBox x:Name="OrdersList"
                      SelectionMode="Extended"
@@ -370,7 +370,7 @@
                                     <Border Background="{TemplateBinding Background}" 
                                             BorderBrush="{DynamicResource AccentBrush}"
                                             BorderThickness="0"
-                                            CornerRadius="6"
+                                            CornerRadius="{DynamicResource RadiusLg}"
                                             x:Name="Bd">
                                         <ContentPresenter/>
                                     </Border>
@@ -397,7 +397,7 @@
                 Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="1"
-                CornerRadius="6"
+                CornerRadius="{DynamicResource RadiusLg}"
                 Padding="12"
                 Margin="8,0,0,0">
             <Grid>
@@ -488,7 +488,7 @@
                                     <Border Background="{TemplateBinding Background}" 
                                             BorderBrush="{TemplateBinding BorderBrush}"
                                             BorderThickness="1"
-                                            CornerRadius="6"
+                                            CornerRadius="{DynamicResource RadiusLg}"
                                             Padding="12,6">
                                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
@@ -517,7 +517,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}" 
-                                            CornerRadius="6"
+                                            CornerRadius="{DynamicResource RadiusLg}"
                                             Padding="12,6">
                                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>

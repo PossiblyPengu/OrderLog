@@ -31,7 +31,7 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="3"
+                            CornerRadius="{DynamicResource RadiusSm}"
                             Padding="{TemplateBinding Padding}">
                         <Border.Effect>
                             <DropShadowEffect x:Name="Glow" BlurRadius="0" ShadowDepth="0"
@@ -98,7 +98,7 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="0"
-                            CornerRadius="3"
+                            CornerRadius="{DynamicResource RadiusSm}"
                             Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
@@ -129,7 +129,7 @@
         </Setter>
         <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius"    Value="3"/>
+        <Setter Property="CornerRadius"    Value="{DynamicResource RadiusSm}"/>
         <Setter Property="Height"          Value="38"/>
         <Setter Property="Effect">
             <Setter.Value>

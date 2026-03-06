@@ -30,7 +30,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bd"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="8"
+                                CornerRadius="{DynamicResource RadiusMd}"
                                 BorderThickness="2"
                                 BorderBrush="Transparent"/>
                         <ControlTemplate.Triggers>
@@ -50,7 +50,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Slider">
                         <Grid>
-                            <Border Height="4" CornerRadius="2" Background="{DynamicResource SurfaceHoverBrush}" VerticalAlignment="Center"/>
+                            <Border Height="4" CornerRadius="{DynamicResource RadiusXs}" Background="{DynamicResource SurfaceHoverBrush}" VerticalAlignment="Center"/>
                             <Track x:Name="PART_Track">
                                 <Track.DecreaseRepeatButton>
                                     <RepeatButton Command="Slider.DecreaseLarge" Opacity="0"/>
@@ -82,7 +82,7 @@
 
     <Border x:Name="RootBorder"
             Background="{DynamicResource BackgroundBrush}"
-            CornerRadius="12"
+            CornerRadius="{DynamicResource OverlayCornerRadius}"
             BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
             RenderTransformOrigin="0.5,0.5">
@@ -101,7 +101,7 @@
 
             <!-- Title Bar -->
             <Border Background="{DynamicResource SurfaceBrush}"
-                    CornerRadius="12,12,0,0"
+                    CornerRadius="{DynamicResource OverlayTitleCornerRadius}"
                     Padding="20,14"
                     MouseLeftButtonDown="TitleBar_MouseDown">
                 <Grid>
@@ -218,7 +218,7 @@
                                         <ControlTemplate TargetType="Button">
                                             <Grid Width="48" Height="48">
                                                 <ContentPresenter/>
-                                                <Border x:Name="HoverOverlay" CornerRadius="6"
+                                                <Border x:Name="HoverOverlay" CornerRadius="{DynamicResource RadiusLg}"
                                                         Background="#30000000" Opacity="0">
                                                     <TextBlock Text="&#x270E;" FontSize="18"
                                                                HorizontalAlignment="Center"
@@ -237,7 +237,7 @@
                             </Style>
                         </Button.Style>
                         <Border x:Name="CustomColorPreview"
-                                Width="48" Height="48" CornerRadius="6"
+                                Width="48" Height="48" CornerRadius="{DynamicResource RadiusLg}"
                                 BorderThickness="2"
                                 Background="{Binding Source={x:Static constants:OrderLogColors.PaletteViolet}}"
                                 VerticalAlignment="Top">
@@ -275,7 +275,7 @@
                                            Foreground="{DynamicResource DangerBrush}"/>
                                 <Slider x:Name="RSlider" Minimum="0" Maximum="255" ValueChanged="Slider_ValueChanged"
                                         Width="200" Style="{StaticResource ColorSliderStyle}"/>
-                                <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="4"
+                                <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource RadiusMd}"
                                         Padding="8,4" Margin="8,0,0,0" MinWidth="40">
                                     <TextBlock x:Name="RValue" TextAlignment="Center" FontFamily="{StaticResource FontMono}"
                                                FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -286,7 +286,7 @@
                                            Foreground="{DynamicResource SuccessBrush}"/>
                                 <Slider x:Name="GSlider" Minimum="0" Maximum="255" ValueChanged="Slider_ValueChanged"
                                         Width="200" Style="{StaticResource ColorSliderStyle}"/>
-                                <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="4"
+                                <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource RadiusMd}"
                                         Padding="8,4" Margin="8,0,0,0" MinWidth="40">
                                     <TextBlock x:Name="GValue" TextAlignment="Center" FontFamily="{StaticResource FontMono}"
                                                FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -297,7 +297,7 @@
                                            Foreground="{DynamicResource InfoBrush}"/>
                                 <Slider x:Name="BSlider" Minimum="0" Maximum="255" ValueChanged="Slider_ValueChanged"
                                         Width="200" Style="{StaticResource ColorSliderStyle}"/>
-                                <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="4"
+                                <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource RadiusMd}"
                                         Padding="8,4" Margin="8,0,0,0" MinWidth="40">
                                     <TextBlock x:Name="BValue" TextAlignment="Center" FontFamily="{StaticResource FontMono}"
                                                FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"/>

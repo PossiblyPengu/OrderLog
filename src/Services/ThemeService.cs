@@ -68,6 +68,10 @@ public partial class ThemeService : ObservableObject
     private readonly string _settingsPath;
     private const string SettingsFileName = "theme-settings.json";
 
+    // Persistent ResourceDictionary slots — Source updated in-place; never Clear() app resources.
+    private readonly ResourceDictionary _appBaseDict   = new();
+    private readonly ResourceDictionary _appColourDict = new();
+
     /// <summary>
     /// Gets or sets whether dark mode is currently active.
     /// </summary>
@@ -160,11 +164,11 @@ public partial class ThemeService : ObservableObject
             ColourTheme.Red    => "Red",
             ColourTheme.Purple => "Purple",
             ColourTheme.Cyan   => "Cyan",
-            _                  => null,
+            ColourTheme.Yellow => "Yellow",
+            _                  => "Neon",
         };
 
-        if (name == null) return null;
-        return $"pack://application:,,,/Themes/Marathon/Colours/{name}{(isDarkMode ? "Dark" : "Light")}.xaml";
+        return $"pack://application:,,,/OrderLog;component/Themes/Marathon/Colours/{name}{(isDarkMode ? "Dark" : "Light")}.xaml";
     }
 
     /// <summary>
@@ -191,45 +195,25 @@ public partial class ThemeService : ObservableObject
         {
             Serilog.Log.Debug("ApplyTheme: Starting. IsDarkMode={IsDarkMode} ShapeVariant={ShapeVariant}", IsDarkMode, ShapeVariant);
 
-            // Clear all merged dictionaries first
-            app.Resources.MergedDictionaries.Clear();
-            Serilog.Log.Debug("ApplyTheme: Cleared merged dictionaries");
+            var md = app.Resources.MergedDictionaries;
 
-            // 1. Load Marathon 2026 design system (dark or light colour variant)
+            // 1. Base colour theme (dark / light)
             var themeFile = IsDarkMode
-                ? "pack://application:,,,/Themes/Marathon/MarathonTheme.xaml"
-                : "pack://application:,,,/Themes/Marathon/MarathonLightTheme.xaml";
+                ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
+                : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
+            SwapDictSource(md, _appBaseDict, new Uri(themeFile, UriKind.Absolute));
+            Serilog.Log.Debug("ApplyTheme: Set base theme {ThemeFile}", themeFile);
 
-            app.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri(themeFile, UriKind.Absolute)
-            });
-            Serilog.Log.Debug("ApplyTheme: Added colour theme {ThemeFile}", themeFile);
+            // 2. Shape profile — written directly into Application.Resources so the values
+            //    shadow every MergedDictionary entry (including Variables.xaml inside the base
+            //    theme) and DynamicResource bindings are guaranteed to refresh immediately.
+            ApplyShapeTokens(app);
+            Serilog.Log.Debug("ApplyTheme: Applied shape tokens for {ShapeVariant}", ShapeVariant);
 
-            // 2. Overlay shape profile (overrides all CornerRadius tokens)
-            var shapeFile = ShapeVariant switch
-            {
-                ShapeVariant.Rounded => "pack://application:,,,/Themes/Marathon/Shapes/RoundedShape.xaml",
-                ShapeVariant.Sharp   => "pack://application:,,,/Themes/Marathon/Shapes/SharpShape.xaml",
-                _                    => "pack://application:,,,/Themes/Marathon/Shapes/AngularShape.xaml",
-            };
-
-            app.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri(shapeFile, UriKind.Absolute)
-            });
-            Serilog.Log.Debug("ApplyTheme: Added shape profile {ShapeFile}", shapeFile);
-
-            // 3. Overlay colour palette (overrides accent tokens; omitted for default Neon)
-            var colourUri = GetColourPaletteUri(ColourTheme, IsDarkMode);
-            if (colourUri != null)
-            {
-                app.Resources.MergedDictionaries.Add(new ResourceDictionary
-                {
-                    Source = new Uri(colourUri, UriKind.Absolute)
-                });
-                Serilog.Log.Debug("ApplyTheme: Added colour palette {ColourUri}", colourUri);
-            }
+            // 3. Colour palette overlay
+            var colourUri = GetColourPaletteUri(ColourTheme, IsDarkMode)!;
+            SwapDictSource(md, _appColourDict, new Uri(colourUri, UriKind.Absolute));
+            Serilog.Log.Debug("ApplyTheme: Set colour {ColourUri}", colourUri);
 
             // Raise event for any listeners
             ThemeChanged?.Invoke(this, IsDarkMode);
@@ -238,6 +222,125 @@ public partial class ThemeService : ObservableObject
         {
             Serilog.Log.Warning(ex, "Failed to apply theme");
         }
+    }
+
+    /// <summary>
+    /// Writes the corner-radius tokens for the current <see cref="ShapeVariant"/> directly into
+    /// <see cref="Application.Resources"/>.  Direct resource keys always take precedence over
+    /// every <c>MergedDictionaries</c> entry (including the nested <c>Variables.xaml</c> inside
+    /// the base theme), so every <c>{DynamicResource RadiusSm}</c> etc. binding in the visual
+    /// tree refreshes immediately when these are set or updated.
+    /// </summary>
+    private void ApplyShapeTokens(Application app)
+    {
+        CornerRadius xs, sm, md, lg,
+                     control, card, nav, badge, overlay,
+                     window, titleBar, sidebar,
+                     icon, appLogo, splash;
+
+        switch (ShapeVariant)
+        {
+            case ShapeVariant.Rounded:
+                xs = new(8);  sm = new(12); md = new(16); lg = new(24);
+                control = new(10); card = new(16); nav = new(10); badge = new(20); overlay = new(20);
+                window  = new(16); titleBar = new(16, 16, 0, 0); sidebar = new(0, 0, 0, 16);
+                icon = new(12); appLogo = new(20); splash = new(32);
+                break;
+
+            case ShapeVariant.Sharp:
+                xs = sm = md = lg = default;
+                control = card = nav = badge = overlay = default;
+                window  = titleBar = sidebar = default;
+                icon = appLogo = splash = default;
+                break;
+
+            default: // Angular
+                xs = new(2);  sm = new(3);  md = new(4);  lg = new(6);
+                control = new(4);  card = new(4);  nav = new(3);  badge = new(3);  overlay = new(6);
+                window  = new(6);  titleBar = new(6, 6, 0, 0);   sidebar = new(0, 0, 0, 6);
+                icon = new(4);  appLogo = new(4);  splash = new(8);
+                break;
+        }
+
+        // Asymmetric structural radii derived from the base scale
+        CornerRadius cardTop, stripeXs, stripeSm, stripeMd, stripeLg, overlayTitle;
+        switch (ShapeVariant)
+        {
+            case ShapeVariant.Rounded:
+                cardTop      = new(16, 16, 0, 0);
+                overlayTitle = new(20, 20, 0, 0);
+                stripeXs = new(8,  0,  0, 8);
+                stripeSm = new(12, 0,  0, 12);
+                stripeMd = new(16, 0,  0, 16);
+                stripeLg = new(24, 0,  0, 24);
+                break;
+            case ShapeVariant.Sharp:
+                cardTop = stripeXs = stripeSm = stripeMd = stripeLg = overlayTitle = default;
+                break;
+            default: // Angular
+                cardTop      = new(4, 4, 0, 0);
+                overlayTitle = new(6, 6, 0, 0);
+                stripeXs = new(2, 0, 0, 2);
+                stripeSm = new(3, 0, 0, 3);
+                stripeMd = new(4, 0, 0, 4);
+                stripeLg = new(6, 0, 0, 6);
+                break;
+        }
+
+        var r = app.Resources;
+        // Semantic scale
+        r["RadiusXs"] = xs;
+        r["RadiusSm"] = sm;
+        r["RadiusMd"] = md;
+        r["RadiusLg"] = lg;
+        // Compat aliases
+        r["XSmallCornerRadius"] = xs;
+        r["SmallCornerRadius"]  = sm;
+        r["MediumCornerRadius"] = md;
+        r["LargeCornerRadius"]  = lg;
+        // Component-specific
+        r["ControlCornerRadius"] = control;
+        r["CardCornerRadius"]    = card;
+        r["NavItemCornerRadius"] = nav;
+        r["BadgeCornerRadius"]   = badge;
+        r["OverlayCornerRadius"] = overlay;
+        // Window chrome
+        r["WindowCornerRadius"]   = window;
+        r["TitleBarCornerRadius"] = titleBar;
+        r["SidebarCornerRadius"]  = sidebar;
+        // Decorative
+        r["IconCornerRadius"]       = icon;
+        r["AppLogoCornerRadius"]    = appLogo;
+        r["SplashIconCornerRadius"] = splash;
+        // Asymmetric structural
+        r["CardTopCornerRadius"]      = cardTop;
+        r["CardStripeXsCornerRadius"] = stripeXs;
+        r["CardStripeSmCornerRadius"] = stripeSm;
+        r["CardStripeMdCornerRadius"] = stripeMd;
+        r["CardStripeLgCornerRadius"] = stripeLg;
+        r["OverlayTitleCornerRadius"] = overlayTitle;
+    }
+
+    /// <summary>
+    /// Removes <paramref name="slot"/> from <paramref name="md"/> (if present), sets its
+    /// <see cref="ResourceDictionary.Source"/> to <paramref name="newUri"/>, then re-inserts
+    /// it at the same index (or appends it when not yet in the collection).
+    /// </summary>
+    private static void SwapDictSource(
+        IList<ResourceDictionary> md,
+        ResourceDictionary slot,
+        Uri newUri)
+    {
+        var idx = md.IndexOf(slot);
+        if (idx >= 0)
+            md.RemoveAt(idx);
+
+        slot.Source = newUri;
+
+        if (idx >= 0)
+            md.Insert(idx, slot);
+        else
+            md.Add(slot);
     }
 
     /// <summary>
@@ -257,7 +360,9 @@ public partial class ThemeService : ObservableObject
                     IsDarkMode = settings.IsDarkMode;
                     ShapeVariant = settings.ShapeVariant;
                     ColourTheme = settings.ColourTheme;
-                    ApplyTheme();
+                    // Do not call ApplyTheme() here — app.InitializeComponent() has not run yet
+                    // and would replace Application.Resources, orphaning any added dicts.
+                    // ThemeService.Initialize() (called from OnStartup) handles the real init.
                 }
             }
         }

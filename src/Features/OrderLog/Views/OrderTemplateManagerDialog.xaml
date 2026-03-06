@@ -14,7 +14,7 @@
         ShowInTaskbar="False">
 
     <Border Background="{DynamicResource BackgroundBrush}"
-            CornerRadius="12"
+            CornerRadius="{DynamicResource OverlayCornerRadius}"
             BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1">
         <Border.Effect>
@@ -29,7 +29,7 @@
 
             <!-- Title Bar -->
             <Border Background="{DynamicResource BackgroundBrush}"
-                    CornerRadius="12,12,0,0"
+                    CornerRadius="{DynamicResource OverlayTitleCornerRadius}"
                     Padding="20,14"
                     MouseLeftButtonDown="TitleBar_MouseDown">
                 <Grid>
@@ -97,7 +97,7 @@
                             Background="{DynamicResource SurfaceHoverBrush}"
                             BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="8">
+                            CornerRadius="{DynamicResource RadiusMd}">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <ListBox x:Name="TemplateListBox"
                                      SelectionChanged="TemplateListBox_SelectionChanged"
@@ -108,7 +108,7 @@
                                     <DataTemplate>
                                         <Border Padding="12,10"
                                                 Background="Transparent"
-                                                CornerRadius="6">
+                                                CornerRadius="{DynamicResource RadiusLg}">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
@@ -120,7 +120,7 @@
                                                 <Border Width="4"
                                                         Height="32"
                                                         Background="{Binding ColorHex}"
-                                                        CornerRadius="2"
+                                                        CornerRadius="{DynamicResource RadiusXs}"
                                                         Margin="0,0,12,0"/>
 
                                                 <!-- Template Info -->
@@ -138,7 +138,7 @@
                                                 <!-- Use Count Badge -->
                                                 <Border Grid.Column="2"
                                                         Background="{DynamicResource SurfaceBrush}"
-                                                        CornerRadius="10"
+                                                        CornerRadius="{DynamicResource BadgeCornerRadius}"
                                                         Padding="8,4"
                                                         VerticalAlignment="Center">
                                                     <TextBlock FontSize="11"
@@ -194,7 +194,7 @@
                         Background="{DynamicResource SurfaceHoverBrush}"
                         BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="1"
-                        CornerRadius="8"
+                        CornerRadius="{DynamicResource RadiusMd}"
                         Padding="16">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel x:Name="PreviewPanel">
@@ -280,7 +280,7 @@
                                 <Border x:Name="PreviewColor"
                                         Height="32"
                                         Background="#B56576"
-                                        CornerRadius="6"
+                                        CornerRadius="{DynamicResource RadiusLg}"
                                         Margin="0,0,0,12"/>
 
                                 <!-- Use Count -->

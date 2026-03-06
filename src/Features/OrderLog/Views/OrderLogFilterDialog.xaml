@@ -15,7 +15,7 @@
 
     <Border x:Name="RootBorder"
             Background="{DynamicResource BackgroundBrush}"
-            CornerRadius="12"
+            CornerRadius="{DynamicResource OverlayCornerRadius}"
             BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
             RenderTransformOrigin="0.5,0.5">
@@ -34,7 +34,7 @@
 
             <!-- Title Bar -->
             <Border Background="{DynamicResource SurfaceBrush}"
-                    CornerRadius="12,12,0,0"
+                    CornerRadius="{DynamicResource OverlayTitleCornerRadius}"
                     Padding="20,14"
                     MouseLeftButtonDown="TitleBar_MouseDown">
                 <Grid>
@@ -67,7 +67,7 @@
                     <Border Background="{DynamicResource SurfaceHoverBrush}"
                             BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="8"
+                            CornerRadius="{DynamicResource RadiusMd}"
                             Padding="14,10"
                             Margin="0,0,0,20">
                         <StackPanel>
@@ -100,7 +100,7 @@
                     <Border Background="{DynamicResource SurfaceHoverBrush}"
                             BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="8"
+                            CornerRadius="{DynamicResource RadiusMd}"
                             Padding="14,10"
                             Margin="0,0,0,20">
                         <StackPanel>
@@ -145,7 +145,7 @@
                     <Border Background="{DynamicResource SurfaceHoverBrush}"
                             BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="8"
+                            CornerRadius="{DynamicResource RadiusMd}"
                             Padding="14,10"
                             Margin="0,0,0,20">
                         <StackPanel>
@@ -181,7 +181,7 @@
                             <Border Background="{DynamicResource SurfaceHoverBrush}"
                                     BorderBrush="{DynamicResource BorderBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="8"
+                                    CornerRadius="{DynamicResource RadiusMd}"
                                     Padding="14,10"
                                     Margin="0,0,0,20">
                                 <StackPanel>

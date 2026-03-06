@@ -630,7 +630,7 @@
                               <Thumb>
                                 <Thumb.Template>
                                   <ControlTemplate TargetType="Thumb">
-                                    <Border CornerRadius="2" Background="{DynamicResource BorderAccentBrush}" Width="4"/>
+                                    <Border CornerRadius="{DynamicResource RadiusXs}" Background="{DynamicResource BorderAccentBrush}" Width="4"/>
                                   </ControlTemplate>
                                 </Thumb.Template>
                               </Thumb>

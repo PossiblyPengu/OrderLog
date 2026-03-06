@@ -464,10 +464,8 @@ public partial class OrderLogWidgetView : UserControl
         // Initialize Spotify service asynchronously
         InitializeSpotifyAndWireUpAsync();
 
-        // Initialize theme and subscribe to changes
-        var isDarkMode = ThemeService.Instance.IsDarkMode;
-        UpdateThemeIcon(isDarkMode);
-        ApplyThemeToUserControl(isDarkMode);
+        // Initialize theme icon and subscribe to changes
+        UpdateThemeIcon(ThemeService.Instance.IsDarkMode);
         ThemeService.Instance.ThemeChanged += OnThemeChanged;
 
         // Subscribe to ViewModel property changes for ShowNowPlaying
@@ -1017,76 +1015,7 @@ public partial class OrderLogWidgetView : UserControl
 
     private void OnThemeChanged(object? sender, bool isDarkMode)
     {
-        Dispatcher.Invoke(() =>
-        {
-            UpdateThemeIcon(isDarkMode);
-            ApplyThemeToUserControl(isDarkMode);
-        });
-    }
-
-    private void ApplyThemeToUserControl(bool isDarkMode)
-    {
-        try
-        {
-            var themeFile = isDarkMode
-                ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
-                : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
-            var marathonTheme = new Uri(themeFile);
-            var widgetUri = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/OrderLogWidgetTheme.xaml");
-            var headerUri = new Uri("pack://application:,,,/OrderLog;component/Features/OrderLog/Themes/ModernHeaderStyles.xaml");
-
-            var shapeFile = OrderLog.Services.ThemeService.Instance.ShapeVariant switch
-            {
-                OrderLog.Services.ShapeVariant.Rounded => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/RoundedShape.xaml",
-                OrderLog.Services.ShapeVariant.Sharp   => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/SharpShape.xaml",
-                _                                      => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/AngularShape.xaml",
-            };
-            var shapeUri = new Uri(shapeFile);
-
-            Resources.MergedDictionaries.Clear();
-            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = marathonTheme });
-            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = shapeUri });
-
-            // Colour palette overlay
-            var colourPaletteUri = OrderLog.Services.ThemeService.GetColourPaletteUri(
-                OrderLog.Services.ThemeService.Instance.ColourTheme, isDarkMode);
-            if (colourPaletteUri != null)
-                Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(colourPaletteUri) });
-
-            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = widgetUri });
-            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = headerUri });
-
-            // Sync Application-level resources so popups/context menus resolve DynamicResource
-            try
-            {
-                if (Application.Current != null)
-                {
-                    var appRes = Application.Current.Resources;
-                    bool HasSource(ResourceDictionary rd, Uri src)
-                    {
-                        foreach (var m in rd.MergedDictionaries)
-                            if (m.Source != null && m.Source == src) return true;
-                        return false;
-                    }
-                    if (!HasSource(appRes, marathonTheme))
-                    {
-                        appRes.MergedDictionaries.Clear();
-                        appRes.MergedDictionaries.Add(new ResourceDictionary { Source = marathonTheme });
-                        appRes.MergedDictionaries.Add(new ResourceDictionary { Source = shapeUri });
-                        if (colourPaletteUri != null)
-                            appRes.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(colourPaletteUri) });
-                    }
-                }
-            }
-            catch (Exception exApp)
-            {
-                Log.Debug(exApp, "Failed to merge widget theme into Application resources");
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Failed to apply theme to widget view");
-        }
+        Dispatcher.Invoke(() => UpdateThemeIcon(isDarkMode));
     }
 
 

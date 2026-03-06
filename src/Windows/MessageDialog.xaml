@@ -13,7 +13,7 @@
     
     <Border x:Name="RootBorder"
             Background="{DynamicResource BackgroundBrush}" 
-            CornerRadius="12"
+            CornerRadius="{DynamicResource OverlayCornerRadius}"
             BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
             RenderTransformOrigin="0.5,0.5">
@@ -81,7 +81,7 @@
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="6"
+                                    CornerRadius="{DynamicResource RadiusLg}"
                                     Padding="{TemplateBinding Padding}">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
@@ -106,7 +106,7 @@
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="border" 
                                     Background="{TemplateBinding Background}"
-                                    CornerRadius="6"
+                                    CornerRadius="{DynamicResource RadiusLg}"
                                     Padding="{TemplateBinding Padding}">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>

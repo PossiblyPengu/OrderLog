@@ -137,7 +137,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalAlignment="Center"/>
                         </Border>
@@ -157,7 +157,7 @@
         <!-- Stat Card Style -->
         <Style x:Key="StatCard" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
-            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}"/>
             <Setter Property="Padding" Value="16,12"/>
         </Style>
     </UserControl.Resources>
@@ -396,7 +396,7 @@
                         <Slider Minimum="10" Maximum="20" Width="120" Style="{StaticResource ModernSlider}"
                                 Value="{Binding CardFontSize, Mode=TwoWay}"
                                 TickFrequency="1" IsSnapToTickEnabled="True"/>
-                        <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="6"
+                        <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="{DynamicResource RadiusLg}"
                                 Padding="10,4" Margin="12,0,0,0" MinWidth="36">
                             <TextBlock Text="{Binding CardFontSize, StringFormat='{}{0:0}'}"
                                        FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center"
@@ -468,7 +468,7 @@
                         <Slider Minimum="2" Maximum="15" Width="100" Style="{StaticResource ModernSlider}"
                                 Value="{Binding UndoTimeoutSeconds, Mode=TwoWay}"
                                 TickFrequency="1" IsSnapToTickEnabled="True"/>
-                        <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="6"
+                        <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="{DynamicResource RadiusLg}"
                                 Padding="10,4" Margin="12,0,0,0" MinWidth="36">
                             <TextBlock Text="{Binding UndoTimeoutSeconds, StringFormat='{}{0}s'}"
                                        FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center"
@@ -521,7 +521,7 @@
                         <TextBlock Text="Default Order Color" Style="{StaticResource SettingLabel}"/>
                         <TextBlock Text="Color used for new order cards" Style="{StaticResource SettingDescription}"/>
                     </StackPanel>
-                    <Border Grid.Column="1" Width="32" Height="32" CornerRadius="6"
+                    <Border Grid.Column="1" Width="32" Height="32" CornerRadius="{DynamicResource RadiusMd}"
                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                             Background="{Binding DefaultOrderColor, Converter={StaticResource HexToBrush}}"
                             Cursor="Hand" MouseLeftButtonDown="PickOrderColor_Click" ToolTip="Click to change"/>
@@ -538,7 +538,7 @@
                         <TextBlock Text="Default Sticky Note Color" Style="{StaticResource SettingLabel}"/>
                         <TextBlock Text="Color used for new sticky notes" Style="{StaticResource SettingDescription}"/>
                     </StackPanel>
-                    <Border Grid.Column="1" Width="32" Height="32" CornerRadius="6"
+                    <Border Grid.Column="1" Width="32" Height="32" CornerRadius="{DynamicResource RadiusMd}"
                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                             Background="{Binding DefaultNoteColor, Converter={StaticResource HexToBrush}}"
                             Cursor="Hand" MouseLeftButtonDown="PickNoteColor_Click" ToolTip="Click to change"/>

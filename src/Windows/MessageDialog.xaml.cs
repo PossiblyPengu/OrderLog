@@ -1,7 +1,6 @@
 using System.Windows;
 using System.Windows.Media;
 using OrderLog.Helpers;
-using OrderLog.Services;
 
 namespace OrderLog.Windows;
 
@@ -35,34 +34,6 @@ public partial class MessageDialog : AnimatedWindow
     private MessageDialog()
     {
         InitializeComponent();
-        ApplyTheme();
-        ThemeService.Instance.ThemeChanged += OnThemeChanged;
-        Unloaded += (s, e) => ThemeService.Instance.ThemeChanged -= OnThemeChanged;
-    }
-
-    private void OnThemeChanged(object? sender, bool isDarkMode)
-    {
-        ApplyTheme();
-    }
-
-    private void ApplyTheme()
-    {
-        var svc = ThemeService.Instance;
-        var themeFile = svc.IsDarkMode
-            ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
-            : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
-        var shapeFile = svc.ShapeVariant switch
-        {
-            ShapeVariant.Rounded => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/RoundedShape.xaml",
-            ShapeVariant.Sharp   => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/SharpShape.xaml",
-            _                    => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/AngularShape.xaml",
-        };
-        Resources.MergedDictionaries.Clear();
-        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(themeFile) });
-        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(shapeFile) });
-        var colourUri = ThemeService.GetColourPaletteUri(svc.ColourTheme, svc.IsDarkMode);
-        if (colourUri != null)
-            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(colourUri) });
     }
 
     private void Configure(string message, string title, DialogType type, DialogButtons buttons)

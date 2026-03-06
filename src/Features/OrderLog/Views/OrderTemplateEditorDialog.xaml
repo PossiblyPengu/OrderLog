@@ -17,7 +17,7 @@
 
     <Border x:Name="RootBorder"
             Background="{DynamicResource BackgroundBrush}"
-            CornerRadius="12"
+            CornerRadius="{DynamicResource OverlayCornerRadius}"
             BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
             RenderTransformOrigin="0.5,0.5">
@@ -36,7 +36,7 @@
 
             <!-- Title Bar -->
             <Border Background="{DynamicResource BackgroundBrush}"
-                    CornerRadius="12,12,0,0"
+                    CornerRadius="{DynamicResource OverlayTitleCornerRadius}"
                     Padding="20,14"
                     MouseLeftButtonDown="TitleBar_MouseDown">
                 <Grid>
@@ -217,7 +217,7 @@
                     <Border x:Name="ColorPreviewBorder"
                             Height="40"
                             Background="#B56576"
-                            CornerRadius="6"
+                            CornerRadius="{DynamicResource RadiusLg}"
                             BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="1"
                             Cursor="Hand"
@@ -232,14 +232,14 @@
 
                     <!-- Color Presets -->
                     <WrapPanel Margin="0,0,0,20">
-                        <Border Width="32" Height="32" Background="#B56576" CornerRadius="4" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#B56576"/>
-                        <Border Width="32" Height="32" Background="#E63946" CornerRadius="4" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#E63946"/>
-                        <Border Width="32" Height="32" Background="#F77F00" CornerRadius="4" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#F77F00"/>
-                        <Border Width="32" Height="32" Background="#FCBF49" CornerRadius="4" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#FCBF49"/>
-                        <Border Width="32" Height="32" Background="#06A77D" CornerRadius="4" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#06A77D"/>
-                        <Border Width="32" Height="32" Background="#277DA1" CornerRadius="4" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#277DA1"/>
-                        <Border Width="32" Height="32" Background="#5A189A" CornerRadius="4" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#5A189A"/>
-                        <Border Width="32" Height="32" Background="#D62828" CornerRadius="4" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#D62828"/>
+                        <Border Width="32" Height="32" Background="#B56576" CornerRadius="{DynamicResource RadiusMd}" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#B56576"/>
+                        <Border Width="32" Height="32" Background="#E63946" CornerRadius="{DynamicResource RadiusMd}" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#E63946"/>
+                        <Border Width="32" Height="32" Background="#F77F00" CornerRadius="{DynamicResource RadiusMd}" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#F77F00"/>
+                        <Border Width="32" Height="32" Background="#FCBF49" CornerRadius="{DynamicResource RadiusMd}" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#FCBF49"/>
+                        <Border Width="32" Height="32" Background="#06A77D" CornerRadius="{DynamicResource RadiusMd}" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#06A77D"/>
+                        <Border Width="32" Height="32" Background="#277DA1" CornerRadius="{DynamicResource RadiusMd}" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#277DA1"/>
+                        <Border Width="32" Height="32" Background="#5A189A" CornerRadius="{DynamicResource RadiusMd}" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#5A189A"/>
+                        <Border Width="32" Height="32" Background="#D62828" CornerRadius="{DynamicResource RadiusMd}" Margin="0,0,8,0" Cursor="Hand" MouseDown="ColorPreset_MouseDown" Tag="#D62828"/>
                     </WrapPanel>
 
                     <!-- Buttons -->

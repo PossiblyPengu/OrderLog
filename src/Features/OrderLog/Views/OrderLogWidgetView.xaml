@@ -14,7 +14,7 @@
         <ResourceDictionary>
             <!-- Marathon Design System — deep space neon HUD -->
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/Marathon/MarathonTheme.xaml"/>
+                <!-- Base theme, shape, and colour overlays come from Application.Resources (ThemeService). -->
                 <ResourceDictionary Source="../Themes/OrderLogWidgetTheme.xaml"/>
                 <ResourceDictionary Source="../Themes/ModernHeaderStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
@@ -132,7 +132,7 @@
                                 Background="{DynamicResource SurfaceBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="4"
+                                CornerRadius="{DynamicResource RadiusMd}"
                                 Padding="4">
                             <Border.Effect>
                                 <DropShadowEffect x:Name="Shadow"
@@ -239,7 +239,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                CornerRadius="4"
+                                CornerRadius="{DynamicResource RadiusMd}"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -258,7 +258,7 @@
 
                 <DataTemplate x:Key="OrderItemTemplate" DataType="{x:Type models:OrderItem}">
                     <!-- Outer border for link mode highlighting -->
-                    <Border x:Name="LinkHighlightBorder" Margin="6" CornerRadius="4" Padding="2"
+                    <Border x:Name="LinkHighlightBorder" Margin="6" CornerRadius="{DynamicResource RadiusMd}" Padding="2"
                             Opacity="0"
                             MouseEnter="Card_MouseEnter" MouseLeave="Card_MouseLeave">
                         <Border.RenderTransform>
@@ -312,7 +312,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Left status stripe -->
-                    <Border Grid.Column="0" Grid.RowSpan="2" CornerRadius="4,0,0,4"
+                    <Border Grid.Column="0" Grid.RowSpan="2" CornerRadius="{DynamicResource CardStripeMdCornerRadius}"
                             Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}"
                             MouseLeftButtonDown="ColorBar_Click"/>
 
@@ -336,7 +336,7 @@
                             <!-- Link Count Badge -->
                             <Border Grid.Column="1"
                                     Background="{DynamicResource PrimaryBrush}"
-                                    CornerRadius="3"
+                                    CornerRadius="{DynamicResource RadiusSm}"
                                     Padding="8,4"
                                     Margin="0,0,8,0"
                                     VerticalAlignment="Center"
@@ -424,7 +424,7 @@
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="Button">
-                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                                                         <TextBlock Text="🔗" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                     </Border>
                                                     <ControlTemplate.Triggers>
@@ -573,7 +573,7 @@
 
         <!-- Modern Sticky Note Template - Clean, minimal design with inline toolbar -->
         <DataTemplate x:Key="StickyNoteTemplate" DataType="{x:Type models:OrderItem}">
-            <Border x:Name="StickyNoteBorder" CornerRadius="6" ClipToBounds="True" Margin="8,0,8,0"
+            <Border x:Name="StickyNoteBorder" CornerRadius="{DynamicResource RadiusLg}" ClipToBounds="True" Margin="8,0,8,0"
                     BorderThickness="1" Opacity="0">
                 <Border.RenderTransform>
                     <TranslateTransform x:Name="NoteLoadSlide"/>
@@ -622,7 +622,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
-                                            <Border x:Name="Stripe" CornerRadius="6,0,0,6"
+                                            <Border x:Name="Stripe" CornerRadius="{DynamicResource CardStripeLgCornerRadius}"
                                                     Background="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}"
                                                     Opacity="0.7"/>
                                             <ControlTemplate.Triggers>
@@ -678,7 +678,7 @@
                             </Grid>
 
                             <!-- Category badge -->
-                            <Border CornerRadius="3" Padding="5,2" HorizontalAlignment="Left" Margin="0,5,0,0"
+                            <Border CornerRadius="{DynamicResource RadiusSm}" Padding="5,2" HorizontalAlignment="Left" Margin="0,5,0,0"
                                     BorderThickness="1">
                                 <Border.BorderBrush>
                                     <SolidColorBrush Color="{Binding ColorHex, Converter={StaticResource HexToColorConverter}}" Opacity="0.4"/>
@@ -726,7 +726,7 @@
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="Button">
-                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                                                         <TextBlock Text="✓" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}"/>
                                                     </Border>
                                                     <ControlTemplate.Triggers>
@@ -890,7 +890,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Color Bar (Done status = muted gray) -->
-                    <Border Grid.Row="0" CornerRadius="4,4,0,0" Height="{StaticResource CardColorBarHeight}"
+                    <Border Grid.Row="0" CornerRadius="{DynamicResource CardTopCornerRadius}" Height="{StaticResource CardColorBarHeight}"
                             Background="{DynamicResource TextTertiaryBrush}"/>
 
                     <!-- Header -->
@@ -917,7 +917,7 @@
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                                                         <TextBlock Text="↩️ Restore" FontSize="{DynamicResource CardFontSize}" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                                     </Border>
                                                 </ControlTemplate>
@@ -960,7 +960,7 @@
             <Border Background="{DynamicResource SurfaceHoverBrush}"
                     BorderBrush="{DynamicResource TextDisabledBrush}"
                     BorderThickness="1"
-                    CornerRadius="6"
+                    CornerRadius="{DynamicResource RadiusLg}"
                     Margin="8,0,8,0"
                     ClipToBounds="True">
                 <Border.ContextMenu>
@@ -978,7 +978,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Left stripe: note color (muted) -->
-                    <Border Grid.Column="0" CornerRadius="6,0,0,6"
+                    <Border Grid.Column="0" CornerRadius="{DynamicResource CardStripeLgCornerRadius}"
                             Background="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}" Opacity="0.55"/>
 
                     <!-- Content -->
@@ -1044,7 +1044,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
-                                            <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                            <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                                                 <TextBlock Text="Restore" FontSize="10"
                                                            FontFamily="{DynamicResource FontMono}"
                                                            Foreground="{DynamicResource AccentBrush}"/>
@@ -1072,7 +1072,7 @@
         <!-- Template for merged order cards in widget view (vertical stacking) -->
         <DataTemplate x:Key="OrderItemGroupMergedTemplate" DataType="{x:Type vm:OrderItemGroup}">
             <!-- Outer border for link mode highlighting -->
-            <Border x:Name="LinkHighlightBorder" Margin="0" CornerRadius="4" Padding="2"
+            <Border x:Name="LinkHighlightBorder" Margin="0" CornerRadius="{DynamicResource RadiusMd}" Padding="2"
                     MouseEnter="Card_MouseEnter" MouseLeave="Card_MouseLeave">
                 <Border.BorderBrush>
                     <MultiBinding Converter="{StaticResource IsLinkSourceToBrushConverter}">
@@ -1101,7 +1101,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Left status stripe -->
-                    <Border Grid.Column="0" Grid.RowSpan="2" CornerRadius="4,0,0,4"
+                    <Border Grid.Column="0" Grid.RowSpan="2" CornerRadius="{DynamicResource CardStripeMdCornerRadius}"
                             Background="{Binding First.Status, Converter={StaticResource StatusToColorConverter}}"/>
 
                     <!-- Unified Header Section -->
@@ -1122,7 +1122,7 @@
                                            Foreground="{DynamicResource TextSecondaryBrush}"
                                            VerticalAlignment="Center"/>
                                 <Border Background="{DynamicResource AccentBrush}"
-                                        CornerRadius="3"
+                                        CornerRadius="{DynamicResource RadiusSm}"
                                         Padding="5,2"
                                         Margin="6,0,0,0">
                                     <TextBlock Text="{Binding Count, StringFormat='{}{0} orders'}"
@@ -1202,7 +1202,7 @@
                                                         <Setter Property="Template">
                                                             <Setter.Value>
                                                                 <ControlTemplate TargetType="Button">
-                                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="3" Padding="{TemplateBinding Padding}">
+                                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusSm}" Padding="{TemplateBinding Padding}">
                                                                         <TextBlock Text="🔗" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                     </Border>
                                                                     <ControlTemplate.Triggers>
@@ -1372,7 +1372,7 @@
             <Border Background="{DynamicResource SurfaceHoverBrush}"
                     BorderBrush="{DynamicResource TextDisabledBrush}"
                     BorderThickness="1"
-                    CornerRadius="6"
+                    CornerRadius="{DynamicResource RadiusLg}"
                     Margin="8,0,8,0"
                     ClipToBounds="True">
                 <Border.ContextMenu>
@@ -1390,7 +1390,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Left accent stripe (muted — no status colour in archive) -->
-                    <Border Grid.Column="0" CornerRadius="6,0,0,6"
+                    <Border Grid.Column="0" CornerRadius="{DynamicResource CardStripeLgCornerRadius}"
                             Background="{DynamicResource TextTertiaryBrush}" Opacity="0.55"/>
 
                     <!-- Content: group header + all member rows -->
@@ -1401,7 +1401,7 @@
                             <TextBlock Text="🔗" FontSize="10" Margin="0,0,5,0" VerticalAlignment="Center"/>
                             <Border Background="{DynamicResource SurfaceSunkenBrush}"
                                     BorderBrush="{DynamicResource BorderBrush}"
-                                    BorderThickness="1" CornerRadius="3" Padding="4,1" Margin="0,0,7,0">
+                                    BorderThickness="1" CornerRadius="{DynamicResource RadiusSm}" Padding="4,1" Margin="0,0,7,0">
                                 <TextBlock Text="{Binding Count, StringFormat='{}{0}×'}"
                                            FontFamily="{DynamicResource FontMono}" FontSize="9" FontWeight="SemiBold"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
@@ -1489,7 +1489,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                                                 <TextBlock Text="↩ Restore All" FontSize="10" Foreground="{DynamicResource AccentBrush}"/>
                                             </Border>
                                         </ControlTemplate>
@@ -1567,7 +1567,7 @@
                     <Border Background="{DynamicResource SurfaceSunkenBrush}"
                             BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="3"
+                            CornerRadius="{DynamicResource RadiusSm}"
                             Padding="3"
                             Height="38">
                         <Grid>
@@ -1617,7 +1617,7 @@
 
                         <!-- Angular Marathon Search Box -->
                         <Border Grid.Column="0"
-                                CornerRadius="3"
+                                CornerRadius="{DynamicResource RadiusSm}"
                                 Height="36"
                                 Margin="0,0,8,0"
                                 BorderThickness="1"
@@ -1706,7 +1706,7 @@
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="Button">
-                                                        <Border Background="{TemplateBinding Background}" CornerRadius="3">
+                                                        <Border Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusSm}">
                                                             <TextBlock Text="✕" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"
                                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
                                                         </Border>
@@ -1731,7 +1731,7 @@
                                 Click="ShowFilters_Click"
                                 Visibility="Collapsed"
                                 Style="{StaticResource ModernIconButtonStyle}">
-                            <Border CornerRadius="4"
+                            <Border CornerRadius="{DynamicResource RadiusMd}"
                                     Background="{DynamicResource SurfaceHoverBrush}"
                                     Width="48" Height="48">
                                 <Border.Effect>
@@ -1765,7 +1765,7 @@
                     <Button Grid.Column="4" Click="SortToggle_Click" ToolTip="Toggle sort direction"
                             Visibility="Collapsed"
                             Style="{StaticResource ModernIconButtonStyle}">
-                        <Border CornerRadius="3"
+                        <Border CornerRadius="{DynamicResource RadiusSm}"
                                 Background="{DynamicResource SurfaceHoverBrush}"
                                 Width="40" Height="40">
                             <TextBlock x:Name="SortSymbol" FontSize="18" FontWeight="Bold"
@@ -1820,7 +1820,7 @@
                             <Border Grid.Row="0"
                                     Background="{DynamicResource SurfaceHoverBrush}"
                                     Padding="14,10"
-                                    CornerRadius="4,4,0,0">
+                                    CornerRadius="{DynamicResource CardTopCornerRadius}">
                                 <Grid>
                                     <TextBlock Text="Add New Order"
                                                FontSize="14"
@@ -2023,7 +2023,7 @@
                                     </Grid.RowDefinitions>
 
                                     <!-- Color Bar -->
-                                    <Border Grid.Row="0" CornerRadius="4,4,0,0"
+                                    <Border Grid.Row="0" CornerRadius="{DynamicResource CardTopCornerRadius}"
                                             Cursor="Hand"
                                             MouseLeftButtonDown="ColorBar_Click"
                                             Height="{StaticResource CardColorBarHeight}">
@@ -2300,7 +2300,7 @@
                                                                 <Setter Property="Template">
                                                                     <Setter.Value>
                                                                         <ControlTemplate TargetType="Button">
-                                                                            <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                                            <Border Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                                                                                 <TextBlock Text="✓" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}"/>
                                                                             </Border>
                                                                         </ControlTemplate>
@@ -2367,7 +2367,7 @@
                                                                       Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalContentAlignment="Stretch">
                                                             <ToggleButton.Template>
                                                                 <ControlTemplate TargetType="ToggleButton">
-                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="3" Padding="12,10" Margin="6,0"
+                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="{DynamicResource RadiusSm}" Padding="12,10" Margin="6,0"
                                                                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                                                                         <Grid>
                                                                             <Grid.ColumnDefinitions>
@@ -2380,7 +2380,7 @@
                                                                             <Border Width="3" Height="16" Background="{DynamicResource WidgetStatusInProgressBrush}" CornerRadius="1.5" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                                                             <TextBlock Grid.Column="1" Text="IN PROGRESS" FontSize="11" FontWeight="SemiBold" FontFamily="{DynamicResource FontMono}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                                                             <!-- Count badge -->
-                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusInProgressBgBrush}" CornerRadius="3" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
+                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusInProgressBgBrush}" CornerRadius="{DynamicResource RadiusSm}" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
                                                                                 <TextBlock Text="{Binding DataContext.InProgressCount, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                                            FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource WidgetStatusInProgressBrush}" HorizontalAlignment="Center"/>
                                                                             </Border>
@@ -2453,7 +2453,7 @@
                                                                       Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalContentAlignment="Stretch">
                                                             <ToggleButton.Template>
                                                                 <ControlTemplate TargetType="ToggleButton">
-                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="3" Padding="12,10" Margin="6,0"
+                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="{DynamicResource RadiusSm}" Padding="12,10" Margin="6,0"
                                                                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                                                                         <Grid>
                                                                             <Grid.ColumnDefinitions>
@@ -2466,7 +2466,7 @@
                                                                             <Border Width="3" Height="16" Background="{DynamicResource WidgetStatusOnDeckBrush}" CornerRadius="1.5" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                                                             <TextBlock Grid.Column="1" Text="ON DECK" FontSize="11" FontWeight="SemiBold" FontFamily="{DynamicResource FontMono}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                                                             <!-- Count badge -->
-                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusOnDeckBgBrush}" CornerRadius="3" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
+                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusOnDeckBgBrush}" CornerRadius="{DynamicResource RadiusSm}" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
                                                                                 <TextBlock Text="{Binding DataContext.OnDeckCount, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                                            FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource WidgetStatusOnDeckBrush}" HorizontalAlignment="Center"/>
                                                                             </Border>
@@ -2539,7 +2539,7 @@
                                                                       Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalContentAlignment="Stretch">
                                                             <ToggleButton.Template>
                                                                 <ControlTemplate TargetType="ToggleButton">
-                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="3" Padding="12,10" Margin="6,0"
+                                                                    <Border x:Name="HeaderBorder" Background="{DynamicResource SurfaceBrush}" CornerRadius="{DynamicResource RadiusSm}" Padding="12,10" Margin="6,0"
                                                                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                                                                         <Grid>
                                                                             <Grid.ColumnDefinitions>
@@ -2552,7 +2552,7 @@
                                                                             <Border Width="3" Height="16" Background="{DynamicResource WidgetStatusNotReadyBrush}" CornerRadius="1.5" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                                                             <TextBlock Grid.Column="1" Text="NOT READY" FontSize="11" FontWeight="SemiBold" FontFamily="{DynamicResource FontMono}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                                                             <!-- Count badge -->
-                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusNotReadyBgBrush}" CornerRadius="3" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
+                                                                            <Border Grid.Column="2" Background="{DynamicResource WidgetStatusNotReadyBgBrush}" CornerRadius="{DynamicResource RadiusSm}" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
                                                                                 <TextBlock Text="{Binding DataContext.NotReadyCount, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                                            FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource WidgetStatusNotReadyBrush}" HorizontalAlignment="Center"/>
                                                                             </Border>
@@ -2615,7 +2615,7 @@
                                 Background="{DynamicResource SurfaceBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="4">
+                                CornerRadius="{DynamicResource RadiusMd}">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -2675,7 +2675,7 @@
                                            VerticalAlignment="Center" Margin="0,0,8,0"/>
                                 <Border Background="{DynamicResource SurfaceSunkenBrush}"
                                         BorderBrush="{DynamicResource BorderBrush}"
-                                        BorderThickness="1" CornerRadius="3" Padding="6,2">
+                                        BorderThickness="1" CornerRadius="{DynamicResource RadiusSm}" Padding="6,2">
                                     <TextBlock Text="{Binding ArchivedItems.Count}"
                                                FontFamily="{DynamicResource FontMono}"
                                                FontSize="10"
@@ -2687,7 +2687,7 @@
                                     Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="8,4">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
-                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="⇅" FontSize="11" Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                                 <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center">
@@ -2751,7 +2751,7 @@
                                 <Border Background="{DynamicResource SurfaceHoverBrush}"
                                         BorderBrush="{DynamicResource TextDisabledBrush}"
                                         BorderThickness="1"
-                                        CornerRadius="6"
+                                        CornerRadius="{DynamicResource RadiusLg}"
                                         Margin="8,0,8,0"
                                         ClipToBounds="True">
                                     <Border.ContextMenu>
@@ -2773,7 +2773,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <!-- Left colour stripe (muted — no status colour in archive) -->
-                                        <Border Grid.Column="0" CornerRadius="6,0,0,6"
+                                        <Border Grid.Column="0" CornerRadius="{DynamicResource CardStripeLgCornerRadius}"
                                                 Background="{DynamicResource TextTertiaryBrush}"
                                                 Opacity="0.55"/>
 
@@ -2848,7 +2848,7 @@
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
-                                                                <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                                <Border Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                                                                     <TextBlock Text="↩ Restore" FontSize="10" Foreground="{DynamicResource AccentBrush}"/>
                                                                 </Border>
                                                             </ControlTemplate>
@@ -2902,7 +2902,7 @@
                             Background="{DynamicResource SurfaceBrush}"
                             BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="4">
+                            CornerRadius="{DynamicResource RadiusMd}">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -2972,7 +2972,7 @@
                         Background="{DynamicResource SurfaceBrush}"
                         BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="1,1,0,1"
-                        CornerRadius="3,0,0,3"
+                        CornerRadius="{DynamicResource CardStripeSmCornerRadius}"
                         Padding="4,8">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="10" ShadowDepth="0" Opacity="0.35" Color="#000000"/>
@@ -2985,7 +2985,7 @@
                                 Background="Transparent" BorderThickness="0">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="2">
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}">
                                         <Border Width="8" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusInProgressBrush}"/>
                                     </Border>
                                     <ControlTemplate.Triggers>
@@ -3003,7 +3003,7 @@
                                 Background="Transparent" BorderThickness="0">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="2">
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}">
                                         <Border Width="8" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusOnDeckBrush}"/>
                                     </Border>
                                     <ControlTemplate.Triggers>
@@ -3021,7 +3021,7 @@
                                 Background="Transparent" BorderThickness="0">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="2">
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}">
                                         <Border Width="8" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusNotReadyBrush}"/>
                                     </Border>
                                     <ControlTemplate.Triggers>
@@ -3038,7 +3038,7 @@
                 <!-- Combined handle strip: notes trigger (amber) + jump dots (surface) -->
                 <Border x:Name="SideHandleStrip"
                         Grid.Column="1"
-                        CornerRadius="4,0,0,4"
+                        CornerRadius="{DynamicResource CardStripeMdCornerRadius}"
                         ClipToBounds="True"
                         BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="1">
@@ -3189,7 +3189,7 @@
                                         VerticalAlignment="Center"
                                         HorizontalAlignment="Center"
                                 Background="{DynamicResource OverlayHeavyBrush}"
-                                        CornerRadius="2"
+                                        CornerRadius="{DynamicResource RadiusXs}"
                                         Padding="10,6"
                                         Opacity="0">
                                     <Border.Effect>
@@ -3213,7 +3213,7 @@
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
-                                                                <Border x:Name="ButtonBorder" Background="Transparent" CornerRadius="2">
+                                                                <Border x:Name="ButtonBorder" Background="Transparent" CornerRadius="{DynamicResource RadiusXs}">
                                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                                 </Border>
                                                                 <ControlTemplate.Triggers>
@@ -3249,7 +3249,7 @@
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
-                                                                <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="2">
+                                                                <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}">
                                                                     <Border.Effect>
                                                                         <DropShadowEffect ShadowDepth="0" BlurRadius="12" Opacity="0.7" Color="{StaticResource AccentColor}"/>
                                                                     </Border.Effect>
@@ -3287,7 +3287,7 @@
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
-                                                                <Border x:Name="ButtonBorder" Background="Transparent" CornerRadius="2">
+                                                                <Border x:Name="ButtonBorder" Background="Transparent" CornerRadius="{DynamicResource RadiusXs}">
                                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                                 </Border>
                                                                 <ControlTemplate.Triggers>
@@ -3339,7 +3339,7 @@
                                 Background="{DynamicResource PrimaryLightBrush}"
                                 BorderBrush="{DynamicResource AccentBrush}"
                                 BorderThickness="1"
-                                CornerRadius="2"
+                                CornerRadius="{DynamicResource RadiusXs}"
                                 Width="22" Height="22"
                                 Margin="0,0,9,0"
                                 VerticalAlignment="Center">
@@ -3421,7 +3421,7 @@
                                 Background="{DynamicResource PrimaryLightBrush}"
                                 BorderBrush="{DynamicResource AccentBrush}"
                                 BorderThickness="1"
-                                CornerRadius="2"
+                                CornerRadius="{DynamicResource RadiusXs}"
                                 Width="18" Height="18"
                                 VerticalAlignment="Center">
                             <TextBlock x:Name="NowPlayingToggleIcon"
@@ -3465,7 +3465,7 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="4"
+                                                    CornerRadius="{DynamicResource RadiusMd}"
                                                     Padding="{TemplateBinding Padding}">
                                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Border>
@@ -3661,7 +3661,7 @@
                             <Border Margin="8,4,8,8" Padding="20,24"
                                     Background="{DynamicResource SurfaceBrush}"
                                     BorderBrush="{DynamicResource BorderBrush}"
-                                    BorderThickness="1" CornerRadius="6">
+                                    BorderThickness="1" CornerRadius="{DynamicResource RadiusLg}">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Visibility" Value="Collapsed"/>

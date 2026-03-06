@@ -37,7 +37,7 @@
                                     Padding="8,6"
                                     BorderBrush="{DynamicResource BorderBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="4">
+                                    CornerRadius="{DynamicResource RadiusMd}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -69,7 +69,7 @@
                 <Border Background="{DynamicResource SuccessBrush}"
                         Margin="0,4"
                         Padding="8,4"
-                        CornerRadius="4"
+                        CornerRadius="{DynamicResource RadiusMd}"
                         Visibility="{Binding HasHistory, Converter={StaticResource BoolToVisibilityConverter}}">
                     <TextBlock Text="← Current State"
                                FontSize="11"
@@ -87,7 +87,7 @@
                                     Padding="8,6"
                                     BorderBrush="{DynamicResource AccentBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="4"
+                                    CornerRadius="{DynamicResource RadiusMd}"
                                     Cursor="Hand"
                                     ToolTip="Click to undo to this point">
                                 <Border.Style>

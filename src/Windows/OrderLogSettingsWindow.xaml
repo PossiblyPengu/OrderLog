@@ -16,7 +16,7 @@
             Background="{DynamicResource BackgroundBrush}"
             BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
-            CornerRadius="2"
+            CornerRadius="{DynamicResource WindowCornerRadius}"
             RenderTransformOrigin="0.5,0.5">
         <Border.RenderTransform>
             <ScaleTransform/>
@@ -34,7 +34,7 @@
             <!-- Title Bar -->
             <Border Grid.Row="0"
                     Background="{DynamicResource TitleBarBackgroundBrush}"
-                    CornerRadius="2,2,0,0"
+                    CornerRadius="{DynamicResource TitleBarCornerRadius}"
                     MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid>
                     <StackPanel Orientation="Horizontal" Margin="14,0,0,0" VerticalAlignment="Center">
@@ -48,7 +48,7 @@
                             BorderThickness="0" Cursor="Hand" Margin="0,0,4,0">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
-                                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4">
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusSm}">
                                     <TextBlock Text="✕" FontSize="14"
                                                Foreground="{DynamicResource TitleBarTextBrush}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>

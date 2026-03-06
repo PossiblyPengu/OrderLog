@@ -442,15 +442,14 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
             var themeService = _serviceProvider.GetService<ThemeService>();
             if (themeService != null)
             {
-                bool isDark = themeService.IsDarkMode;
-
-                ApplyThemeResources(isDark);
                 themeService.ThemeChanged += OnThemeChanged;
+                // Apply initial window-local overrides; app resources are already set by ThemeService.
+                ApplyThemeResources(themeService.IsDarkMode);
             }
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "Failed to apply theme");
+            Log.Warning(ex, "Failed to subscribe to theme changes");
         }
     }
 
@@ -458,32 +457,10 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
 
     private void ApplyThemeResources(bool isDarkMode)
     {
-        Resources.MergedDictionaries.Clear();
-
-        // Marathon 2026 design system — dark or light colour variant
-        var themeFile = isDarkMode
-            ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
-            : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
-        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(themeFile) });
-
-        // Shape profile overlay
-        var shapeFile = OrderLog.Services.ThemeService.Instance.ShapeVariant switch
-        {
-            OrderLog.Services.ShapeVariant.Rounded => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/RoundedShape.xaml",
-            OrderLog.Services.ShapeVariant.Sharp   => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/SharpShape.xaml",
-            _                                      => "pack://application:,,,/OrderLog;component/Themes/Marathon/Shapes/AngularShape.xaml",
-        };
-        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(shapeFile) });
-
-        // Colour palette overlay
-        var colourUri = OrderLog.Services.ThemeService.GetColourPaletteUri(OrderLog.Services.ThemeService.Instance.ColourTheme, isDarkMode);
-        if (colourUri != null)
-            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(colourUri) });
-
+        // Theme resources are managed by ThemeService at app level and inherit automatically.
+        // Only apply window-local overrides here.
         if (_viewModel.CardFontSize > 0)
-        {
             Resources["CardFontSize"] = _viewModel.CardFontSize;
-        }
     }
 
     private void OnThemeChanged(object? sender, bool isDarkMode)
