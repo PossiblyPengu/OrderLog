@@ -155,70 +155,7 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         DockToEdge(AppBarEdge.Right);
-        ApplyTaskbarOverlay();
         InitializeWidgetAsync();
-    }
-
-    private void ApplyTaskbarOverlay()
-    {
-        try
-        {
-            var drawing = new GeometryDrawing
-            {
-                Brush = Brushes.White,
-                Pen = new Pen(Brushes.Black, 0.5),
-                Geometry = new GeometryGroup
-                {
-                    Children =
-                    {
-                        new EllipseGeometry(new Point(8, 8), 7.5, 7.5),
-                    }
-                }
-            };
-
-            var plusDrawing = new GeometryDrawing
-            {
-                Brush = new SolidColorBrush(Color.FromRgb(139, 92, 246)),
-                Geometry = new GeometryGroup
-                {
-                    Children =
-                    {
-                        new RectangleGeometry(new Rect(4, 6.5, 8, 3)),
-                        new RectangleGeometry(new Rect(6.5, 4, 3, 8)),
-                    }
-                }
-            };
-
-            var drawingGroup = new DrawingGroup();
-            drawingGroup.Children.Add(drawing);
-            drawingGroup.Children.Add(plusDrawing);
-
-            var drawingImage = new DrawingImage(drawingGroup);
-            drawingImage.Freeze();
-
-            TaskbarItemInfo ??= new TaskbarItemInfo();
-            TaskbarItemInfo.Overlay = drawingImage;
-            TaskbarItemInfo.Description = "Order Log";
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Failed to apply taskbar overlay");
-        }
-    }
-
-    private void ClearTaskbarOverlay()
-    {
-        try
-        {
-            if (TaskbarItemInfo != null)
-            {
-                TaskbarItemInfo.Overlay = null;
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Failed to clear taskbar overlay");
-        }
     }
 
     private async void InitializeWidgetAsync()
@@ -255,8 +192,6 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
     {
         base.OnClosing(e);
         if (e.Cancel) return;
-
-        ClearTaskbarOverlay();
 
         try
         {

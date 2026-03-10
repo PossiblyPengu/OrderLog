@@ -10,7 +10,8 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        ResizeMode="CanResizeWithGrip">
+        ResizeMode="CanResizeWithGrip"
+        Icon="pack://application:,,,/Assets/orderlog.ico">
 
     <Border x:Name="RootBorder"
             Background="{DynamicResource BackgroundBrush}"

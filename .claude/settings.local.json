@@ -11,7 +11,10 @@
       "Bash(grep:*)",
       "Bash(\"/c/Program Files/dotnet/dotnet.exe\" build \"d:/CODE/SOUP/OrderLog/src/OrderLog.csproj\")",
       "Bash(powershell.exe -Command \"dotnet build ''d:\\\\CODE\\\\SOUP\\\\OrderLog\\\\src\\\\OrderLog.csproj''\")",
-      "Bash(find src -name \"*.xaml\" -exec grep -l \"ToolTip\\\\|Placeholder\\\\|watermark\" {} ;)"
+      "Bash(find src -name \"*.xaml\" -exec grep -l \"ToolTip\\\\|Placeholder\\\\|watermark\" {} ;)",
+      "Bash(powershell -ExecutionPolicy Bypass -File IconMaker.ps1 -ConfigFile \"orderlog-windows.json\" -OutputPath \"d:/CODE/SOUP/OrderLog/src/Assets\" -ProjectName \"OrderLog\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File IconMaker-v2.ps1 -ConfigFile \"orderlog-windows.json\" -OutputPath \"d:/CODE/SOUP/OrderLog/src/Assets\" -ProjectName \"OrderLog\")",
+      "Bash(D:/CODE/\"important files\"/dotnet-sdk-8.0.404-win-x64/dotnet.exe publish src/OrderLog.csproj -c Release -r win-x64 --self-contained -o publish)"
     ]
   }
 }

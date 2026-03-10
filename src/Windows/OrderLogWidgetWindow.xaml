@@ -13,7 +13,8 @@
         ResizeMode="NoResize"
         Background="Transparent"
         Topmost="True"
-        ShowInTaskbar="True">
+        ShowInTaskbar="True"
+        Icon="pack://application:,,,/Assets/orderlog.ico">
 
     <Window.Resources>
         <ResourceDictionary>

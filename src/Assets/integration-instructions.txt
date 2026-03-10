@@ -1,0 +1,31 @@
+﻿Project Integration Instructions
+===============================
+
+1. Add this to your .csproj PropertyGroup:
+  <!-- Icon integration - add to your .csproj PropertyGroup -->
+  <ApplicationIcon>Icons\OrderLog-icon.ico</ApplicationIcon>
+
+2. Add this to your .csproj ItemGroup:
+  <!-- Icon integration - add to your .csproj ItemGroup -->
+  <EmbeddedResource Include="Icons\OrderLog-icon.ico" />
+
+3. Add this code to your main form constructor:
+// Icon loading code - add to your main form constructor
+try
+{
+    var iconStream = typeof(MainForm).Assembly.GetManifestResourceStream("OrderLog.Icons.OrderLog-icon.ico");
+    if (iconStream != null)
+    {
+        Icon = new Icon(iconStream);
+    }
+}
+catch
+{
+    // Icon loading failed, continue without icon
+}
+
+4. Rebuild your project
+
+Icon Files Created:
+- OrderLog-icon.ico (main icon file)
+- Individual PNG files for reference

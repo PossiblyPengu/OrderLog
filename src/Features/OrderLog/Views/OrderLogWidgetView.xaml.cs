@@ -67,6 +67,12 @@ public partial class OrderLogWidgetView : UserControl
         _showingArchivedTab = false;
         UpdateTabState();
 
+        // Force refresh of active display items
+        if (DataContext is OrderLogViewModel vm)
+        {
+            vm.RefreshDisplayItems();
+        }
+
         // Restore active tab scroll position
         if (MainScrollViewer != null)
         {
@@ -88,27 +94,19 @@ public partial class OrderLogWidgetView : UserControl
         _showingArchivedTab = true;
         UpdateTabState();
 
-        // Ensure the archived display collection is refreshed when showing the Archived tab
+        // Force refresh of archived display items
         if (DataContext is OrderLogViewModel vm)
         {
-            try
+            _ = vm.RefreshArchivedDisplayItemsAsync();
+        }
+
+        // Restore archived tab scroll position
+        if (MainScrollViewer != null)
+        {
+            _ = Dispatcher.BeginInvoke(new Action(() =>
             {
-                var countBefore = vm.ArchivedItems?.Count ?? 0;
-                Log.Debug("Opening Archived tab - archived count={Count}", countBefore);
-                _ = vm.RefreshArchivedDisplayItemsAsync().ContinueWith(t =>
-                {
-                    try
-                    {
-                        var countAfter = vm.DisplayArchivedItems?.Sum(g => g.Members.Count) ?? 0;
-                        Log.Debug("Archived refresh completed - displayCount={Count}", countAfter);
-                    }
-                    catch { }
-                });
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "Failed to start async archived refresh");
-            }
+                MainScrollViewer.ScrollToVerticalOffset(_archivedTabScrollPosition);
+            }), System.Windows.Threading.DispatcherPriority.Loaded);
         }
 
         // Restore archived tab scroll position
@@ -204,6 +202,7 @@ public partial class OrderLogWidgetView : UserControl
         fadeIn.Completed += (s, _) =>
         {
             incoming.BeginAnimation(OpacityProperty, null);
+            incoming.Opacity = 1;
             if (inTransform != null)
             {
                 inTransform.BeginAnimation(TranslateTransform.XProperty, null);

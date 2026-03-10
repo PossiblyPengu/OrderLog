@@ -164,7 +164,6 @@ public partial class ThemeService : ObservableObject
             ColourTheme.Red    => "Red",
             ColourTheme.Purple => "Purple",
             ColourTheme.Cyan   => "Cyan",
-            ColourTheme.Yellow => "Yellow",
             _                  => "Neon",
         };
 

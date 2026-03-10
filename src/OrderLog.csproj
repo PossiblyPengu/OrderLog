@@ -50,6 +50,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Resource Include="Assets\soup-logo.png" />
+    <Resource Include="Assets\orderlog.ico" />
   </ItemGroup>
 
 </Project>

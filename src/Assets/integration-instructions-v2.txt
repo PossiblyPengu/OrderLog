@@ -1,0 +1,52 @@
+﻿Advanced Icon Integration Instructions
+=====================================
+
+1. Add this to your .csproj PropertyGroup:
+  <!-- Advanced icon integration -->
+  <ApplicationIcon>Assets\OrderLog-icon.ico</ApplicationIcon>
+
+2. Add this to your .csproj ItemGroup:
+  <!-- Icon as embedded resource -->
+  <EmbeddedResource Include="Assets\OrderLog-icon.ico" />
+  <None Update="Assets\*.png">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+
+3. Enhanced icon loading code:
+// Advanced icon loading - add to your main window constructor
+try
+{
+    var iconStream = typeof(MainWindow).Assembly.GetManifestResourceStream("OrderLog.Assets.OrderLog-icon.ico");
+    if (iconStream != null)
+    {
+        this.Icon = new Icon(iconStream);
+    }
+}
+catch
+{
+    // Icon loading failed, continue without icon
+    System.Diagnostics.Debug.WriteLine("Failed to load application icon");
+}
+
+4. For WPF applications, also add to App.xaml:
+<Application ...>
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Add your theme resources here -->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
+
+Generated Files:
+- OrderLog-icon.ico (multi-size ICO file)
+- Individual PNG files for all sizes
+- SVG vector version (if enabled)
+- This integration guide
+
+Icon Features:
+- Multiple sizes: 16, 32, 48, 64, 128, 256
+- Advanced shapes and gradients
+- High-quality rendering
+- Professional appearance

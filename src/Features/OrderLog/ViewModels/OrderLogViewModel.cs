@@ -2202,6 +2202,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         RefreshStatusGroups();
         RefreshStickyNotes();
         UpdateLinkedItemCounts();
+        OnPropertyChanged(nameof(DisplayItems)); // Ensure UI updates
     }
 
     /// <summary>
@@ -2369,6 +2370,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
                 foreach (var g in built)
                     DisplayArchivedItems.Add(g);
                 UpdateDisplayCounts();
+                OnPropertyChanged(nameof(DisplayArchivedItems)); // Ensure UI updates
             });
             _logger?.LogInformation("RefreshArchivedDisplayItemsAsync built {Groups} groups from {Items} items in {Ms}ms", built.Count, snapshot.Count, sw.ElapsedMilliseconds);
         }
