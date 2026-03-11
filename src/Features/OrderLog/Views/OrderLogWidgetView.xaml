@@ -3098,7 +3098,31 @@
                         <Border CornerRadius="0"
                                 Background="{DynamicResource SurfaceBrush}"
                                 MinHeight="220">
-                            <Grid>
+                            <Grid x:Name="PlayerExpandedGrid">
+                                <Grid.Triggers>
+                                    <EventTrigger RoutedEvent="Grid.MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="PlayerControlsPanel"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="1" Duration="0:0:0.2">
+                                                    <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="Grid.MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="PlayerControlsPanel"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="0" Duration="0:0:0.35" BeginTime="0:0:1">
+                                                    <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseIn"/></DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Grid.Triggers>
                                 <!-- Dominant color tint background -->
                                 <Border x:Name="DominantColorBg" CornerRadius="0" Opacity="0.25"/>
 
@@ -3179,6 +3203,7 @@
                                                    Visibility="Collapsed"/>
                                     </StackPanel>
 
+                                    <StackPanel x:Name="PlayerControlsPanel" Opacity="0">
                                     <!-- Progress Bar -->
                                     <Grid Margin="0,10,0,0">
                                         <Grid.ColumnDefinitions>
@@ -3438,6 +3463,7 @@
                                             </Button>
                                         </StackPanel>
                                     </Grid>
+                                    </StackPanel>
                                 </StackPanel>
 
                                 <!-- ControlBar stub -->
