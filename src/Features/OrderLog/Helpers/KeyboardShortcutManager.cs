@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Input;
 using OrderLog.Features.ViewModels;
 using OrderLog.Features.Models;
+using OrderLog.Services;
 
 namespace OrderLog.Features.Helpers;
 
@@ -232,6 +233,49 @@ public class KeyboardShortcutManager
                     break;
             }
         }
+        // Alt key combinations — media controls
+        if (modifiers.HasFlag(ModifierKeys.Alt))
+        {
+            switch (key)
+            {
+                case Key.Space:
+                case Key.P:
+                    // Alt+Space or Alt+P: Play/Pause
+                    SpotifyService.Instance.PlayPauseAsync();
+                    return true;
+
+                case Key.Right:
+                    // Alt+Right: Next track
+                    SpotifyService.Instance.NextTrackAsync();
+                    return true;
+
+                case Key.Left:
+                    // Alt+Left: Previous track
+                    SpotifyService.Instance.PreviousTrackAsync();
+                    return true;
+
+                case Key.Up:
+                    // Alt+Up: Volume up
+                    SpotifyService.Instance.VolumeUpAsync();
+                    return true;
+
+                case Key.Down:
+                    // Alt+Down: Volume down
+                    SpotifyService.Instance.VolumeDownAsync();
+                    return true;
+
+                case Key.L:
+                    // Alt+L: Like/unlike current track
+                    SpotifyService.Instance.ToggleLikeCurrentTrack();
+                    return true;
+
+                case Key.M:
+                    // Alt+M: Mute/unmute
+                    SpotifyService.Instance.VolumeMuteAsync();
+                    return true;
+            }
+        }
+
         // Arrow key navigation (without Ctrl)
         else if (modifiers == ModifierKeys.None)
         {

@@ -141,6 +141,12 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _runAtStartup = false;
 
+    /// <summary>
+    /// Whether Spotify Web API enhancements are enabled.
+    /// </summary>
+    [ObservableProperty]
+    private bool _spotifyApiEnabled = false;
+
     // Search & Filter Properties
     [ObservableProperty]
     private string _searchQuery = string.Empty;
@@ -489,6 +495,11 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     partial void OnShowArchivedChanged(bool value) => SaveWidgetSettings();
     partial void OnDefaultOrderColorChanged(string value) => SaveWidgetSettings();
     partial void OnDefaultNoteColorChanged(string value) => SaveWidgetSettings();
+    partial void OnSpotifyApiEnabledChanged(bool value)
+    {
+        SaveWidgetSettings();
+        OrderLog.Services.SpotifyService.Instance.SetWebApiEnabled(value);
+    }
     partial void OnSortStatusDescendingChanged(bool value) => SaveWidgetSettings();
 
     partial void OnNotesOnlyModeChanged(bool value)
@@ -552,7 +563,8 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             OnDeckGroupExpanded = OnDeckGroupExpanded,
             InProgressGroupExpanded = InProgressGroupExpanded,
             NotesExpanded = NotesExpanded,
-            RunAtStartup = RunAtStartup
+            RunAtStartup = RunAtStartup,
+            SpotifyApiEnabled = SpotifyApiEnabled
         };
         Task.Delay(300).ContinueWith(_ =>
         {
@@ -646,6 +658,9 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             // System settings
             RunAtStartup = s.RunAtStartup;
             SetRunAtStartup(RunAtStartup);
+            // Spotify
+            SpotifyApiEnabled = s.SpotifyApiEnabled;
+            OrderLog.Services.SpotifyService.Instance.SetWebApiEnabled(SpotifyApiEnabled);
             
             // Apply font size to resources
             if (Application.Current != null)

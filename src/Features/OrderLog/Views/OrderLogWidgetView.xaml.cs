@@ -36,6 +36,8 @@ public partial class OrderLogWidgetView : UserControl
     private bool _isMarqueeRunning = false;
     private Random _random = new();
     private KeyboardShortcutManager? _keyboardShortcutManager;
+    private bool _lastHasMedia = false; // For auto-hide fade tracking
+    private string? _lastAlbumArtTrackKey; // For crossfade detection
 
     public OrderLogWidgetView()
     {
@@ -405,7 +407,7 @@ public partial class OrderLogWidgetView : UserControl
 
     private void NowPlayingContent_MouseEnter(object sender, MouseEventArgs e)
     {
-        // Fade in the control bar
+        // Brighten the control bar on hover
         if (ControlBar == null) return;
         var fadeIn = new DoubleAnimation(1, TimeSpan.FromMilliseconds(150))
         {
@@ -416,13 +418,32 @@ public partial class OrderLogWidgetView : UserControl
 
     private void NowPlayingContent_MouseLeave(object sender, MouseEventArgs e)
     {
-        // Fade out the control bar
+        // Dim the control bar when not hovering
         if (ControlBar == null) return;
-        var fadeOut = new DoubleAnimation(0, TimeSpan.FromMilliseconds(300))
+        var fadeOut = new DoubleAnimation(0.9, TimeSpan.FromMilliseconds(300))
         {
             EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
         };
         ControlBar.BeginAnimation(OpacityProperty, fadeOut);
+    }
+
+    private async void ProgressTrack_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (_spotifyService == null) return;
+        try
+        {
+            var container = ProgressTrackContainer;
+            if (container == null || _spotifyService.TrackDuration.TotalSeconds <= 0) return;
+
+            var clickPos = e.GetPosition(container);
+            double ratio = Math.Clamp(clickPos.X / container.ActualWidth, 0, 1);
+            var seekPosition = TimeSpan.FromSeconds(_spotifyService.TrackDuration.TotalSeconds * ratio);
+            await _spotifyService.SeekAsync(seekPosition);
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Debug(ex, "Failed to seek via progress bar click");
+        }
     }
 
     private void AnimateEqualizerBars()
@@ -708,7 +729,7 @@ public partial class OrderLogWidgetView : UserControl
         _nowPlayingExpanded = expanded;
         NowPlayingToggleIcon.Text = _nowPlayingExpanded ? "▼" : "▲";
 
-        double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.8, 180), 280);
+        double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.8, 180), 340);
 
         if (_nowPlayingExpanded)
         {
@@ -887,6 +908,7 @@ public partial class OrderLogWidgetView : UserControl
         if (_spotifyService != null)
         {
             _spotifyService.PropertyChanged -= SpotifyService_PropertyChanged;
+            _spotifyService.TrackChanged -= SpotifyService_TrackChanged;
         }
 
         // Unsubscribe from ViewModel property changes
@@ -1033,6 +1055,8 @@ public partial class OrderLogWidgetView : UserControl
             _spotifyService = SpotifyService.Instance;
             await _spotifyService.InitializeAsync();
             _spotifyService.PropertyChanged += SpotifyService_PropertyChanged;
+            _spotifyService.TrackChanged += SpotifyService_TrackChanged;
+            HistoryList.ItemsSource = _spotifyService.RecentTracks;
             UpdateNowPlayingUI();
         }
         catch (Exception ex)
@@ -1044,6 +1068,47 @@ public partial class OrderLogWidgetView : UserControl
     private void SpotifyService_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         Dispatcher.Invoke(() => UpdateNowPlayingUI());
+    }
+
+    private void SpotifyService_TrackChanged(object? sender, string trackTitle)
+    {
+        Dispatcher.Invoke(() => ShowTrackChangeToast(trackTitle));
+    }
+
+    private void ShowTrackChangeToast(string trackTitle)
+    {
+        try
+        {
+            if (TrackChangeToast == null || ToastTrackTitle == null) return;
+
+            ToastTrackTitle.Text = trackTitle;
+
+            // Slide up + fade in, hold, then fade out
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            var hold = new DoubleAnimation(1, 1, TimeSpan.FromMilliseconds(2500));
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400))
+            {
+                BeginTime = TimeSpan.FromMilliseconds(2700),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+            };
+
+            TrackChangeToast.BeginAnimation(OpacityProperty, null);
+            var storyboard = new Storyboard();
+            storyboard.Children.Add(fadeIn);
+            storyboard.Children.Add(fadeOut);
+            Storyboard.SetTarget(fadeIn, TrackChangeToast);
+            Storyboard.SetTargetProperty(fadeIn, new PropertyPath(OpacityProperty));
+            Storyboard.SetTarget(fadeOut, TrackChangeToast);
+            Storyboard.SetTargetProperty(fadeOut, new PropertyPath(OpacityProperty));
+            storyboard.Begin();
+        }
+        catch (Exception ex)
+        {
+            Log.Debug(ex, "Failed to show track change toast");
+        }
     }
 
     private void UpdateNowPlayingUI()
@@ -1060,23 +1125,164 @@ public partial class OrderLogWidgetView : UserControl
             return;
         }
 
-        // Hide the entire player section when nothing is playing OR when disabled in settings
+        // Show connect overlay only when no media is detected and Web API isn't connected
+        try
+        {
+            SpotifyConnectOverlay.Visibility = (!_spotifyService.HasMedia && !_spotifyService.IsConnected)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+        catch { }
+
+        // Auto-hide with smooth fade when nothing is playing
         var viewModel = DataContext as OrderLogViewModel;
         var showNowPlaying = viewModel?.ShowNowPlaying ?? true;
-        NowPlayingSection.Visibility = (showNowPlaying && _spotifyService.HasMedia) ? Visibility.Visible : Visibility.Collapsed;
+        bool shouldBeVisible = showNowPlaying && _spotifyService.HasMedia;
+
+        if (shouldBeVisible && !_lastHasMedia)
+        {
+            // Fade in
+            NowPlayingSection.Visibility = Visibility.Visible;
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            NowPlayingSection.BeginAnimation(OpacityProperty, fadeIn);
+        }
+        else if (!shouldBeVisible && _lastHasMedia)
+        {
+            // Fade out then collapse
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+            };
+            fadeOut.Completed += (s, _) =>
+            {
+                NowPlayingSection.Visibility = Visibility.Collapsed;
+                NowPlayingSection.BeginAnimation(OpacityProperty, null);
+            };
+            NowPlayingSection.BeginAnimation(OpacityProperty, fadeOut);
+        }
+        else if (!shouldBeVisible)
+        {
+            NowPlayingSection.Visibility = Visibility.Collapsed;
+        }
+        _lastHasMedia = shouldBeVisible;
 
         if (!_spotifyService.HasMedia) return;
 
         TrackTitleText.Text = _spotifyService.TrackTitle;
         ArtistNameText.Text = _spotifyService.ArtistName;
-        AlbumArtImage.Source = _spotifyService.AlbumArt;
-        AlbumArtBlurredBg.Source = _spotifyService.AlbumArt; // Set blurred background too
         PlayPauseButton.Content = _spotifyService.IsPlaying ? "⏸" : "▶";
+        try { MiniPlayPauseButton.Content = _spotifyService.IsPlaying ? "⏸" : "▶"; } catch { }
+
+        // Toggle API-specific UI elements
+        var apiVis = _spotifyService.IsWebApiConnected ? Visibility.Visible : Visibility.Collapsed;
+        try
+        {
+            LikeButton.Visibility = apiVis;
+            VolumeDownButton.Visibility = apiVis;
+            VolumeUpButton.Visibility = apiVis;
+            HistoryButton.Visibility = apiVis;
+            ShuffleIndicatorWrapper.Visibility = apiVis;
+            RepeatIndicatorWrapper.Visibility = apiVis;
+        }
+        catch { }
+
+        // Album · Device info line (API-only data)
+        try
+        {
+            if (!_spotifyService.IsWebApiConnected)
+            {
+                AlbumDeviceText.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                var album = _spotifyService.AlbumName ?? "";
+                var device = _spotifyService.DeviceName ?? "";
+                if (!string.IsNullOrEmpty(album) || !string.IsNullOrEmpty(device))
+                {
+                    var parts = new System.Collections.Generic.List<string>();
+                    if (!string.IsNullOrEmpty(album)) parts.Add(album);
+                    if (!string.IsNullOrEmpty(device)) parts.Add($"📱 {device}");
+                    AlbumDeviceText.Text = string.Join("  ·  ", parts);
+                    AlbumDeviceText.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    AlbumDeviceText.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+        catch { }
+
+        // Album art crossfade
+        var currentArtKey = $"{_spotifyService.TrackTitle}|{_spotifyService.ArtistName}";
+        if (_spotifyService.AlbumArt != null && currentArtKey != _lastAlbumArtTrackKey)
+        {
+            // Crossfade: move current to old, set new, animate
+            AlbumArtImageOld.Source = AlbumArtImage.Source;
+            AlbumArtImageOld.Opacity = 1;
+            AlbumArtImage.Source = _spotifyService.AlbumArt;
+            AlbumArtImage.Opacity = 0;
+
+            var fadeInNew = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(500))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            var fadeOutOld = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(500))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+            };
+            AlbumArtImage.BeginAnimation(OpacityProperty, fadeInNew);
+            AlbumArtImageOld.BeginAnimation(OpacityProperty, fadeOutOld);
+
+            _lastAlbumArtTrackKey = currentArtKey;
+        }
+        else if (_spotifyService.AlbumArt != null && AlbumArtImage.Source != _spotifyService.AlbumArt)
+        {
+            AlbumArtImage.Source = _spotifyService.AlbumArt;
+            AlbumArtImage.Opacity = 1;
+        }
+        else if (_spotifyService.AlbumArt == null)
+        {
+            AlbumArtImage.Source = null;
+            AlbumArtImage.Opacity = 1;
+        }
+
+        AlbumArtBlurredBg.Source = _spotifyService.AlbumArt;
+
+        // Sync mini album art thumbnail
+        try { MiniAlbumArt.Source = _spotifyService.AlbumArt; } catch { }
 
         // Show/hide album art placeholder
         AlbumArtPlaceholder.Visibility = _spotifyService.AlbumArt == null
             ? Visibility.Visible
             : Visibility.Collapsed;
+
+        // Dominant color tint
+        try
+        {
+            var dominantColor = _spotifyService.DominantColor;
+            if (dominantColor != System.Windows.Media.Colors.Transparent)
+            {
+                DominantColorBg.Background = new SolidColorBrush(dominantColor);
+                MiniBarAccentStripe.Background = new SolidColorBrush(dominantColor);
+            }
+        }
+        catch { }
+
+        // Progress bar
+        UpdateProgressBar();
+
+        // Shuffle/Repeat indicators
+        UpdateShuffleRepeatIndicators();
+
+        // Like button state
+        LikeButton.Content = _spotifyService.IsCurrentTrackLiked ? "♥" : "♡";
+        LikeButton.Foreground = _spotifyService.IsCurrentTrackLiked
+            ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 80, 80))
+            : (System.Windows.Media.Brush)FindResource("TextSecondaryBrush");
 
         // Control equalizer animation
         if (_spotifyService.IsPlaying)
@@ -1111,7 +1317,7 @@ public partial class OrderLogWidgetView : UserControl
                 {
                     NowPlayingContent.Visibility = Visibility.Visible;
                     NowPlayingContent.BeginAnimation(HeightProperty, null);
-                    double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.8, 180), 280);
+                    double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.8, 180), 340);
                     var expandAnimation = new DoubleAnimation(0, targetHeight, TimeSpan.FromMilliseconds(200))
                     {
                         EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
@@ -1142,6 +1348,82 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
+    private void UpdateProgressBar()
+    {
+        if (_spotifyService == null) return;
+        try
+        {
+            var pos = _spotifyService.TrackPosition;
+            var dur = _spotifyService.TrackDuration;
+
+            TrackPositionText.Text = FormatTimeSpan(pos);
+            TrackDurationText.Text = FormatTimeSpan(dur);
+
+            double ratio = 0;
+            // Update progress bar fill width
+            if (dur.TotalSeconds > 0)
+            {
+                ratio = Math.Clamp(pos.TotalSeconds / dur.TotalSeconds, 0, 1);
+                var parent = ProgressBarFill.Parent as Grid;
+                if (parent != null && parent.ActualWidth > 0)
+                {
+                    ProgressBarFill.Width = parent.ActualWidth * ratio;
+                }
+            }
+            else
+            {
+                ProgressBarFill.Width = 0;
+            }
+
+            // Update mini progress bar in collapsed mini-bar
+            try
+            {
+                var miniParent = MiniProgressBarFill?.Parent as Grid;
+                if (miniParent != null && miniParent.ActualWidth > 0)
+                {
+                    MiniProgressBarFill.Width = miniParent.ActualWidth * ratio;
+                }
+            }
+            catch { }
+        }
+        catch { }
+    }
+
+    private static string FormatTimeSpan(TimeSpan ts)
+    {
+        if (ts.TotalHours >= 1)
+            return $"{(int)ts.TotalHours}:{ts.Minutes:D2}:{ts.Seconds:D2}";
+        return $"{(int)ts.TotalMinutes}:{ts.Seconds:D2}";
+    }
+
+    private void UpdateShuffleRepeatIndicators()
+    {
+        if (_spotifyService == null) return;
+        try
+        {
+            // Shuffle
+            ShuffleIndicator.Opacity = _spotifyService.IsShuffleEnabled ? 1.0 : 0.3;
+            ShuffleIndicator.Foreground = _spotifyService.IsShuffleEnabled
+                ? (System.Windows.Media.Brush)FindResource("AccentBrush")
+                : (System.Windows.Media.Brush)FindResource("TextTertiaryBrush");
+            ShuffleIndicator.ToolTip = _spotifyService.IsShuffleEnabled ? "Shuffle On" : "Shuffle Off";
+
+            // Repeat
+            RepeatIndicator.Opacity = _spotifyService.RepeatMode > 0 ? 1.0 : 0.3;
+            RepeatIndicator.Foreground = _spotifyService.RepeatMode > 0
+                ? (System.Windows.Media.Brush)FindResource("AccentBrush")
+                : (System.Windows.Media.Brush)FindResource("TextTertiaryBrush");
+            RepeatIndicator.Text = _spotifyService.RepeatMode == 1 ? "🔂" : "🔁";
+            RepeatIndicator.ToolTip = _spotifyService.RepeatMode switch
+            {
+                1 => "Repeat Track",
+                2 => "Repeat All",
+                _ => "Repeat Off"
+            };
+        }
+        catch { }
+    }
+
     private void NowPlayingHeader_Click(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2)
@@ -1155,7 +1437,7 @@ public partial class OrderLogWidgetView : UserControl
         NowPlayingToggleIcon.Text = _nowPlayingExpanded ? "▼" : "▲";
 
         // Calculate target height based on widget width (for square-ish album art)
-        double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.8, 180), 280);
+        double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.8, 180), 340);
 
         // Animated expand/collapse
         if (_nowPlayingExpanded)
@@ -1394,6 +1676,32 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
+    private async void SpotifyConnect_Click(object sender, RoutedEventArgs e)
+    {
+        if (_spotifyService == null) return;
+        try
+        {
+            SpotifyConnectButton.Content = "Connecting…";
+            SpotifyConnectButton.IsEnabled = false;
+            var result = await _spotifyService.ConnectAsync();
+            if (result)
+            {
+                UpdateNowPlayingUI();
+            }
+            else
+            {
+                SpotifyConnectButton.Content = "Connect";
+                SpotifyConnectButton.IsEnabled = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Warning(ex, "Spotify connect failed");
+            SpotifyConnectButton.Content = "Connect";
+            SpotifyConnectButton.IsEnabled = true;
+        }
+    }
+
     private async void PlayPause_Click(object sender, RoutedEventArgs e)
     {
         if (_spotifyService != null)
@@ -1415,6 +1723,52 @@ public partial class OrderLogWidgetView : UserControl
         if (_spotifyService != null)
         {
             await _spotifyService.PreviousTrackAsync();
+        }
+    }
+
+    private async void VolumeUp_Click(object sender, RoutedEventArgs e)
+    {
+        if (_spotifyService != null)
+        {
+            await _spotifyService.VolumeUpAsync();
+        }
+    }
+
+    private async void VolumeDown_Click(object sender, RoutedEventArgs e)
+    {
+        if (_spotifyService != null)
+        {
+            await _spotifyService.VolumeDownAsync();
+        }
+    }
+
+    private void LikeTrack_Click(object sender, RoutedEventArgs e)
+    {
+        _spotifyService?.ToggleLikeCurrentTrack();
+        UpdateNowPlayingUI();
+    }
+
+    private void HistoryButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (HistoryPopup != null)
+        {
+            HistoryPopup.IsOpen = !HistoryPopup.IsOpen;
+        }
+    }
+
+    private async void ShuffleIndicator_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (_spotifyService != null)
+        {
+            await _spotifyService.ToggleShuffleAsync();
+        }
+    }
+
+    private async void RepeatIndicator_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (_spotifyService != null)
+        {
+            await _spotifyService.CycleRepeatAsync();
         }
     }
 

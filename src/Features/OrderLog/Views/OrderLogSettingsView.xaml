@@ -545,6 +545,88 @@
                 </Grid>
             </Border>
 
+            <!-- Spotify Integration Section -->
+            <TextBlock Text="SPOTIFY" Style="{StaticResource SectionHeader}"/>
+
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Enable API Enhancements" Style="{StaticResource SettingLabel}"/>
+                        <TextBlock Style="{StaticResource SettingDescription}"
+                                   Text="Use Spotify Web API for richer controls (volume, shuffle, repeat, seek, save tracks). Player works without this via Windows media detection."/>
+                    </StackPanel>
+                    <CheckBox Grid.Column="1" VerticalAlignment="Center"
+                              IsChecked="{Binding SpotifyApiEnabled, Mode=TwoWay}"/>
+                </Grid>
+            </Border>
+
+            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Padding="16" Margin="0,0,0,8"
+                    Visibility="{Binding SpotifyApiEnabled, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock x:Name="SpotifyStatusText" Text="Not Connected" Style="{StaticResource SettingLabel}"/>
+                        <TextBlock x:Name="SpotifyStatusDesc" Style="{StaticResource SettingDescription}"
+                                   Text="Connect to enable direct Spotify control"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="SpotifyConnectBtn" Content="Connect"
+                                Click="SpotifyConnect_Click"
+                                Padding="14,8" FontSize="12" FontWeight="SemiBold"
+                                Background="{DynamicResource AccentBrush}"
+                                Foreground="{DynamicResource TextOnAccentBrush}"
+                                BorderThickness="0" Cursor="Hand"
+                                Margin="0,0,6,0">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="{DynamicResource RadiusMd}"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button x:Name="SpotifyDisconnectBtn" Content="Disconnect"
+                                Click="SpotifyDisconnect_Click"
+                                Padding="14,8" FontSize="12" FontWeight="SemiBold"
+                                Background="{DynamicResource DangerBrush}"
+                                Foreground="{DynamicResource TextOnAccentBrush}"
+                                BorderThickness="0" Cursor="Hand"
+                                Visibility="Collapsed">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="{DynamicResource RadiusMd}"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
             <!-- System Section -->
             <TextBlock Text="SYSTEM" Style="{StaticResource SectionHeader}"/>
 
