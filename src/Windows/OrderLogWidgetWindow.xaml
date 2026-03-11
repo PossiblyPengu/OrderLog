@@ -69,7 +69,7 @@
                         <!-- green indicator bracket -->
                         <Border Width="3" Height="16" Background="{DynamicResource AccentBrush}" Margin="0,0,7,0"/>
                         <TextBlock Text="ORDER LOG"
-                                   FontFamily="JetBrains Mono, Cascadia Code, Consolas, Courier New"
+                                   FontFamily="{DynamicResource FontMono}"
                                    FontSize="11" FontWeight="Bold"
                                    Foreground="{DynamicResource TitleBarTextBrush}"
                                    VerticalAlignment="Center"/>

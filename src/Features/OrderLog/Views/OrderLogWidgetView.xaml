@@ -529,21 +529,21 @@
                         <TextBlock Text="{Binding TimeInProgressDisplay}"
                                    Foreground="{Binding InProgressColorHex, Converter={StaticResource HexToBrushConverter}}"
                                    FontSize="{DynamicResource CardFontSize}"
-                                   FontFamily="{StaticResource FontMono}"
+                                   FontFamily="{DynamicResource FontMono}"
                                    Margin="0,6,0,0"/>
 
                         <!-- TimeOnDeck Display -->
                         <TextBlock Text="{Binding TimeOnDeckDisplay}"
                                    Foreground="{Binding OnDeckColorHex, Converter={StaticResource HexToBrushConverter}}"
                                    FontSize="{DynamicResource CardFontSize}"
-                                   FontFamily="{StaticResource FontMono}"
+                                   FontFamily="{DynamicResource FontMono}"
                                    FontWeight="SemiBold"
                                    Margin="0,2,0,0"/>
 
                         <!-- Created timestamp -->
                         <TextBlock Text="{Binding CreatedAtDisplay}"
                                    FontSize="10"
-                                   FontFamily="{StaticResource FontMono}"
+                                   FontFamily="{DynamicResource FontMono}"
                                    Foreground="{DynamicResource TextTertiaryBrush}"
                                    HorizontalAlignment="Right"
                                    Margin="0,4,0,0"/>
@@ -843,7 +843,7 @@
                             <TextBlock Grid.Column="1"
                                        Text="{Binding CreatedAtDisplay}"
                                        FontSize="10"
-                                       FontFamily="{StaticResource FontMono}"
+                                       FontFamily="{DynamicResource FontMono}"
                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                        VerticalAlignment="Center"/>
                         </Grid>
@@ -940,15 +940,15 @@
                                  Background="Transparent" BorderThickness="0" IsReadOnly="True" IsReadOnlyCaretVisible="False" Cursor="IBeam" Padding="0"/>
                         <TextBox Text="{Binding WhsShipmentNumbers}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="{DynamicResource CardFontSize}" Margin="0,0,0,4"
                                  Background="Transparent" BorderThickness="0" IsReadOnly="True" IsReadOnlyCaretVisible="False" Cursor="IBeam" Padding="0"/>
-                        <TextBox Text="{Binding TimeInProgressDisplay}" Foreground="{Binding InProgressColorHex, Converter={StaticResource HexToBrushConverter}}" FontSize="{DynamicResource CardFontSize}" FontFamily="{StaticResource FontMono}"
+                        <TextBox Text="{Binding TimeInProgressDisplay}" Foreground="{Binding InProgressColorHex, Converter={StaticResource HexToBrushConverter}}" FontSize="{DynamicResource CardFontSize}" FontFamily="{DynamicResource FontMono}"
                                  Background="Transparent" BorderThickness="0" IsReadOnly="True" IsReadOnlyCaretVisible="False" Cursor="IBeam" Padding="0"/>
-                        <TextBox Text="{Binding TimeOnDeckDisplay}" Foreground="{Binding OnDeckColorHex, Converter={StaticResource HexToBrushConverter}}" FontSize="{DynamicResource CardFontSize}" FontFamily="{StaticResource FontMono}" FontWeight="SemiBold" Margin="0,4,0,0"
+                        <TextBox Text="{Binding TimeOnDeckDisplay}" Foreground="{Binding OnDeckColorHex, Converter={StaticResource HexToBrushConverter}}" FontSize="{DynamicResource CardFontSize}" FontFamily="{DynamicResource FontMono}" FontWeight="SemiBold" Margin="0,4,0,0"
                                  Background="Transparent" BorderThickness="0" IsReadOnly="True" IsReadOnlyCaretVisible="False" Cursor="IBeam" Padding="0"/>
                     </StackPanel>
                     
                     <!-- Footer with timestamp -->
                     <TextBlock Grid.Row="3" Text="{Binding CreatedAtDisplay}" FontSize="10"
-                               FontFamily="{StaticResource FontMono}"
+                               FontFamily="{DynamicResource FontMono}"
                                Foreground="{DynamicResource TextTertiaryBrush}"
                                HorizontalAlignment="Right" Margin="0,4,16,8"/>
                 </Grid>
@@ -1027,7 +1027,7 @@
                                 </TextBlock.Style>
                             </TextBlock>
                             <TextBlock Text="{Binding CreatedAtDisplay}"
-                                       FontSize="10" FontFamily="{StaticResource FontMono}"
+                                       FontSize="10" FontFamily="{DynamicResource FontMono}"
                                        Foreground="{DynamicResource TextTertiaryBrush}"/>
                         </StackPanel>
                     </StackPanel>
@@ -1339,21 +1339,21 @@
                                         <TextBlock Text="{Binding TimeInProgressDisplay}"
                                                    Foreground="{Binding InProgressColorHex, Converter={StaticResource HexToBrushConverter}}"
                                                    FontSize="{DynamicResource CardFontSize}"
-                                                   FontFamily="{StaticResource FontMono}"
+                                                   FontFamily="{DynamicResource FontMono}"
                                                    Margin="0,6,0,0"/>
 
                                         <!-- TimeOnDeck Display -->
                                         <TextBlock Text="{Binding TimeOnDeckDisplay}"
                                                    Foreground="{Binding OnDeckColorHex, Converter={StaticResource HexToBrushConverter}}"
                                                    FontSize="{DynamicResource CardFontSize}"
-                                                   FontFamily="{StaticResource FontMono}"
+                                                   FontFamily="{DynamicResource FontMono}"
                                                    FontWeight="SemiBold"
                                                    Margin="0,2,0,0"/>
 
                                         <!-- Created timestamp -->
                                         <TextBlock Text="{Binding CreatedAtDisplay}"
                                                    FontSize="10"
-                                                   FontFamily="{StaticResource FontMono}"
+                                                   FontFamily="{DynamicResource FontMono}"
                                                    Foreground="{DynamicResource TextTertiaryBrush}"
                                                    HorizontalAlignment="Right"
                                                    Margin="0,4,0,0"/>
@@ -1407,7 +1407,7 @@
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </Border>
                             <TextBlock Text="{Binding First.CreatedAtDisplay}"
-                                       FontSize="10" FontFamily="{StaticResource FontMono}"
+                                       FontSize="10" FontFamily="{DynamicResource FontMono}"
                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
@@ -1466,7 +1466,7 @@
 
                                             <!-- Timer (muted, no status colour) -->
                                             <TextBlock Text="{Binding TimeInProgressDisplay}"
-                                                       FontFamily="{StaticResource FontMono}" FontSize="10"
+                                                       FontFamily="{DynamicResource FontMono}" FontSize="10"
                                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                                        Visibility="{Binding TimeInProgressDisplay, Converter={StaticResource StringToVisibilityConverter}}"/>
                                         </StackPanel>
@@ -2230,7 +2230,7 @@
                                             <TextBlock Text="{Binding TimeInProgressDisplay}"
                                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                                        FontSize="{DynamicResource CardFontSize}"
-                                                       FontFamily="{StaticResource FontMono}"
+                                                       FontFamily="{DynamicResource FontMono}"
                                                        Margin="0,6,0,0"/>
                                         </StackPanel>
                                         
@@ -2324,7 +2324,7 @@
                                     <TextBlock Grid.Row="3" 
                                                Text="{Binding CreatedAtDisplay}" 
                                                FontSize="10" 
-                                               FontFamily="{StaticResource FontMono}"
+                                               FontFamily="{DynamicResource FontMono}"
                                                Foreground="{DynamicResource TextTertiaryBrush}" 
                                                HorizontalAlignment="Right" 
                                                Margin="0,4,16,8"/>
@@ -2825,12 +2825,12 @@
                                             <!-- Timer + timestamp -->
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding First.TimeInProgressDisplay}"
-                                                           FontFamily="{StaticResource FontMono}" FontSize="10"
+                                                           FontFamily="{DynamicResource FontMono}" FontSize="10"
                                                            Foreground="{DynamicResource TextTertiaryBrush}"
                                                            Margin="0,0,8,0"
                                                            Visibility="{Binding First.TimeInProgressDisplay, Converter={StaticResource StringToVisibilityConverter}}"/>
                                                 <TextBlock Text="{Binding First.CreatedAtDisplay}"
-                                                           FontSize="10" FontFamily="{StaticResource FontMono}"
+                                                           FontSize="10" FontFamily="{DynamicResource FontMono}"
                                                            Foreground="{DynamicResource TextTertiaryBrush}"
                                                            VerticalAlignment="Center"/>
                                             </StackPanel>
@@ -3103,30 +3103,6 @@
             </Grid>
         </Grid>
 
-        <!-- Track Change Toast Notification (floats above player) -->
-        <Border x:Name="TrackChangeToast" Grid.Row="4"
-                Background="{DynamicResource SurfaceBrush}"
-                BorderBrush="{DynamicResource AccentBrush}"
-                BorderThickness="1"
-                CornerRadius="{DynamicResource RadiusMd}"
-                Padding="10,6"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Margin="0,-40,0,0"
-                Panel.ZIndex="100"
-                Opacity="0"
-                IsHitTestVisible="False">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.4"/>
-            </Border.Effect>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Now Playing: " FontSize="11" FontWeight="SemiBold"
-                           Foreground="{DynamicResource AccentBrush}"/>
-                <TextBlock x:Name="ToastTrackTitle" FontSize="11" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" MaxWidth="200" TextTrimming="CharacterEllipsis"/>
-            </StackPanel>
-        </Border>
-
         <!-- Now Playing Mini-Player (Collapsible - rises from bottom) -->
         <Border x:Name="NowPlayingSection" Grid.Row="4"
                 Background="Transparent"
@@ -3145,13 +3121,12 @@
                         <!-- Album Art Background -->
                         <Border CornerRadius="0"
                                 Background="{DynamicResource SurfaceBrush}"
-                                MinHeight="180"
-                                MaxHeight="340">
+                                MinHeight="220">
                             <Grid>
-                                <!-- Dominant color tint background (behind album art, visible as glow) -->
-                                <Border x:Name="DominantColorBg" CornerRadius="0" Opacity="0.3"/>
+                                <!-- Dominant color tint background -->
+                                <Border x:Name="DominantColorBg" CornerRadius="0" Opacity="0.25"/>
 
-                                <!-- Album Art (fills entire area) - old image for crossfade -->
+                                <!-- Album Art - old image for crossfade -->
                                 <Image x:Name="AlbumArtImageOld"
                                        Stretch="UniformToFill"
                                        RenderOptions.BitmapScalingMode="HighQuality"
@@ -3159,16 +3134,15 @@
                                        VerticalAlignment="Center"
                                        Opacity="0"/>
 
-                                <!-- Album Art (fills entire area) - current -->
+                                <!-- Album Art - current -->
                                 <Image x:Name="AlbumArtImage"
                                        Stretch="UniformToFill"
                                        RenderOptions.BitmapScalingMode="HighQuality"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
 
-                                <!-- Hidden blurred background reference (for code-behind compatibility) -->
-                                <Image x:Name="AlbumArtBlurredBg"
-                                       Visibility="Collapsed"/>
+                                <!-- Hidden blurred background reference -->
+                                <Image x:Name="AlbumArtBlurredBg" Visibility="Collapsed"/>
 
                                 <!-- Placeholder when no art -->
                                 <TextBlock x:Name="AlbumArtPlaceholder"
@@ -3179,57 +3153,54 @@
                                            Foreground="{DynamicResource TextTertiaryBrush}"
                                            Opacity="0.3"/>
 
-                                <!-- Cinematic gradient overlay -->
+                                <!-- Gradient overlay: transparent top → near-black bottom -->
                                 <Border>
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                             <GradientStop Color="#00000000" Offset="0.0"/>
-                                            <GradientStop Color="#0A000000" Offset="0.2"/>
-                                            <GradientStop Color="#40000000" Offset="0.45"/>
-                                            <GradientStop Color="#AA000000" Offset="0.65"/>
-                                            <GradientStop Color="#E8000000" Offset="0.85"/>
-                                            <GradientStop Color="#F5000000" Offset="1"/>
+                                            <GradientStop Color="#08000000" Offset="0.25"/>
+                                            <GradientStop Color="#55000000" Offset="0.5"/>
+                                            <GradientStop Color="#BB000000" Offset="0.72"/>
+                                            <GradientStop Color="#EE000000" Offset="0.88"/>
+                                            <GradientStop Color="#F8000000" Offset="1.0"/>
                                         </LinearGradientBrush>
                                     </Border.Background>
                                 </Border>
 
-                                <!-- Track Info + Progress overlaid at bottom -->
-                                <StackPanel VerticalAlignment="Bottom" Margin="18,0,18,16">
+                                <!-- Track Info + Progress + Controls overlaid at bottom -->
+                                <StackPanel VerticalAlignment="Bottom" Margin="18,0,18,14">
+
                                     <!-- Track Title -->
                                     <TextBlock x:Name="TrackTitleText"
                                                Text="Not Playing"
-                                               FontSize="18"
+                                               FontSize="17"
                                                FontWeight="Bold"
                                                Foreground="White"
                                                TextTrimming="CharacterEllipsis"
                                                TextWrapping="NoWrap">
                                         <TextBlock.Effect>
-                                            <DropShadowEffect ShadowDepth="0" BlurRadius="6" Opacity="0.7" Color="Black"/>
+                                            <DropShadowEffect ShadowDepth="0" BlurRadius="8" Opacity="0.8" Color="Black"/>
                                         </TextBlock.Effect>
                                     </TextBlock>
 
                                     <!-- Artist · Album row -->
-                                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                                         <TextBlock x:Name="ArtistNameText"
                                                    Text=""
                                                    FontSize="12"
-                                                   Foreground="#CCFFFFFF"
+                                                   Foreground="#DDFFFFFF"
                                                    TextTrimming="CharacterEllipsis">
                                             <TextBlock.Effect>
-                                                <DropShadowEffect ShadowDepth="0" BlurRadius="4" Opacity="0.5" Color="Black"/>
+                                                <DropShadowEffect ShadowDepth="0" BlurRadius="4" Opacity="0.6" Color="Black"/>
                                             </TextBlock.Effect>
                                         </TextBlock>
                                         <TextBlock x:Name="AlbumDeviceText"
                                                    Text=""
                                                    FontSize="11"
-                                                   Foreground="#88FFFFFF"
+                                                   Foreground="#99FFFFFF"
                                                    TextTrimming="CharacterEllipsis"
-                                                   Margin="0,0,0,0"
-                                                   Visibility="Collapsed">
-                                            <TextBlock.Effect>
-                                                <DropShadowEffect ShadowDepth="0" BlurRadius="3" Opacity="0.3" Color="Black"/>
-                                            </TextBlock.Effect>
-                                        </TextBlock>
+                                                   Margin="6,0,0,0"
+                                                   Visibility="Collapsed"/>
                                     </StackPanel>
 
                                     <!-- Progress Bar -->
@@ -3244,17 +3215,16 @@
                                                    Text="0:00"
                                                    FontSize="9"
                                                    FontFamily="{DynamicResource FontMono}"
-                                                   Foreground="#99FFFFFF"
+                                                   Foreground="#AAFFFFFF"
                                                    VerticalAlignment="Center"
                                                    Margin="0,0,8,0"/>
-                                        <!-- Seekable Progress Track -->
                                         <Grid x:Name="ProgressTrackContainer" Grid.Column="1" Height="16" VerticalAlignment="Center"
                                               Cursor="Hand" Background="Transparent"
                                               MouseLeftButtonDown="ProgressTrack_MouseLeftButtonDown">
                                             <Grid VerticalAlignment="Center" Height="3">
-                                                <Border Background="#33FFFFFF" CornerRadius="1.5"/>
+                                                <Border Background="#44FFFFFF" CornerRadius="1.5"/>
                                                 <Border x:Name="ProgressBarFill"
-                                                        Background="White"
+                                                        Background="{DynamicResource PrimaryLightBrush}"
                                                         CornerRadius="1.5"
                                                         HorizontalAlignment="Left"
                                                         Width="0"/>
@@ -3265,13 +3235,13 @@
                                                    Text="0:00"
                                                    FontSize="9"
                                                    FontFamily="{DynamicResource FontMono}"
-                                                   Foreground="#99FFFFFF"
+                                                   Foreground="#AAFFFFFF"
                                                    VerticalAlignment="Center"
                                                    Margin="8,0,0,0"/>
                                     </Grid>
 
-                                    <!-- Controls Row: Shuffle | Vol- | Prev | Play/Pause | Next | Vol+ | Repeat | Like | History -->
-                                    <Grid Margin="0,8,0,0">
+                                    <!-- Controls Row -->
+                                    <Grid Margin="0,6,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
@@ -3285,9 +3255,9 @@
                                                 <TextBlock x:Name="ShuffleIndicator"
                                                            Text="🔀"
                                                            FontSize="12"
-                                                           Foreground="#88FFFFFF"
+                                                           Foreground="#AAFFFFFF"
                                                            VerticalAlignment="Center"
-                                                           Opacity="0.5"
+                                                           Opacity="0.7"
                                                            ToolTip="Shuffle Off"/>
                                             </Border>
                                             <Border x:Name="RepeatIndicatorWrapper" Cursor="Hand" MouseLeftButtonDown="RepeatIndicator_Click"
@@ -3295,9 +3265,9 @@
                                                 <TextBlock x:Name="RepeatIndicator"
                                                            Text="🔁"
                                                            FontSize="12"
-                                                           Foreground="#88FFFFFF"
+                                                           Foreground="#AAFFFFFF"
                                                            VerticalAlignment="Center"
-                                                           Opacity="0.5"
+                                                           Opacity="0.7"
                                                            ToolTip="Repeat Off"/>
                                             </Border>
                                         </StackPanel>
@@ -3343,7 +3313,10 @@
                                                                     </Border>
                                                                     <ControlTemplate.Triggers>
                                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter TargetName="Bd" Property="Background" Value="#22FFFFFF"/>
+                                                                            <Setter TargetName="Bd" Property="Background" Value="#33FFFFFF"/>
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsPressed" Value="True">
+                                                                            <Setter TargetName="Bd" Property="Background" Value="#55FFFFFF"/>
                                                                         </Trigger>
                                                                     </ControlTemplate.Triggers>
                                                                 </ControlTemplate>
@@ -3354,23 +3327,30 @@
                                             </Button>
                                             <Button x:Name="PlayPauseButton"
                                                     Content="▶" Click="PlayPause_Click"
-                                                    Background="White" Foreground="#111111"
-                                                    BorderThickness="0" FontSize="16"
-                                                    Width="40" Height="40" Margin="4,0" Cursor="Hand" ToolTip="Play/Pause">
+                                                    Background="{DynamicResource PrimaryBrush}" Foreground="White"
+                                                    BorderThickness="0" FontSize="14"
+                                                    Width="44" Height="44" Margin="4,0" Cursor="Hand" ToolTip="Play/Pause">
                                                 <Button.Style>
                                                     <Style TargetType="Button">
+                                                        <Setter Property="Foreground" Value="White"/>
                                                         <Setter Property="Template">
                                                             <Setter.Value>
                                                                 <ControlTemplate TargetType="Button">
-                                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="20">
-                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="22">
+                                                                        <TextBlock x:Name="Icon"
+                                                                                   Text="{TemplateBinding Content}"
+                                                                                   Foreground="{TemplateBinding Foreground}"
+                                                                                   FontFamily="Segoe UI Symbol"
+                                                                                   FontSize="{TemplateBinding FontSize}"
+                                                                                   HorizontalAlignment="Center"
+                                                                                   VerticalAlignment="Center"/>
                                                                     </Border>
                                                                     <ControlTemplate.Triggers>
                                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter TargetName="Bd" Property="Background" Value="#DDDDDD"/>
+                                                                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryDarkBrush}"/>
                                                                         </Trigger>
                                                                         <Trigger Property="IsPressed" Value="True">
-                                                                            <Setter TargetName="Bd" Property="Background" Value="#BBBBBB"/>
+                                                                            <Setter TargetName="Bd" Property="Opacity" Value="0.8"/>
                                                                         </Trigger>
                                                                     </ControlTemplate.Triggers>
                                                                 </ControlTemplate>
@@ -3394,7 +3374,10 @@
                                                                     </Border>
                                                                     <ControlTemplate.Triggers>
                                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter TargetName="Bd" Property="Background" Value="#22FFFFFF"/>
+                                                                            <Setter TargetName="Bd" Property="Background" Value="#33FFFFFF"/>
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsPressed" Value="True">
+                                                                            <Setter TargetName="Bd" Property="Background" Value="#55FFFFFF"/>
                                                                         </Trigger>
                                                                     </ControlTemplate.Triggers>
                                                                 </ControlTemplate>
@@ -3483,7 +3466,7 @@
                                     </Grid>
                                 </StackPanel>
 
-                                <!-- ControlBar stub (kept for code-behind hover animation reference) -->
+                                <!-- ControlBar stub -->
                                 <Border x:Name="ControlBar" Visibility="Collapsed"/>
 
                                 <!-- Recently Played Popup -->
@@ -3541,7 +3524,7 @@
                                     </Border>
                                 </Popup>
 
-                                <!-- Connect to Spotify overlay (shown when not authenticated) -->
+                                <!-- Connect to Spotify overlay -->
                                 <Border x:Name="SpotifyConnectOverlay" Visibility="Collapsed" Panel.ZIndex="100">
                                     <Border.Background>
                                         <SolidColorBrush Color="#000000" Opacity="0.85"/>

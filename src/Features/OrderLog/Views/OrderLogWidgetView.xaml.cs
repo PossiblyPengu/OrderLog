@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Documents;
@@ -24,6 +26,21 @@ namespace OrderLog.Features.Views;
 /// </summary>
 public partial class OrderLogWidgetView : UserControl
 {
+    [DllImport("dwmapi.dll", PreserveSig = true)]
+    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+    private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+
+    private static void ApplySettingsDarkTitleBar(Window window)
+    {
+        try
+        {
+            var hwnd = new WindowInteropHelper(window).EnsureHandle();
+            int dark = ThemeService.Instance.IsDarkMode ? 1 : 0;
+            DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref dark, sizeof(int));
+        }
+        catch { }
+    }
+
     private bool _nowPlayingExpanded = false;
     private bool _notesExpanded = false;
     private bool _showingArchivedTab = false;
@@ -908,7 +925,6 @@ public partial class OrderLogWidgetView : UserControl
         if (_spotifyService != null)
         {
             _spotifyService.PropertyChanged -= SpotifyService_PropertyChanged;
-            _spotifyService.TrackChanged -= SpotifyService_TrackChanged;
         }
 
         // Unsubscribe from ViewModel property changes
@@ -976,6 +992,7 @@ public partial class OrderLogWidgetView : UserControl
                 settingsWindow.Resources.MergedDictionaries.Add(dict);
             }
             settingsWindow.Background = (System.Windows.Media.Brush)FindResource("BackgroundBrush");
+            ApplySettingsDarkTitleBar(settingsWindow);
 
             settingsWindow.ShowDialog();
         }
@@ -1055,7 +1072,6 @@ public partial class OrderLogWidgetView : UserControl
             _spotifyService = SpotifyService.Instance;
             await _spotifyService.InitializeAsync();
             _spotifyService.PropertyChanged += SpotifyService_PropertyChanged;
-            _spotifyService.TrackChanged += SpotifyService_TrackChanged;
             HistoryList.ItemsSource = _spotifyService.RecentTracks;
             UpdateNowPlayingUI();
         }
@@ -1068,47 +1084,6 @@ public partial class OrderLogWidgetView : UserControl
     private void SpotifyService_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         Dispatcher.Invoke(() => UpdateNowPlayingUI());
-    }
-
-    private void SpotifyService_TrackChanged(object? sender, string trackTitle)
-    {
-        Dispatcher.Invoke(() => ShowTrackChangeToast(trackTitle));
-    }
-
-    private void ShowTrackChangeToast(string trackTitle)
-    {
-        try
-        {
-            if (TrackChangeToast == null || ToastTrackTitle == null) return;
-
-            ToastTrackTitle.Text = trackTitle;
-
-            // Slide up + fade in, hold, then fade out
-            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200))
-            {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-            };
-            var hold = new DoubleAnimation(1, 1, TimeSpan.FromMilliseconds(2500));
-            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400))
-            {
-                BeginTime = TimeSpan.FromMilliseconds(2700),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
-
-            TrackChangeToast.BeginAnimation(OpacityProperty, null);
-            var storyboard = new Storyboard();
-            storyboard.Children.Add(fadeIn);
-            storyboard.Children.Add(fadeOut);
-            Storyboard.SetTarget(fadeIn, TrackChangeToast);
-            Storyboard.SetTargetProperty(fadeIn, new PropertyPath(OpacityProperty));
-            Storyboard.SetTarget(fadeOut, TrackChangeToast);
-            Storyboard.SetTargetProperty(fadeOut, new PropertyPath(OpacityProperty));
-            storyboard.Begin();
-        }
-        catch (Exception ex)
-        {
-            Log.Debug(ex, "Failed to show track change toast");
-        }
     }
 
     private void UpdateNowPlayingUI()
@@ -1317,7 +1292,7 @@ public partial class OrderLogWidgetView : UserControl
                 {
                     NowPlayingContent.Visibility = Visibility.Visible;
                     NowPlayingContent.BeginAnimation(HeightProperty, null);
-                    double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.8, 180), 340);
+                    double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.75, 220), 300);
                     var expandAnimation = new DoubleAnimation(0, targetHeight, TimeSpan.FromMilliseconds(200))
                     {
                         EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
