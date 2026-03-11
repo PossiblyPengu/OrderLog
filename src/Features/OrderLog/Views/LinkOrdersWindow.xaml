@@ -18,6 +18,14 @@
                 <ResourceDictionary Source="/OrderLog;component/Themes/Marathon/MarathonTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <!-- Default TextBlock — monospace for HUD aesthetic -->
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily"          Value="{DynamicResource FontMono}"/>
+                <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+                <Setter Property="LineHeight"          Value="20"/>
+                <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
+            </Style>
+
             <!-- Status Chip Style (matching main widget design) -->
             <Style x:Key="StatusChipStyle" TargetType="Border">
                 <Setter Property="CornerRadius" Value="10"/>
@@ -185,8 +193,7 @@
                     <!-- Order Info -->
                     <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                         <TextBlock Text="{Binding VendorName, TargetNullValue='(No vendor)'}"
-                                   FontWeight="SemiBold" FontSize="13"
-                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                   FontWeight="SemiBold" FontSize="13"/>
                         <TextBlock Margin="0,4,0,0" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
                             <Run Text="Transfer:"/>
                             <Run Text="{Binding TransferNumbers, TargetNullValue='(none)', Mode=OneWay}"/>
@@ -225,7 +232,6 @@
                     <TextBlock Text="🔗 Link Orders" 
                                FontSize="14" 
                                FontWeight="SemiBold" 
-                               Foreground="{DynamicResource TextPrimaryBrush}"
                                VerticalAlignment="Center"/>
                     <Button Content="✕" 
                             HorizontalAlignment="Right" 
@@ -410,7 +416,6 @@
                 <TextBlock Grid.Row="0"
                            Text="Preview"
                            FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}"
                            Margin="0,0,0,8"/>
 
                 <!-- Preview Content -->

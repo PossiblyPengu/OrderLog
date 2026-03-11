@@ -6,6 +6,14 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="250"
              Background="{DynamicResource BackgroundBrush}">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily"          Value="{DynamicResource FontMono}"/>
+            <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="LineHeight"          Value="20"/>
+            <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -15,7 +23,7 @@
         <!-- Header -->
         <Border Grid.Row="0" Background="{DynamicResource SurfaceHoverBrush}" Padding="12,8">
             <StackPanel>
-                <TextBlock Text="Undo History" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14"/>
+                <TextBlock Text="Undo History" FontWeight="Bold" FontSize="14"/>
                 <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,0,0">
                     <Run Text="Undo: "/>
                     <Run Text="{Binding UndoCount, FallbackValue=0}"/>
@@ -119,7 +127,6 @@
                                     <TextBlock Grid.Column="1"
                                                Text="{Binding Description}"
                                                FontSize="12"
-                                               Foreground="{DynamicResource TextPrimaryBrush}"
                                                TextWrapping="Wrap"
                                                VerticalAlignment="Center"/>
 

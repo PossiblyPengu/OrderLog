@@ -35,8 +35,7 @@
                 <Grid>
                     <TextBlock Text="Template Manager"
                                FontSize="16"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                               FontWeight="SemiBold"/>
 
                     <Button Content="✕"
                             HorizontalAlignment="Right"
@@ -127,8 +126,7 @@
                                                 <StackPanel Grid.Column="1">
                                                     <TextBlock Text="{Binding Name}"
                                                                FontSize="13"
-                                                               FontWeight="SemiBold"
-                                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                               FontWeight="SemiBold"/>
                                                     <TextBlock FontSize="12"
                                                                Foreground="{DynamicResource TextSecondaryBrush}">
                                                         <Run Text="{Binding VendorName, TargetNullValue='(No vendor)'}"/>
@@ -202,7 +200,6 @@
                             <TextBlock Text="Template Preview"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                        Margin="0,0,0,16"/>
 
                             <!-- Empty State -->
@@ -225,7 +222,6 @@
                                 <TextBlock x:Name="PreviewName"
                                            FontSize="13"
                                            FontWeight="SemiBold"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                            Margin="0,0,0,12"
                                            TextWrapping="Wrap"/>
 
@@ -236,7 +232,6 @@
                                            Margin="0,0,0,4"/>
                                 <TextBlock x:Name="PreviewVendor"
                                            FontSize="13"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                            Margin="0,0,0,12"
                                            TextWrapping="Wrap"/>
 
@@ -247,7 +242,6 @@
                                            Margin="0,0,0,4"/>
                                 <TextBlock x:Name="PreviewTransferNumbers"
                                            FontSize="13"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                            Margin="0,0,0,12"
                                            TextWrapping="Wrap"/>
 
@@ -258,7 +252,6 @@
                                            Margin="0,0,0,4"/>
                                 <TextBlock x:Name="PreviewWhsNumbers"
                                            FontSize="13"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                            Margin="0,0,0,12"
                                            TextWrapping="Wrap"/>
 
@@ -269,7 +262,6 @@
                                            Margin="0,0,0,4"/>
                                 <TextBlock x:Name="PreviewStatus"
                                            FontSize="13"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                            Margin="0,0,0,12"/>
 
                                 <!-- Color -->
@@ -291,7 +283,6 @@
                                 <TextBlock x:Name="PreviewUseCount"
                                            FontSize="13"
                                            FontWeight="SemiBold"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                            Margin="0,0,0,12"/>
 
                                 <!-- Created Date -->
@@ -300,8 +291,7 @@
                                            Foreground="{DynamicResource TextSecondaryBrush}"
                                            Margin="0,0,0,4"/>
                                 <TextBlock x:Name="PreviewCreatedAt"
-                                           FontSize="13"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                           FontSize="13"/>
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
@@ -311,6 +301,12 @@
     </Border>
 
     <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily"          Value="{DynamicResource FontMono}"/>
+            <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="LineHeight"          Value="20"/>
+            <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
+        </Style>
         <!-- Null to Boolean Converter (for enabling/disabling buttons based on selection) -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <local:NullToBooleanConverter x:Key="NullToBooleanConverter"/>

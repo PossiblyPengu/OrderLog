@@ -15,6 +15,15 @@
         ResizeMode="NoResize"
         ShowInTaskbar="False">
 
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily"          Value="{DynamicResource FontMono}"/>
+            <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="LineHeight"          Value="20"/>
+            <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
+        </Style>
+    </Window.Resources>
+
     <Border x:Name="RootBorder"
             Background="{DynamicResource BackgroundBrush}"
             CornerRadius="{DynamicResource OverlayCornerRadius}"
@@ -43,8 +52,7 @@
                     <TextBlock x:Name="TitleText"
                                Text="Create Template"
                                FontSize="16"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                               FontWeight="SemiBold"/>
 
                     <Button Content="✕"
                             HorizontalAlignment="Right"
@@ -64,7 +72,6 @@
                     <TextBlock Text="Template Name *"
                                FontSize="13"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
                     <Grid Margin="0,0,0,16">
@@ -95,7 +102,6 @@
                     <TextBlock Text="Vendor Name"
                                FontSize="13"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
                     <Grid Margin="0,0,0,16">
@@ -130,7 +136,6 @@
                     <TextBlock Text="Transfer Numbers"
                                FontSize="13"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
                     <Grid Margin="0,0,0,16">
@@ -161,7 +166,6 @@
                     <TextBlock Text="WHS Shipment Numbers"
                                FontSize="13"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
                     <Grid Margin="0,0,0,16">
@@ -192,7 +196,6 @@
                     <TextBlock Text="Default Status"
                                FontSize="13"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
                     <ComboBox x:Name="DefaultStatusComboBox"
@@ -211,7 +214,6 @@
                     <TextBlock Text="Color"
                                FontSize="13"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,0,8"/>
 
                     <Border x:Name="ColorPreviewBorder"

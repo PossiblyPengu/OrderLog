@@ -26,10 +26,11 @@
 
   <!-- ─── TextBlock ───────────────────────────────────────────────────────── -->
   <Style TargetType="TextBlock">
-    <Setter Property="FontFamily"    Value="{DynamicResource FontMain}"/>
-    <Setter Property="Foreground"    Value="{DynamicResource TextPrimaryBrush}"/>
-    <Setter Property="TextWrapping"  Value="Wrap"/>
-    <Setter Property="LineHeight"    Value="20"/>
+    <Setter Property="FontFamily"          Value="{DynamicResource FontMain}"/>
+    <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+    <Setter Property="TextWrapping"        Value="Wrap"/>
+    <Setter Property="LineHeight"          Value="20"/>
+    <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
   </Style>
 
   <!-- ─── TextBox ─────────────────────────────────────────────────────────── -->

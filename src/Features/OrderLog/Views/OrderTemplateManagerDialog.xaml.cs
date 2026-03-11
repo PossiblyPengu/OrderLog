@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -46,7 +46,7 @@ public partial class OrderTemplateManagerDialog : Window
         }
     }
 
-    private void RefreshTemplateList(System.Collections.Generic.List<OrderTemplate> templates)
+    private void RefreshTemplateList(List<OrderTemplate> templates)
     {
         // Sort templates based on current sort mode
         var sorted = _templateService.GetTemplatesSorted(_currentSortBy);

@@ -37,27 +37,34 @@
             </Setter>
         </Style>
 
+        <!-- Default TextBlock — monospace for HUD aesthetic -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily"          Value="{DynamicResource FontMono}"/>
+            <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="LineHeight"          Value="20"/>
+            <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
+        </Style>
+
         <!-- Section Header Style -->
-        <Style x:Key="SectionHeader" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13"/>
+        <Style x:Key="SectionHeader" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize"   Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
-            <Setter Property="Margin" Value="0,20,0,12"/>
+            <Setter Property="Margin"     Value="0,20,0,12"/>
         </Style>
 
         <!-- Setting Label Style -->
-        <Style x:Key="SettingLabel" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Style x:Key="SettingLabel" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize"          Value="13"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
         <!-- Setting Description Style -->
-        <Style x:Key="SettingDescription" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+        <Style x:Key="SettingDescription" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize"    Value="11"/>
+            <Setter Property="Foreground"  Value="{DynamicResource TextSecondaryBrush}"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Margin" Value="0,2,0,0"/>
+            <Setter Property="Margin"      Value="0,2,0,0"/>
         </Style>
 
         <!-- Modern Toggle Style -->

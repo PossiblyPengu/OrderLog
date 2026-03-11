@@ -189,48 +189,22 @@ public class KeyboardShortcutManager
 
                 case Key.D1:
                 case Key.NumPad1:
-                    // Ctrl+Shift+1: Apply template #1
                     // Ctrl+1: Set status to NotReady
-                    if (modifiers.HasFlag(ModifierKeys.Shift))
-                    {
-                        HandleApplyTemplate(0);
-                        return true;
-                    }
                     HandleStatusShortcut(OrderItem.OrderStatus.NotReady);
                     return true;
 
                 case Key.D2:
                 case Key.NumPad2:
-                    // Ctrl+Shift+2: Apply template #2
                     // Ctrl+2: Set status to OnDeck
-                    if (modifiers.HasFlag(ModifierKeys.Shift))
-                    {
-                        HandleApplyTemplate(1);
-                        return true;
-                    }
                     HandleStatusShortcut(OrderItem.OrderStatus.OnDeck);
                     return true;
 
                 case Key.D3:
                 case Key.NumPad3:
-                    // Ctrl+Shift+3: Apply template #3
                     // Ctrl+3: Set status to InProgress
-                    if (modifiers.HasFlag(ModifierKeys.Shift))
-                    {
-                        HandleApplyTemplate(2);
-                        return true;
-                    }
                     HandleStatusShortcut(OrderItem.OrderStatus.InProgress);
                     return true;
 
-                case Key.T:
-                    // Ctrl+Shift+T: Manage templates
-                    if (modifiers.HasFlag(ModifierKeys.Shift))
-                    {
-                        HandleManageTemplates();
-                        return true;
-                    }
-                    break;
             }
         }
         // Alt key combinations — media controls
@@ -439,16 +413,6 @@ public class KeyboardShortcutManager
     {
         // Show keyboard shortcuts help dialog (future implementation)
         HelpDialogRequested?.Invoke();
-    }
-
-    private void HandleApplyTemplate(int templateIndex)
-    {
-        // Templates feature removed: no-op
-    }
-
-    private void HandleManageTemplates()
-    {
-        // Templates feature removed: no-op
     }
 
     // Events for View to subscribe to

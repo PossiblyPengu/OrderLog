@@ -19,6 +19,14 @@
                 <ResourceDictionary Source="/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
+        <!-- Default TextBlock — monospace for HUD aesthetic -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily"          Value="{DynamicResource FontMono}"/>
+            <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="LineHeight"          Value="20"/>
+            <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
+        </Style>
+
         <!-- Color Swatch Button Style -->
         <Style x:Key="ColorSwatchStyle" TargetType="Button">
             <Setter Property="Width" Value="40"/>
@@ -126,7 +134,6 @@
                 <TextBlock Text="App Colors"
                            FontSize="11"
                            FontWeight="SemiBold"
-                           FontFamily="{StaticResource FontMono}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            Margin="0,0,0,10"/>
                 
@@ -155,7 +162,6 @@
                 <TextBlock Text="Extended Palette"
                            FontSize="11"
                            FontWeight="SemiBold"
-                           FontFamily="{StaticResource FontMono}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            Margin="0,0,0,10"/>
                 
@@ -196,7 +202,6 @@
                 <TextBlock Text="Custom Color (Hex)"
                            FontSize="11"
                            FontWeight="SemiBold"
-                           FontFamily="{StaticResource FontMono}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            Margin="0,0,0,10"/>
                 
@@ -264,7 +269,7 @@
                                      TextChanged="HexBox_TextChanged"
                                      Padding="8,5"
                                      FontSize="13"
-                                     FontFamily="{StaticResource FontMono}"
+                                     FontFamily="{DynamicResource FontMono}"
                                      MinHeight="0"
                                      Width="130"/>
                         </StackPanel>
@@ -277,8 +282,7 @@
                                         Width="200" Style="{StaticResource ColorSliderStyle}"/>
                                 <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource RadiusMd}"
                                         Padding="8,4" Margin="8,0,0,0" MinWidth="40">
-                                    <TextBlock x:Name="RValue" TextAlignment="Center" FontFamily="{StaticResource FontMono}"
-                                               FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                    <TextBlock x:Name="RValue" TextAlignment="Center" FontSize="12"/>
                                 </Border>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,8,0,0">
@@ -288,8 +292,7 @@
                                         Width="200" Style="{StaticResource ColorSliderStyle}"/>
                                 <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource RadiusMd}"
                                         Padding="8,4" Margin="8,0,0,0" MinWidth="40">
-                                    <TextBlock x:Name="GValue" TextAlignment="Center" FontFamily="{StaticResource FontMono}"
-                                               FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                    <TextBlock x:Name="GValue" TextAlignment="Center" FontSize="12"/>
                                 </Border>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,8,0,0">
@@ -299,8 +302,7 @@
                                         Width="200" Style="{StaticResource ColorSliderStyle}"/>
                                 <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="{DynamicResource RadiusMd}"
                                         Padding="8,4" Margin="8,0,0,0" MinWidth="40">
-                                    <TextBlock x:Name="BValue" TextAlignment="Center" FontFamily="{StaticResource FontMono}"
-                                               FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                    <TextBlock x:Name="BValue" TextAlignment="Center" FontSize="12"/>
                                 </Border>
                             </StackPanel>
                         </StackPanel>

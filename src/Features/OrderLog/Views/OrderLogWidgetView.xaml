@@ -529,21 +529,18 @@
                         <TextBlock Text="{Binding TimeInProgressDisplay}"
                                    Foreground="{Binding InProgressColorHex, Converter={StaticResource HexToBrushConverter}}"
                                    FontSize="{DynamicResource CardFontSize}"
-                                   FontFamily="{DynamicResource FontMono}"
                                    Margin="0,6,0,0"/>
 
                         <!-- TimeOnDeck Display -->
                         <TextBlock Text="{Binding TimeOnDeckDisplay}"
                                    Foreground="{Binding OnDeckColorHex, Converter={StaticResource HexToBrushConverter}}"
                                    FontSize="{DynamicResource CardFontSize}"
-                                   FontFamily="{DynamicResource FontMono}"
                                    FontWeight="SemiBold"
                                    Margin="0,2,0,0"/>
 
                         <!-- Created timestamp -->
                         <TextBlock Text="{Binding CreatedAtDisplay}"
                                    FontSize="10"
-                                   FontFamily="{DynamicResource FontMono}"
                                    Foreground="{DynamicResource TextTertiaryBrush}"
                                    HorizontalAlignment="Right"
                                    Margin="0,4,0,0"/>
@@ -686,7 +683,7 @@
                                 <Border.Background>
                                     <SolidColorBrush Color="{Binding ColorHex, Converter={StaticResource HexToColorConverter}}" Opacity="0.15"/>
                                 </Border.Background>
-                                <TextBlock FontSize="9" FontWeight="SemiBold" FontFamily="{DynamicResource FontMono}"
+                                <TextBlock FontSize="9" FontWeight="SemiBold"
                                            Foreground="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
@@ -843,7 +840,6 @@
                             <TextBlock Grid.Column="1"
                                        Text="{Binding CreatedAtDisplay}"
                                        FontSize="10"
-                                       FontFamily="{DynamicResource FontMono}"
                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                        VerticalAlignment="Center"/>
                         </Grid>
@@ -948,7 +944,6 @@
                     
                     <!-- Footer with timestamp -->
                     <TextBlock Grid.Row="3" Text="{Binding CreatedAtDisplay}" FontSize="10"
-                               FontFamily="{DynamicResource FontMono}"
                                Foreground="{DynamicResource TextTertiaryBrush}"
                                HorizontalAlignment="Right" Margin="0,4,16,8"/>
                 </Grid>
@@ -985,7 +980,6 @@
                     <StackPanel Grid.Column="1" Margin="12,9,8,9">
                         <!-- Title or content preview -->
                         <TextBlock FontSize="{DynamicResource CardFontSize}" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}"
                                    Margin="0,0,0,3">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
@@ -1003,7 +997,7 @@
                         </TextBlock>
                         <!-- Category + timestamp row -->
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontSize="9" FontWeight="SemiBold" FontFamily="{DynamicResource FontMono}"
+                            <TextBlock FontSize="9" FontWeight="SemiBold"
                                        Foreground="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}"
                                        Opacity="0.7" Margin="0,0,8,0">
                                 <TextBlock.Style>
@@ -1027,7 +1021,7 @@
                                 </TextBlock.Style>
                             </TextBlock>
                             <TextBlock Text="{Binding CreatedAtDisplay}"
-                                       FontSize="10" FontFamily="{DynamicResource FontMono}"
+                                       FontSize="10"
                                        Foreground="{DynamicResource TextTertiaryBrush}"/>
                         </StackPanel>
                     </StackPanel>
@@ -1046,7 +1040,6 @@
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusMd}" Padding="{TemplateBinding Padding}">
                                                 <TextBlock Text="Restore" FontSize="10"
-                                                           FontFamily="{DynamicResource FontMono}"
                                                            Foreground="{DynamicResource AccentBrush}"/>
                                             </Border>
                                             <ControlTemplate.Triggers>
@@ -1339,21 +1332,18 @@
                                         <TextBlock Text="{Binding TimeInProgressDisplay}"
                                                    Foreground="{Binding InProgressColorHex, Converter={StaticResource HexToBrushConverter}}"
                                                    FontSize="{DynamicResource CardFontSize}"
-                                                   FontFamily="{DynamicResource FontMono}"
                                                    Margin="0,6,0,0"/>
 
                                         <!-- TimeOnDeck Display -->
                                         <TextBlock Text="{Binding TimeOnDeckDisplay}"
                                                    Foreground="{Binding OnDeckColorHex, Converter={StaticResource HexToBrushConverter}}"
                                                    FontSize="{DynamicResource CardFontSize}"
-                                                   FontFamily="{DynamicResource FontMono}"
                                                    FontWeight="SemiBold"
                                                    Margin="0,2,0,0"/>
 
                                         <!-- Created timestamp -->
                                         <TextBlock Text="{Binding CreatedAtDisplay}"
                                                    FontSize="10"
-                                                   FontFamily="{DynamicResource FontMono}"
                                                    Foreground="{DynamicResource TextTertiaryBrush}"
                                                    HorizontalAlignment="Right"
                                                    Margin="0,4,0,0"/>
@@ -1403,11 +1393,11 @@
                                     BorderBrush="{DynamicResource BorderBrush}"
                                     BorderThickness="1" CornerRadius="{DynamicResource RadiusSm}" Padding="4,1" Margin="0,0,7,0">
                                 <TextBlock Text="{Binding Count, StringFormat='{}{0}×'}"
-                                           FontFamily="{DynamicResource FontMono}" FontSize="9" FontWeight="SemiBold"
+                                           FontSize="9" FontWeight="SemiBold"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </Border>
                             <TextBlock Text="{Binding First.CreatedAtDisplay}"
-                                       FontSize="10" FontFamily="{DynamicResource FontMono}"
+                                       FontSize="10"
                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
@@ -1431,7 +1421,6 @@
                                             <!-- Vendor name -->
                                             <TextBlock Text="{Binding VendorName, FallbackValue='—'}"
                                                        FontSize="{DynamicResource CardFontSize}" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                                        Margin="0,0,0,5"/>
 
                                             <!-- Transfer numbers with copy button -->
@@ -1466,7 +1455,7 @@
 
                                             <!-- Timer (muted, no status colour) -->
                                             <TextBlock Text="{Binding TimeInProgressDisplay}"
-                                                       FontFamily="{DynamicResource FontMono}" FontSize="10"
+                                                       FontSize="10"
                                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                                        Visibility="{Binding TimeInProgressDisplay, Converter={StaticResource StringToVisibilityConverter}}"/>
                                         </StackPanel>
@@ -1583,7 +1572,6 @@
                                     Height="32"
                                     Margin="0,0,2,0">
                                 <TextBlock Text="ACTIVE"
-                                           FontFamily="{DynamicResource FontMono}"
                                            FontSize="10" FontWeight="SemiBold"
                                            VerticalAlignment="Center"
                                            Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
@@ -1597,7 +1585,6 @@
                                     Height="32"
                                     Margin="2,0,0,0">
                                 <TextBlock Text="ARCHIVED"
-                                           FontFamily="{DynamicResource FontMono}"
                                            FontSize="10" FontWeight="SemiBold"
                                            VerticalAlignment="Center"
                                            Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
@@ -1751,13 +1738,12 @@
                             Visibility="{Binding NotesOnlyMode, Converter={StaticResource InverseBoolToVis}}"
                             Style="{StaticResource ModernPillButtonStyle}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="+" FontFamily="{DynamicResource FontMono}"
+                            <TextBlock Text="+"
                                        FontSize="14" FontWeight="Bold" Margin="0,0,6,0"
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource AccentBrush}"/>
-                            <TextBlock Text="ORDER" FontFamily="{DynamicResource FontMono}"
-                                       FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="ORDER"
+                                       FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
@@ -1808,8 +1794,7 @@
                     <!-- Add Order Card (Inline) -->
                     <Border x:Name="AddOrderCard"
                             Visibility="Collapsed"
-                            Style="{StaticResource OrderLogWidgetElevatedCardStyle}"
-                            Background="{DynamicResource SurfaceBrush}">
+                            Style="{StaticResource OrderLogWidgetStaticCardStyle}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -1825,7 +1810,6 @@
                                     <TextBlock Text="Add New Order"
                                                FontSize="14"
                                                FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimaryBrush}"
                                                VerticalAlignment="Center"/>
                                     <Button Content="✕"
                                             HorizontalAlignment="Right"
@@ -2230,7 +2214,6 @@
                                             <TextBlock Text="{Binding TimeInProgressDisplay}"
                                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                                        FontSize="{DynamicResource CardFontSize}"
-                                                       FontFamily="{DynamicResource FontMono}"
                                                        Margin="0,6,0,0"/>
                                         </StackPanel>
                                         
@@ -2324,7 +2307,6 @@
                                     <TextBlock Grid.Row="3" 
                                                Text="{Binding CreatedAtDisplay}" 
                                                FontSize="10" 
-                                               FontFamily="{DynamicResource FontMono}"
                                                Foreground="{DynamicResource TextTertiaryBrush}" 
                                                HorizontalAlignment="Right" 
                                                Margin="0,4,16,8"/>
@@ -2378,7 +2360,7 @@
                                                                             </Grid.ColumnDefinitions>
                                                                             <!-- Status accent stripe -->
                                                                             <Border Width="3" Height="16" Background="{DynamicResource WidgetStatusInProgressBrush}" CornerRadius="1.5" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                                                            <TextBlock Grid.Column="1" Text="IN PROGRESS" FontSize="11" FontWeight="SemiBold" FontFamily="{DynamicResource FontMono}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                                                            <TextBlock Grid.Column="1" Text="IN PROGRESS" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                                                             <!-- Count badge -->
                                                                             <Border Grid.Column="2" Background="{DynamicResource WidgetStatusInProgressBgBrush}" CornerRadius="{DynamicResource RadiusSm}" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
                                                                                 <TextBlock Text="{Binding DataContext.InProgressCount, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -2464,7 +2446,7 @@
                                                                             </Grid.ColumnDefinitions>
                                                                             <!-- Status accent stripe -->
                                                                             <Border Width="3" Height="16" Background="{DynamicResource WidgetStatusOnDeckBrush}" CornerRadius="1.5" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                                                            <TextBlock Grid.Column="1" Text="ON DECK" FontSize="11" FontWeight="SemiBold" FontFamily="{DynamicResource FontMono}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                                                            <TextBlock Grid.Column="1" Text="ON DECK" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                                                             <!-- Count badge -->
                                                                             <Border Grid.Column="2" Background="{DynamicResource WidgetStatusOnDeckBgBrush}" CornerRadius="{DynamicResource RadiusSm}" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
                                                                                 <TextBlock Text="{Binding DataContext.OnDeckCount, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -2550,7 +2532,7 @@
                                                                             </Grid.ColumnDefinitions>
                                                                             <!-- Status accent stripe -->
                                                                             <Border Width="3" Height="16" Background="{DynamicResource WidgetStatusNotReadyBrush}" CornerRadius="1.5" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                                                            <TextBlock Grid.Column="1" Text="NOT READY" FontSize="11" FontWeight="SemiBold" FontFamily="{DynamicResource FontMono}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                                                            <TextBlock Grid.Column="1" Text="NOT READY" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                                                             <!-- Count badge -->
                                                                             <Border Grid.Column="2" Background="{DynamicResource WidgetStatusNotReadyBgBrush}" CornerRadius="{DynamicResource RadiusSm}" Padding="8,3" Margin="8,0,10,0" VerticalAlignment="Center">
                                                                                 <TextBlock Text="{Binding DataContext.NotReadyCount, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -2636,7 +2618,6 @@
                                 <TextBlock Text="No Orders Yet"
                                            FontSize="18"
                                            FontWeight="SemiBold"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                            HorizontalAlignment="Center"
                                            Margin="0,0,0,8"/>
                                 <TextBlock Text="Create your first order to get started"
@@ -2669,7 +2650,6 @@
                             <!-- Title + count badge -->
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <TextBlock Text="ARCHIVED"
-                                           FontFamily="{DynamicResource FontMono}"
                                            FontSize="10" FontWeight="SemiBold"
                                            Foreground="{DynamicResource TextTertiaryBrush}"
                                            VerticalAlignment="Center" Margin="0,0,8,0"/>
@@ -2677,7 +2657,6 @@
                                         BorderBrush="{DynamicResource BorderBrush}"
                                         BorderThickness="1" CornerRadius="{DynamicResource RadiusSm}" Padding="6,2">
                                     <TextBlock Text="{Binding ArchivedItems.Count}"
-                                               FontFamily="{DynamicResource FontMono}"
                                                FontSize="10"
                                                Foreground="{DynamicResource TextSecondaryBrush}"/>
                                 </Border>
@@ -2782,12 +2761,10 @@
                                             <!-- Vendor name (orders) or note preview (sticky) -->
                                             <TextBlock Text="{Binding First.VendorName, FallbackValue='—'}"
                                                        FontSize="{DynamicResource CardFontSize}" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                                        Margin="0,0,0,5"
                                                        Visibility="{Binding First.IsStickyNote, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"/>
                                             <TextBlock Text="{Binding First.NoteContent}"
                                                        FontSize="{DynamicResource CardFontSize}" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                                        TextTrimming="CharacterEllipsis"
                                                        Margin="0,0,0,5"
                                                        Visibility="{Binding First.IsStickyNote, Converter={StaticResource BoolToVisibilityConverter}}"/>
@@ -2825,12 +2802,12 @@
                                             <!-- Timer + timestamp -->
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding First.TimeInProgressDisplay}"
-                                                           FontFamily="{DynamicResource FontMono}" FontSize="10"
+                                                           FontSize="10"
                                                            Foreground="{DynamicResource TextTertiaryBrush}"
                                                            Margin="0,0,8,0"
                                                            Visibility="{Binding First.TimeInProgressDisplay, Converter={StaticResource StringToVisibilityConverter}}"/>
                                                 <TextBlock Text="{Binding First.CreatedAtDisplay}"
-                                                           FontSize="10" FontFamily="{DynamicResource FontMono}"
+                                                           FontSize="10"
                                                            Foreground="{DynamicResource TextTertiaryBrush}"
                                                            VerticalAlignment="Center"/>
                                             </StackPanel>
@@ -2918,7 +2895,6 @@
                             <TextBlock Text="No Archived Orders"
                                        FontSize="18"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                        HorizontalAlignment="Center"
                                        Margin="0,0,0,8"/>
                             <TextBlock Text="Archived orders will appear here"
@@ -3063,7 +3039,7 @@
                                                     Width="14" Height="14" HorizontalAlignment="Center"
                                                     Visibility="{Binding StickyNotes.Count, Converter={StaticResource IntToVisibilityConverter}}">
                                                 <TextBlock Text="{Binding StickyNotes.Count}"
-                                                           FontFamily="{DynamicResource FontMono}" FontSize="7" FontWeight="Bold"
+                                                           FontSize="7" FontWeight="Bold"
                                                            Foreground="{DynamicResource WarningBrush}"
                                                            HorizontalAlignment="Center" VerticalAlignment="Center"
                                                            IsHitTestVisible="False"/>
@@ -3214,7 +3190,6 @@
                                                    Grid.Column="0"
                                                    Text="0:00"
                                                    FontSize="9"
-                                                   FontFamily="{DynamicResource FontMono}"
                                                    Foreground="#AAFFFFFF"
                                                    VerticalAlignment="Center"
                                                    Margin="0,0,8,0"/>
@@ -3234,7 +3209,6 @@
                                                    Grid.Column="2"
                                                    Text="0:00"
                                                    FontSize="9"
-                                                   FontFamily="{DynamicResource FontMono}"
                                                    Foreground="#AAFFFFFF"
                                                    VerticalAlignment="Center"
                                                    Margin="8,0,0,0"/>
@@ -3509,7 +3483,6 @@
                                                                 </Border>
                                                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                                     <TextBlock Text="{Binding Title}" FontSize="11" FontWeight="SemiBold"
-                                                                               Foreground="{DynamicResource TextPrimaryBrush}"
                                                                                TextTrimming="CharacterEllipsis"/>
                                                                     <TextBlock Text="{Binding Artist}" FontSize="9"
                                                                                Foreground="{DynamicResource TextTertiaryBrush}"
@@ -3668,7 +3641,6 @@
                                            Grid.Column="0"
                                            Text="NOW PLAYING"
                                            FontSize="8"
-                                           FontFamily="{DynamicResource FontMono}"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource TextTertiaryBrush}"
                                            VerticalAlignment="Center"
@@ -3676,21 +3648,23 @@
                                            Opacity="0.7"/>
 
                                 <!-- Scrolling track info -->
-                                <Canvas x:Name="MarqueeContainer" Grid.Column="1" Height="18" Visibility="Collapsed" ClipToBounds="True">
+                                <Canvas x:Name="MarqueeContainer" Grid.Column="1" Height="28" Visibility="Collapsed" ClipToBounds="True">
                                     <StackPanel x:Name="MarqueeContent" Orientation="Horizontal" Canvas.Top="0">
                                         <StackPanel.RenderTransform>
                                             <TranslateTransform x:Name="MarqueeTransform" X="0"/>
                                         </StackPanel.RenderTransform>
-                                        <TextBlock x:Name="CollapsedTrackTitle"
-                                                   FontSize="12"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
-                                        <TextBlock Text="  ·  "
-                                                   FontSize="12"
-                                                   Foreground="{DynamicResource TextTertiaryBrush}"/>
-                                        <TextBlock x:Name="CollapsedArtistName"
-                                                   FontSize="12"
-                                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        <StackPanel>
+                                            <TextBlock x:Name="CollapsedTrackTitle"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       LineHeight="15"
+                                                       LineStackingStrategy="BlockLineHeight"/>
+                                            <TextBlock x:Name="CollapsedArtistName"
+                                                       FontSize="10"
+                                                       LineHeight="13"
+                                                       LineStackingStrategy="BlockLineHeight"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        </StackPanel>
                                         <TextBlock x:Name="MarqueeSpacer" Text="          " FontSize="12"/>
                                     </StackPanel>
                                 </Canvas>
@@ -3904,15 +3878,13 @@
                             <StackPanel Grid.Column="1" Orientation="Horizontal"
                                         VerticalAlignment="Center" Margin="12,12,8,12">
                                 <TextBlock Text="NOTES"
-                                           FontFamily="{DynamicResource FontMono}"
                                            FontSize="12" FontWeight="Bold"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                            VerticalAlignment="Center"/>
                                 <Border CornerRadius="8" Background="{DynamicResource WarningBrush}"
                                         Padding="6,2" Margin="8,0,0,0" VerticalAlignment="Center"
                                         Visibility="{Binding StickyNotes.Count, Converter={StaticResource IntToVisibilityConverter}}">
                                     <TextBlock Text="{Binding StickyNotes.Count}"
-                                               FontFamily="{DynamicResource FontMono}" FontSize="10" FontWeight="Bold"
+                                               FontSize="10" FontWeight="Bold"
                                                Foreground="#1A1A1A"/>
                                 </Border>
                             </StackPanel>
