@@ -3108,6 +3108,11 @@
                                                                  To="1" Duration="0:0:0.2">
                                                     <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
                                                 </DoubleAnimation>
+                                                <DoubleAnimation Storyboard.TargetName="PlayerTrackInfoPanel"
+                                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                 To="0" Duration="0:0:0.25">
+                                                    <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </EventTrigger>
@@ -3117,6 +3122,11 @@
                                                 <DoubleAnimation Storyboard.TargetName="PlayerControlsPanel"
                                                                  Storyboard.TargetProperty="Opacity"
                                                                  To="0" Duration="0:0:0.35" BeginTime="0:0:1">
+                                                    <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseIn"/></DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                                <DoubleAnimation Storyboard.TargetName="PlayerTrackInfoPanel"
+                                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                 To="80" Duration="0:0:0.35" BeginTime="0:0:1">
                                                     <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseIn"/></DoubleAnimation.EasingFunction>
                                                 </DoubleAnimation>
                                             </Storyboard>
@@ -3170,6 +3180,10 @@
                                 <!-- Track Info + Progress + Controls overlaid at bottom -->
                                 <StackPanel VerticalAlignment="Bottom" Margin="18,0,18,14">
 
+                                    <StackPanel x:Name="PlayerTrackInfoPanel">
+                                        <StackPanel.RenderTransform>
+                                            <TranslateTransform Y="80"/>
+                                        </StackPanel.RenderTransform>
                                     <!-- Track Title -->
                                     <TextBlock x:Name="TrackTitleText"
                                                Text="Not Playing"
@@ -3201,6 +3215,7 @@
                                                    TextTrimming="CharacterEllipsis"
                                                    Margin="6,0,0,0"
                                                    Visibility="Collapsed"/>
+                                    </StackPanel>
                                     </StackPanel>
 
                                     <StackPanel x:Name="PlayerControlsPanel" Opacity="0">
