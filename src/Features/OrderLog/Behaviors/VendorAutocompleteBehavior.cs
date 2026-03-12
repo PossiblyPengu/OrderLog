@@ -90,6 +90,24 @@ public class VendorAutocompleteBehavior : Behavior<TextBox>
 
     private void CreatePopup()
     {
+        var hoverBrush   = Application.Current.TryFindResource("SurfaceHoverBrush")  as Brush ?? new SolidColorBrush(Color.FromRgb(50, 50, 50));
+        var activeBrush  = Application.Current.TryFindResource("SurfaceActiveBrush") as Brush ?? new SolidColorBrush(Color.FromRgb(60, 60, 60));
+        var textBrush    = Application.Current.TryFindResource("TextPrimaryBrush")   as Brush ?? Brushes.White;
+
+        var itemStyle = new Style(typeof(ListBoxItem));
+        itemStyle.Setters.Add(new Setter(ListBoxItem.BackgroundProperty, Brushes.Transparent));
+        itemStyle.Setters.Add(new Setter(ListBoxItem.ForegroundProperty, textBrush));
+        itemStyle.Setters.Add(new Setter(ListBoxItem.PaddingProperty, new Thickness(12, 7, 12, 7)));
+        itemStyle.Setters.Add(new Setter(ListBoxItem.CursorProperty, Cursors.Hand));
+
+        var hoverTrigger = new Trigger { Property = ListBoxItem.IsMouseOverProperty, Value = true };
+        hoverTrigger.Setters.Add(new Setter(ListBoxItem.BackgroundProperty, hoverBrush));
+        itemStyle.Triggers.Add(hoverTrigger);
+
+        var selectedTrigger = new Trigger { Property = ListBoxItem.IsSelectedProperty, Value = true };
+        selectedTrigger.Setters.Add(new Setter(ListBoxItem.BackgroundProperty, activeBrush));
+        itemStyle.Triggers.Add(selectedTrigger);
+
         _listBox = new ListBox
         {
             MaxHeight = 200,
@@ -98,7 +116,8 @@ public class VendorAutocompleteBehavior : Behavior<TextBox>
             Padding = new Thickness(0),
             Background = Application.Current.TryFindResource("SurfaceBrush") as Brush ?? Brushes.White,
             BorderBrush = Application.Current.TryFindResource("BorderBrush") as Brush ?? Brushes.Gray,
-            Foreground = Application.Current.TryFindResource("TextPrimaryBrush") as Brush ?? Brushes.Black,
+            Foreground = textBrush,
+            ItemContainerStyle = itemStyle,
         };
 
         _listBox.PreviewMouseLeftButtonDown += OnListBoxItemClicked;

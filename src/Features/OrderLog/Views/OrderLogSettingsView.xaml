@@ -238,9 +238,9 @@
         <StackPanel MaxWidth="420">
 
             <!-- Header -->
-            <TextBlock Text="Order Log Settings" FontSize="20" FontWeight="SemiBold"
+            <TextBlock Text="SS Command Centre Settings" FontSize="20" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
-            <TextBlock Text="Configure the appearance and behavior of Order Log"
+            <TextBlock Text="Configure the appearance and behavior of SS Command Centre"
                        FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,8"/>
 
             <!-- Statistics Row -->

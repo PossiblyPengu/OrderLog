@@ -19,6 +19,8 @@ namespace OrderLog.Features.Helpers;
 /// </summary>
 public static class TextFormattingHelper
 {
+    private static SolidColorBrush? _cachedHighlightBrush;
+
     /// <summary>
     /// Finds the NoteContent RichTextBox by walking up the visual tree from a button.
     /// </summary>
@@ -55,6 +57,33 @@ public static class TextFormattingHelper
             return FindDescendantRichTextBoxes(view).FirstOrDefault();
 
         return null;
+    }
+
+    /// <summary>
+    /// Retrieves the brush used for text highlighting, falling back to a soft accent if the resource is missing.
+    /// </summary>
+    public static SolidColorBrush GetHighlightBrush()
+    {
+        if (_cachedHighlightBrush != null)
+            return _cachedHighlightBrush;
+
+        if (Application.Current?.Resources["NoteHighlightBrush"] is SolidColorBrush themeBrush)
+        {
+            _cachedHighlightBrush = themeBrush;
+            return _cachedHighlightBrush;
+        }
+
+        if (Application.Current?.Resources["AccentBrush"] is SolidColorBrush accent)
+        {
+            _cachedHighlightBrush = new SolidColorBrush(Color.FromArgb(90, accent.Color.R, accent.Color.G, accent.Color.B));
+            _cachedHighlightBrush.Freeze();
+            return _cachedHighlightBrush;
+        }
+
+        var fallback = (Color)ColorConverter.ConvertFromString("#66FCE083")!;
+        _cachedHighlightBrush = new SolidColorBrush(fallback);
+        _cachedHighlightBrush.Freeze();
+        return _cachedHighlightBrush;
     }
 
     private static System.Collections.Generic.IEnumerable<RichTextBox> FindDescendantRichTextBoxes(DependencyObject root)
@@ -110,6 +139,7 @@ public static class TextFormattingHelper
             }
             rtb.Document.Blocks.Add(para);
             ResetTextForeground(rtb);
+            NormalizeDocumentSpacing(rtb.Document);
             return;
         }
 
@@ -133,12 +163,14 @@ public static class TextFormattingHelper
             }
             
             ResetTextForeground(rtb);
+            NormalizeDocumentSpacing(rtb.Document);
         }
         catch
         {
             // Fallback: insert plain text
             rtb.Document.Blocks.Clear();
             rtb.Document.Blocks.Add(new Paragraph(new Run(plainText ?? xaml)));
+            NormalizeDocumentSpacing(rtb.Document);
         }
     }
 
@@ -204,6 +236,21 @@ public static class TextFormattingHelper
         }
         
         return text.Trim();
+    }
+
+    private static void NormalizeDocumentSpacing(FlowDocument? document)
+    {
+        if (document == null) return;
+
+        document.PagePadding = new Thickness(0);
+        document.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+
+        foreach (var paragraph in document.Blocks.OfType<Paragraph>())
+        {
+            paragraph.Margin = new Thickness(0, 2, 0, 2);
+            paragraph.LineHeight = double.NaN;
+            paragraph.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+        }
     }
 
     /// <summary>
@@ -405,6 +452,94 @@ public static class TextFormattingHelper
                Regex.IsMatch(trimmedLine, @"^\d+\.\s*$");
     }
 
+    private static TextRange GetSelectionRange(RichTextBox rtb)
+    {
+        if (rtb.Selection != null && !rtb.Selection.IsEmpty)
+            return new TextRange(rtb.Selection.Start, rtb.Selection.End);
+
+        return new TextRange(rtb.CaretPosition, rtb.CaretPosition);
+    }
+
+    private static bool SelectionHasDecoration(TextRange selection, TextDecorationLocation location)
+    {
+        var value = selection.GetPropertyValue(Inline.TextDecorationsProperty);
+        if (value == DependencyProperty.UnsetValue)
+            return false;
+
+        if (value is TextDecorationCollection collection)
+            return collection.Any(d => d.Location == location);
+
+        return false;
+    }
+
+    private static void RemoveTextDecoration(TextRange selection, TextDecorationLocation location)
+    {
+        var value = selection.GetPropertyValue(Inline.TextDecorationsProperty);
+        if (value == DependencyProperty.UnsetValue)
+        {
+            selection.ApplyPropertyValue(Inline.TextDecorationsProperty, DependencyProperty.UnsetValue);
+            return;
+        }
+
+        if (value is not TextDecorationCollection collection)
+        {
+            selection.ApplyPropertyValue(Inline.TextDecorationsProperty, DependencyProperty.UnsetValue);
+            return;
+        }
+
+        var filtered = new TextDecorationCollection(collection.Where(d => d.Location != location));
+        if (filtered.Count == 0)
+        {
+            selection.ApplyPropertyValue(Inline.TextDecorationsProperty, DependencyProperty.UnsetValue);
+        }
+        else
+        {
+            selection.ApplyPropertyValue(Inline.TextDecorationsProperty, filtered);
+        }
+    }
+
+    private static void AddTextDecoration(TextRange selection, TextDecoration decoration)
+    {
+        var value = selection.GetPropertyValue(Inline.TextDecorationsProperty);
+        TextDecorationCollection updated;
+
+        if (value == DependencyProperty.UnsetValue || value is not TextDecorationCollection existing)
+        {
+            updated = new TextDecorationCollection { decoration };
+        }
+        else
+        {
+            updated = new TextDecorationCollection(existing);
+            updated.Add(decoration);
+        }
+
+        selection.ApplyPropertyValue(Inline.TextDecorationsProperty, updated);
+    }
+
+    private static bool ColorsAreClose(Color left, Color right)
+        => Math.Abs(left.R - right.R) < 3 && Math.Abs(left.G - right.G) < 3 && Math.Abs(left.B - right.B) < 3 && Math.Abs(left.A - right.A) < 3;
+
+    /// <summary>
+    /// Checks if the current selection contains a strikethrough decoration.
+    /// </summary>
+    public static bool SelectionHasStrikethrough(TextRange selection)
+        => selection != null && SelectionHasDecoration(selection, TextDecorationLocation.Strikethrough);
+
+    /// <summary>
+    /// Checks if the current selection is highlighted with the themed highlight brush.
+    /// </summary>
+    public static bool SelectionHasHighlight(TextRange selection)
+    {
+        if (selection == null) return false;
+
+        var highlightValue = selection.GetPropertyValue(TextElement.BackgroundProperty);
+        if (highlightValue == DependencyProperty.UnsetValue || highlightValue is not SolidColorBrush brush)
+            return false;
+
+        var target = GetHighlightBrush();
+        return brush != null && target != null && ColorsAreClose(brush.Color, target.Color);
+    }
+
     // Click handler methods that can be called from code-behind
     public static void FormatBold(object sender, FrameworkElement view)
     {
@@ -459,6 +594,98 @@ public static class TextFormattingHelper
             InsertPrefixAtLineStart(rtb, "☐ ");
             UpdateNoteContent(sender, view);
         }
+    }
+
+    public static void ToggleBullets(object sender, FrameworkElement view)
+    {
+        var rtb = FindNoteContentRichTextBox(sender, view);
+        if (rtb == null) return;
+        rtb.Focus();
+        EditingCommands.ToggleBullets.Execute(null, rtb);
+        UpdateNoteContent(sender, view);
+    }
+
+    public static void ToggleNumberedList(object sender, FrameworkElement view)
+    {
+        var rtb = FindNoteContentRichTextBox(sender, view);
+        if (rtb == null) return;
+        rtb.Focus();
+        EditingCommands.ToggleNumbering.Execute(null, rtb);
+        UpdateNoteContent(sender, view);
+    }
+
+    public static void ToggleStrikethrough(object sender, FrameworkElement view)
+    {
+        var rtb = FindNoteContentRichTextBox(sender, view);
+        if (rtb == null) return;
+        rtb.Focus();
+
+        var selection = GetSelectionRange(rtb);
+
+        if (SelectionHasDecoration(selection, TextDecorationLocation.Strikethrough))
+        {
+            RemoveTextDecoration(selection, TextDecorationLocation.Strikethrough);
+        }
+        else
+        {
+            var strike = new TextDecoration
+            {
+                Location = TextDecorationLocation.Strikethrough,
+                Pen = new Pen(rtb.Foreground, 1)
+            };
+            AddTextDecoration(selection, strike);
+        }
+
+        UpdateNoteContent(sender, view);
+    }
+
+    public static void ToggleHighlight(object sender, FrameworkElement view)
+    {
+        var rtb = FindNoteContentRichTextBox(sender, view);
+        if (rtb == null) return;
+        rtb.Focus();
+
+        var selection = GetSelectionRange(rtb);
+
+        var highlightBrush = GetHighlightBrush();
+        var value = selection.GetPropertyValue(TextElement.BackgroundProperty);
+        var hasHighlight = value != DependencyProperty.UnsetValue && value is SolidColorBrush brush && ColorsAreClose(brush.Color, highlightBrush.Color);
+
+        selection.ApplyPropertyValue(TextElement.BackgroundProperty, hasHighlight ? DependencyProperty.UnsetValue : highlightBrush);
+        UpdateNoteContent(sender, view);
+    }
+
+    public static void IncreaseIndent(object sender, FrameworkElement view)
+    {
+        var rtb = FindNoteContentRichTextBox(sender, view);
+        if (rtb == null) return;
+        rtb.Focus();
+        EditingCommands.IncreaseIndentation.Execute(null, rtb);
+        UpdateNoteContent(sender, view);
+    }
+
+    public static void DecreaseIndent(object sender, FrameworkElement view)
+    {
+        var rtb = FindNoteContentRichTextBox(sender, view);
+        if (rtb == null) return;
+        rtb.Focus();
+        EditingCommands.DecreaseIndentation.Execute(null, rtb);
+        UpdateNoteContent(sender, view);
+    }
+
+    public static void ClearFormatting(object sender, FrameworkElement view)
+    {
+        var rtb = FindNoteContentRichTextBox(sender, view);
+        if (rtb == null) return;
+        rtb.Focus();
+        var selection = GetSelectionRange(rtb);
+        selection.ClearAllProperties();
+        selection.ApplyPropertyValue(TextElement.ForegroundProperty, DependencyProperty.UnsetValue);
+        selection.ApplyPropertyValue(TextElement.FontWeightProperty, DependencyProperty.UnsetValue);
+        selection.ApplyPropertyValue(TextElement.FontStyleProperty, DependencyProperty.UnsetValue);
+        selection.ApplyPropertyValue(Inline.TextDecorationsProperty, DependencyProperty.UnsetValue);
+        selection.ApplyPropertyValue(TextElement.BackgroundProperty, DependencyProperty.UnsetValue);
+        UpdateNoteContent(sender, view);
     }
 
     public static void InsertTimestamp(object sender, FrameworkElement view)

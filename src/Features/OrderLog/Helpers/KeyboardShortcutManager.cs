@@ -43,7 +43,7 @@ public class KeyboardShortcutManager
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
         // Don't intercept if user is typing in a TextBox
-        if (e.OriginalSource is System.Windows.Controls.TextBox textBox)
+        if (e.OriginalSource is System.Windows.Controls.Primitives.TextBoxBase textInput)
         {
             // Allow Ctrl+A, Ctrl+Z, Ctrl+F even in TextBox for specific cases
             bool isCtrl = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
@@ -56,8 +56,9 @@ public class KeyboardShortcutManager
                 return;
             }
 
-            // Allow other shortcuts only if TextBox is empty or read-only
-            if (!string.IsNullOrEmpty(textBox.Text) && !textBox.IsReadOnly)
+            // If the user is typing inside an editable text control (TextBox/RichTextBox),
+            // do not hijack clipboard/navigation shortcuts—let the control handle them.
+            if (!textInput.IsReadOnly)
             {
                 return;
             }
@@ -215,27 +216,27 @@ public class KeyboardShortcutManager
                 case Key.Space:
                 case Key.P:
                     // Alt+Space or Alt+P: Play/Pause
-                    SpotifyService.Instance.PlayPauseAsync();
+                    _ = SpotifyService.Instance.PlayPauseAsync();
                     return true;
 
                 case Key.Right:
                     // Alt+Right: Next track
-                    SpotifyService.Instance.NextTrackAsync();
+                    _ = SpotifyService.Instance.NextTrackAsync();
                     return true;
 
                 case Key.Left:
                     // Alt+Left: Previous track
-                    SpotifyService.Instance.PreviousTrackAsync();
+                    _ = SpotifyService.Instance.PreviousTrackAsync();
                     return true;
 
                 case Key.Up:
                     // Alt+Up: Volume up
-                    SpotifyService.Instance.VolumeUpAsync();
+                    _ = SpotifyService.Instance.VolumeUpAsync();
                     return true;
 
                 case Key.Down:
                     // Alt+Down: Volume down
-                    SpotifyService.Instance.VolumeDownAsync();
+                    _ = SpotifyService.Instance.VolumeDownAsync();
                     return true;
 
                 case Key.L:
@@ -245,7 +246,7 @@ public class KeyboardShortcutManager
 
                 case Key.M:
                     // Alt+M: Mute/unmute
-                    SpotifyService.Instance.VolumeMuteAsync();
+                    _ = SpotifyService.Instance.VolumeMuteAsync();
                     return true;
             }
         }

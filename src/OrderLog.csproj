@@ -4,7 +4,8 @@
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
     <RootNamespace>OrderLog</RootNamespace>
-    <AssemblyName>OrderLog</AssemblyName>
+    <AssemblyName>SSCommandCentre</AssemblyName>
+    <Product>SS Command Centre</Product>
     <ApplicationIcon>Assets\orderlog.ico</ApplicationIcon>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -15,7 +16,7 @@
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
-    <Description>Order Log - Transfer order tracking and management</Description>
+    <Description>SS Command Centre - Transfer order tracking and management</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -49,7 +50,6 @@
     <None Update="Assets\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Resource Include="Assets\soup-logo.png" />
     <Resource Include="Assets\orderlog.ico" />
   </ItemGroup>
 

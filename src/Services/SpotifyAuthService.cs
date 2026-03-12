@@ -412,7 +412,7 @@ public sealed class SpotifyAuthService : IDisposable
             var root = doc.RootElement;
 
             if (root.TryGetProperty("client_id", out var cid))
-                _clientId ??= cid.GetString();
+                _clientId ??= cid.GetString() ?? string.Empty;
             if (root.TryGetProperty("refresh_token", out var rt))
                 _refreshToken = rt.GetString();
             if (root.TryGetProperty("access_token", out var at))

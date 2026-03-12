@@ -167,7 +167,7 @@ public partial class ThemeService : ObservableObject
             _                  => "Neon",
         };
 
-        return $"pack://application:,,,/OrderLog;component/Themes/Marathon/Colours/{name}{(isDarkMode ? "Dark" : "Light")}.xaml";
+        return $"pack://application:,,,/SSCommandCentre;component/Themes/Marathon/Colours/{name}{(isDarkMode ? "Dark" : "Light")}.xaml";
     }
 
     /// <summary>
@@ -198,8 +198,8 @@ public partial class ThemeService : ObservableObject
 
             // 1. Base colour theme (dark / light)
             var themeFile = IsDarkMode
-                ? "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonTheme.xaml"
-                : "pack://application:,,,/OrderLog;component/Themes/Marathon/MarathonLightTheme.xaml";
+                ? "pack://application:,,,/SSCommandCentre;component/Themes/Marathon/MarathonTheme.xaml"
+                : "pack://application:,,,/SSCommandCentre;component/Themes/Marathon/MarathonLightTheme.xaml";
             SwapDictSource(md, _appBaseDict, new Uri(themeFile, UriKind.Absolute));
             Serilog.Log.Debug("ApplyTheme: Set base theme {ThemeFile}", themeFile);
 

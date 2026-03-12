@@ -1354,7 +1354,7 @@ public partial class OrderLogWidgetView : UserControl
             try
             {
                 var miniParent = MiniProgressBarFill?.Parent as Grid;
-                if (miniParent != null && miniParent.ActualWidth > 0)
+                if (MiniProgressBarFill != null && miniParent != null && miniParent.ActualWidth > 0)
                 {
                     MiniProgressBarFill.Width = miniParent.ActualWidth * ratio;
                 }

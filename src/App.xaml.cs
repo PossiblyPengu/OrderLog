@@ -33,7 +33,7 @@ public partial class App : Application
 
         try
         {
-            Log.Information("Starting Order Log");
+            Log.Information("Starting SS Command Centre");
 
             AppDomain.CurrentDomain.UnhandledException += (s, ev) =>
             {

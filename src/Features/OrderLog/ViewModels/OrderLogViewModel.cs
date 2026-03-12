@@ -697,7 +697,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             {
                 _logger?.LogWarning("Loading items is taking >10s; continuing startup and letting load finish in background");
                 // Attach continuation to log when background load completes
-                loadTask.ContinueWith(t =>
+                _ = loadTask.ContinueWith(t =>
                 {
                     if (t.IsFaulted)
                     {

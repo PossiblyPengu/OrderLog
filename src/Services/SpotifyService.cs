@@ -400,9 +400,9 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     /// <summary>
     /// Fast position update for smooth progress bar (runs every 500ms).
     /// </summary>
-    private async Task UpdatePositionAsync()
+    private Task UpdatePositionAsync()
     {
-        if (!_isPlaying) return;
+        if (!_isPlaying) return Task.CompletedTask;
 
         if (_useWebApi)
         {
@@ -415,10 +415,10 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
                         TrackPosition = newPos;
                 });
             }
-            return;
+            return Task.CompletedTask;
         }
 
-        if (_currentSession == null) return;
+        if (_currentSession == null) return Task.CompletedTask;
 
         try
         {
@@ -440,6 +440,7 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
         {
             Log.Debug(ex, "Failed to update track position");
         }
+        return Task.CompletedTask;
     }
 
     /// <summary>

@@ -426,18 +426,23 @@
 
     <!-- Icon button -->
     <Style x:Key="WidgetIconButtonStyle" TargetType="Button">
-        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="Background"      Value="{DynamicResource SurfaceSunkenBrush}"/>
         <Setter Property="Foreground"      Value="{DynamicResource TextSecondaryBrush}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Width"           Value="32"/>
-        <Setter Property="Height"          Value="32"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Width"           Value="34"/>
+        <Setter Property="Height"          Value="34"/>
         <Setter Property="Cursor"          Value="Hand"/>
-        <Setter Property="Padding"         Value="6"/>
+        <Setter Property="Padding"         Value="8"/>
+        <Setter Property="FontFamily"      Value="{DynamicResource FontMono}"/>
+        <Setter Property="FontSize"        Value="12"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="Bd"
                             Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{DynamicResource RadiusSm}"
                             Width="{TemplateBinding Width}"
                             Height="{TemplateBinding Height}"
@@ -446,17 +451,20 @@
                         <Border.RenderTransform>
                             <ScaleTransform x:Name="BdScale"/>
                         </Border.RenderTransform>
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryLightBrush}"/>
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                            <Setter TargetName="Bd" Property="BorderBrush"  Value="{DynamicResource BorderAccentBrush}"/>
                             <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                            <Setter TargetName="Bd" Property="Effect"      Value="{StaticResource WidgetAccentGlow}"/>
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.12" Duration="0:0:0.12"/>
-                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.12" Duration="0:0:0.12"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.1"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
@@ -470,11 +478,13 @@
                             </Trigger.ExitActions>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                            <Setter Property="Foreground" Value="#FFFFFF"/>
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="0.9" Duration="0:0:0.08"/>
-                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="0.9" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleX" To="0.92" Duration="0:0:0.06"/>
+                                        <DoubleAnimation Storyboard.TargetName="BdScale" Storyboard.TargetProperty="ScaleY" To="0.92" Duration="0:0:0.06"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
@@ -486,6 +496,9 @@
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
