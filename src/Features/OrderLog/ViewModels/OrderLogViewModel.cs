@@ -1067,7 +1067,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
                     if (UndoSecondsRemaining > 0) UndoSecondsRemaining--;
                     if (UndoSecondsRemaining <= 0)
                     {
-                        _undoCountdownTimer?.Stop();
+                        CompleteUndoTimeout();
                     }
                 }
                 catch { }
@@ -1083,6 +1083,11 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     private void OnUndoTimerTick(object? sender, EventArgs e)
     {
         // Timer expired - hide the UI undo bar while leaving history intact
+        CompleteUndoTimeout();
+    }
+
+    private void CompleteUndoTimeout()
+    {
         _undoTimer?.Stop();
         _undoCountdownTimer?.Stop();
         UndoSecondsRemaining = 0;

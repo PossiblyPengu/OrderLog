@@ -3084,7 +3084,7 @@
                 Background="Transparent"
                 BorderThickness="0"
             Margin="0,-20,0,0"
-            Panel.ZIndex="50"
+            Panel.ZIndex="300"
                 Visibility="{Binding ShowNowPlaying, Converter={StaticResource BoolToVis}, FallbackValue=Visible}">
             <Grid>
                 <StackPanel>
@@ -3891,8 +3891,8 @@
             </Grid>
         </Border>
 
-        <!-- Notes Side Drawer Overlay — slides in over the orders list -->
-        <Grid x:Name="NotesDrawerOverlay" Grid.RowSpan="7" Panel.ZIndex="200" Visibility="Collapsed">
+        <!-- Notes Side Drawer Overlay — slides in over the header + orders list (keeps player visible) -->
+        <Grid x:Name="NotesDrawerOverlay" Grid.RowSpan="4" Panel.ZIndex="200" Visibility="Collapsed">
             <!-- Scrim: darkens the content behind the drawer -->
             <Border x:Name="NotesScrim"
                     Background="#CC000000"
