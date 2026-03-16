@@ -243,6 +243,7 @@ public partial class OrderLogWidgetView : UserControl
     private void NotesToggle_Click(object sender, RoutedEventArgs e)
     {
         if (DataContext is not OrderLogViewModel vm) return;
+        if (vm.NotesOnlyMode) return; // Drawer is permanently open in notes-only mode
         bool opening = !vm.NotesExpanded;
         // Set guard BEFORE updating vm.NotesExpanded so that when PropertyChanged fires
         // UpdateNotesHeaderState sees _notesExpanded already in sync and returns early,
@@ -253,9 +254,17 @@ public partial class OrderLogWidgetView : UserControl
         if (opening) OpenNotesDrawer(); else AnimateDrawerClose();
     }
 
-    private void NotesDrawerClose_Click(object sender, RoutedEventArgs e) => CloseNotesDrawer(true);
+    private void NotesDrawerClose_Click(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is OrderLogViewModel vm && vm.NotesOnlyMode) return;
+        CloseNotesDrawer(true);
+    }
 
-    private void NotesScrim_Click(object sender, MouseButtonEventArgs e) => CloseNotesDrawer(true);
+    private void NotesScrim_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (DataContext is OrderLogViewModel vm && vm.NotesOnlyMode) return;
+        CloseNotesDrawer(true);
+    }
 
     private void OpenNotesDrawer()
     {
@@ -278,6 +287,7 @@ public partial class OrderLogWidgetView : UserControl
     private void CloseNotesDrawer(bool syncViewModel = false)
     {
         if (NotesDrawerOverlay == null) return;
+        if (DataContext is OrderLogViewModel vm2 && vm2.NotesOnlyMode) return;
 
         // Set guard BEFORE triggering PropertyChanged so UpdateNotesHeaderState returns early
         // and does not immediately set Visibility = Collapsed, which would swallow the animation.
@@ -319,6 +329,45 @@ public partial class OrderLogWidgetView : UserControl
         // Hide the whole side handle when the drawer is open (drawer covers the widget anyway)
         if (SideHandlePanel != null)
             SideHandlePanel.Visibility = isOpen ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    private void ApplyNotesOnlyMode(bool isNotesOnly)
+    {
+        if (isNotesOnly)
+        {
+            // Force drawer open permanently: no animation, no scrim, hide close button and side handle
+            _notesExpanded = true;
+            if (NotesDrawerOverlay != null)
+            {
+                // Stop any running animations first
+                NotesDrawerTransform.BeginAnimation(TranslateTransform.XProperty, null);
+                NotesScrim.BeginAnimation(OpacityProperty, null);
+
+                NotesDrawerOverlay.Visibility = Visibility.Visible;
+                NotesDrawerTransform.X = 0;
+                NotesScrim.Opacity = 0;
+                NotesScrim.IsHitTestVisible = false;
+            }
+            if (SideHandlePanel != null)
+                SideHandlePanel.Visibility = Visibility.Collapsed;
+            if (NotesDrawerCloseButton != null)
+                NotesDrawerCloseButton.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            // Restore normal drawer behavior
+            if (NotesScrim != null)
+                NotesScrim.IsHitTestVisible = true;
+            if (NotesDrawerCloseButton != null)
+                NotesDrawerCloseButton.Visibility = Visibility.Visible;
+
+            // Sync drawer state with current NotesExpanded
+            if (DataContext is OrderLogViewModel vm)
+            {
+                _notesExpanded = !vm.NotesExpanded; // Force UpdateNotesHeaderState to run
+                UpdateNotesHeaderState(vm.NotesExpanded);
+            }
+        }
     }
 
     private void InitializeEqualizerTimer()
@@ -444,23 +493,9 @@ public partial class OrderLogWidgetView : UserControl
         ControlBar.BeginAnimation(OpacityProperty, fadeOut);
     }
 
-    private async void ProgressTrack_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private void ProgressTrack_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (_spotifyService == null) return;
-        try
-        {
-            var container = ProgressTrackContainer;
-            if (container == null || _spotifyService.TrackDuration.TotalSeconds <= 0) return;
-
-            var clickPos = e.GetPosition(container);
-            double ratio = Math.Clamp(clickPos.X / container.ActualWidth, 0, 1);
-            var seekPosition = TimeSpan.FromSeconds(_spotifyService.TrackDuration.TotalSeconds * ratio);
-            await _spotifyService.SeekAsync(seekPosition);
-        }
-        catch (Exception ex)
-        {
-            Serilog.Log.Debug(ex, "Failed to seek via progress bar click");
-        }
+        // Seek requires Web API which has been removed
     }
 
     private void AnimateEqualizerBars()
@@ -527,6 +562,10 @@ public partial class OrderLogWidgetView : UserControl
 
             // Initialize notes header state (will be updated via PropertyChanged when settings load)
             UpdateNotesHeaderState(viewModel.NotesExpanded);
+
+            // Apply notes-only mode if already enabled from saved settings
+            if (viewModel.NotesOnlyMode)
+                ApplyNotesOnlyMode(true);
         }
     }
 
@@ -617,7 +656,16 @@ public partial class OrderLogWidgetView : UserControl
         {
             if (sender is OrderLogViewModel vm)
             {
-                UpdateNotesHeaderState(vm.NotesExpanded);
+                // In notes-only mode, the drawer is managed by ApplyNotesOnlyMode — skip normal handling
+                if (!vm.NotesOnlyMode)
+                    UpdateNotesHeaderState(vm.NotesExpanded);
+            }
+        }
+        else if (e.PropertyName == nameof(OrderLogViewModel.NotesOnlyMode))
+        {
+            if (sender is OrderLogViewModel vm)
+            {
+                ApplyNotesOnlyMode(vm.NotesOnlyMode);
             }
         }
     }
@@ -853,21 +901,6 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
-    private void SortToggle_Click(object sender, RoutedEventArgs e)
-    {
-        if (DataContext is not OrderLogViewModel vm) return;
-
-        // If Ctrl pressed, toggle sort direction. Otherwise cycle sort mode.
-        if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
-        {
-            vm.SortStatusDescending = !vm.SortStatusDescending;
-        }
-        else
-        {
-            vm.CycleSortMode();
-        }
-    }
-
     private void ArchivedSortToggle_Click(object sender, RoutedEventArgs e)
     {
         if (DataContext is not OrderLogViewModel vm) return;
@@ -1059,10 +1092,7 @@ public partial class OrderLogWidgetView : UserControl
 
     private void UpdateThemeIcon(bool isDarkMode)
     {
-        if (ThemeToggleIcon != null)
-        {
-            ThemeToggleIcon.Text = isDarkMode ? "☀️" : "🌙";
-        }
+        // Half-circle contrast icon works for both themes — no update needed
     }
 
     private async Task InitializeSpotifyAsync()
@@ -1099,15 +1129,6 @@ public partial class OrderLogWidgetView : UserControl
             catch { }
             return;
         }
-
-        // Show connect overlay only when no media is detected and Web API isn't connected
-        try
-        {
-            SpotifyConnectOverlay.Visibility = (!_spotifyService.HasMedia && !_spotifyService.IsConnected)
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-        }
-        catch { }
 
         // Auto-hide with smooth fade when nothing is playing
         var viewModel = DataContext as OrderLogViewModel;
@@ -1151,43 +1172,16 @@ public partial class OrderLogWidgetView : UserControl
         PlayPauseButton.Content = _spotifyService.IsPlaying ? "⏸" : "▶";
         try { MiniPlayPauseButton.Content = _spotifyService.IsPlaying ? "⏸" : "▶"; } catch { }
 
-        // Toggle API-specific UI elements
-        var apiVis = _spotifyService.IsWebApiConnected ? Visibility.Visible : Visibility.Collapsed;
+        // Hide API-only UI elements (Web API removed)
         try
         {
-            LikeButton.Visibility = apiVis;
-            VolumeDownButton.Visibility = apiVis;
-            VolumeUpButton.Visibility = apiVis;
-            HistoryButton.Visibility = apiVis;
-            ShuffleIndicatorWrapper.Visibility = apiVis;
-            RepeatIndicatorWrapper.Visibility = apiVis;
-        }
-        catch { }
-
-        // Album · Device info line (API-only data)
-        try
-        {
-            if (!_spotifyService.IsWebApiConnected)
-            {
-                AlbumDeviceText.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                var album = _spotifyService.AlbumName ?? "";
-                var device = _spotifyService.DeviceName ?? "";
-                if (!string.IsNullOrEmpty(album) || !string.IsNullOrEmpty(device))
-                {
-                    var parts = new System.Collections.Generic.List<string>();
-                    if (!string.IsNullOrEmpty(album)) parts.Add(album);
-                    if (!string.IsNullOrEmpty(device)) parts.Add($"📱 {device}");
-                    AlbumDeviceText.Text = string.Join("  ·  ", parts);
-                    AlbumDeviceText.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    AlbumDeviceText.Visibility = Visibility.Collapsed;
-                }
-            }
+            LikeButton.Visibility = Visibility.Collapsed;
+            VolumeDownButton.Visibility = Visibility.Collapsed;
+            VolumeUpButton.Visibility = Visibility.Collapsed;
+            HistoryButton.Visibility = Visibility.Collapsed;
+            ShuffleIndicatorWrapper.Visibility = Visibility.Collapsed;
+            RepeatIndicatorWrapper.Visibility = Visibility.Collapsed;
+            AlbumDeviceText.Visibility = Visibility.Collapsed;
         }
         catch { }
 
@@ -1335,18 +1329,23 @@ public partial class OrderLogWidgetView : UserControl
             TrackDurationText.Text = FormatTimeSpan(dur);
 
             double ratio = 0;
-            // Update progress bar fill width
             if (dur.TotalSeconds > 0)
             {
                 ratio = Math.Clamp(pos.TotalSeconds / dur.TotalSeconds, 0, 1);
                 var parent = ProgressBarFill.Parent as Grid;
                 if (parent != null && parent.ActualWidth > 0)
                 {
-                    ProgressBarFill.Width = parent.ActualWidth * ratio;
+                    double targetWidth = parent.ActualWidth * ratio;
+                    var anim = new DoubleAnimation(targetWidth, TimeSpan.FromMilliseconds(450))
+                    {
+                        EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    ProgressBarFill.BeginAnimation(WidthProperty, anim);
                 }
             }
             else
             {
+                ProgressBarFill.BeginAnimation(WidthProperty, null);
                 ProgressBarFill.Width = 0;
             }
 
@@ -1356,7 +1355,12 @@ public partial class OrderLogWidgetView : UserControl
                 var miniParent = MiniProgressBarFill?.Parent as Grid;
                 if (MiniProgressBarFill != null && miniParent != null && miniParent.ActualWidth > 0)
                 {
-                    MiniProgressBarFill.Width = miniParent.ActualWidth * ratio;
+                    double miniTarget = miniParent.ActualWidth * ratio;
+                    var miniAnim = new DoubleAnimation(miniTarget, TimeSpan.FromMilliseconds(450))
+                    {
+                        EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    MiniProgressBarFill.BeginAnimation(WidthProperty, miniAnim);
                 }
             }
             catch { }
@@ -1651,32 +1655,6 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
-    private async void SpotifyConnect_Click(object sender, RoutedEventArgs e)
-    {
-        if (_spotifyService == null) return;
-        try
-        {
-            SpotifyConnectButton.Content = "Connecting…";
-            SpotifyConnectButton.IsEnabled = false;
-            var result = await _spotifyService.ConnectAsync();
-            if (result)
-            {
-                UpdateNowPlayingUI();
-            }
-            else
-            {
-                SpotifyConnectButton.Content = "Connect";
-                SpotifyConnectButton.IsEnabled = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Serilog.Log.Warning(ex, "Spotify connect failed");
-            SpotifyConnectButton.Content = "Connect";
-            SpotifyConnectButton.IsEnabled = true;
-        }
-    }
-
     private async void PlayPause_Click(object sender, RoutedEventArgs e)
     {
         if (_spotifyService != null)
@@ -1731,21 +1709,6 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
-    private async void ShuffleIndicator_Click(object sender, MouseButtonEventArgs e)
-    {
-        if (_spotifyService != null)
-        {
-            await _spotifyService.ToggleShuffleAsync();
-        }
-    }
-
-    private async void RepeatIndicator_Click(object sender, MouseButtonEventArgs e)
-    {
-        if (_spotifyService != null)
-        {
-            await _spotifyService.CycleRepeatAsync();
-        }
-    }
 
     private void AddBlankOrder_Click(object sender, RoutedEventArgs e)
     {

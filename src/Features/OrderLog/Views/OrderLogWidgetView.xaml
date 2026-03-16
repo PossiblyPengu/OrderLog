@@ -1747,36 +1747,7 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- Modern Sort direction toggle button - Hidden -->
-                    <Button Grid.Column="4" Click="SortToggle_Click" ToolTip="Toggle sort direction"
-                            Visibility="Collapsed"
-                            Style="{StaticResource ModernIconButtonStyle}">
-                        <Border CornerRadius="{DynamicResource RadiusSm}"
-                                Background="{DynamicResource SurfaceHoverBrush}"
-                                Width="40" Height="40">
-                            <TextBlock x:Name="SortSymbol" FontSize="18" FontWeight="Bold"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       Foreground="{DynamicResource AccentBrush}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Text" Value="↑"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SortStatusDescending}" Value="True">
-                                                <Setter Property="Text" Value="↓"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Border>
-                    </Button>
-
-                    <!-- Multi-select removed: toggle button omitted -->
-
-                    
                 </Grid>
-
-                <!-- Multi-select removed -->
 
             </Grid>
         </Border>
@@ -3283,7 +3254,7 @@
 
                                         <!-- Left: Shuffle + Repeat -->
                                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Border x:Name="ShuffleIndicatorWrapper" Cursor="Hand" MouseLeftButtonDown="ShuffleIndicator_Click"
+                                            <Border x:Name="ShuffleIndicatorWrapper"
                                                     Background="Transparent" Padding="4,2">
                                                 <TextBlock x:Name="ShuffleIndicator"
                                                            Text="🔀"
@@ -3293,7 +3264,7 @@
                                                            Opacity="0.7"
                                                            ToolTip="Shuffle Off"/>
                                             </Border>
-                                            <Border x:Name="RepeatIndicatorWrapper" Cursor="Hand" MouseLeftButtonDown="RepeatIndicator_Click"
+                                            <Border x:Name="RepeatIndicatorWrapper"
                                                     Background="Transparent" Padding="4,2" Margin="2,0,0,0">
                                                 <TextBlock x:Name="RepeatIndicator"
                                                            Text="🔁"
@@ -3557,52 +3528,6 @@
                                     </Border>
                                 </Popup>
 
-                                <!-- Connect to Spotify overlay -->
-                                <Border x:Name="SpotifyConnectOverlay" Visibility="Collapsed" Panel.ZIndex="100">
-                                    <Border.Background>
-                                        <SolidColorBrush Color="#000000" Opacity="0.85"/>
-                                    </Border.Background>
-                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
-                                        <TextBlock Text="🎧" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                        <TextBlock Text="Connect to Spotify"
-                                                   FontSize="16" FontWeight="Bold"
-                                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                                   HorizontalAlignment="Center"/>
-                                        <TextBlock Text="Sign in to control playback"
-                                                   FontSize="11"
-                                                   Foreground="{DynamicResource TextTertiaryBrush}"
-                                                   HorizontalAlignment="Center"
-                                                   Margin="0,4,0,12"/>
-                                        <Button x:Name="SpotifyConnectButton"
-                                                Content="Connect"
-                                                Click="SpotifyConnect_Click"
-                                                Background="{DynamicResource AccentBrush}"
-                                                Foreground="{DynamicResource TextOnAccentBrush}"
-                                                BorderThickness="0"
-                                                FontSize="13" FontWeight="SemiBold"
-                                                Width="120" Height="34"
-                                                Cursor="Hand">
-                                            <Button.Style>
-                                                <Style TargetType="Button">
-                                                    <Setter Property="Template">
-                                                        <Setter.Value>
-                                                            <ControlTemplate TargetType="Button">
-                                                                <Border x:Name="ConnBd" Background="{TemplateBinding Background}" CornerRadius="17" Padding="16,6">
-                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                                </Border>
-                                                                <ControlTemplate.Triggers>
-                                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                                        <Setter TargetName="ConnBd" Property="Opacity" Value="0.85"/>
-                                                                    </Trigger>
-                                                                </ControlTemplate.Triggers>
-                                                            </ControlTemplate>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-                                    </StackPanel>
-                                </Border>
                             </Grid>
                         </Border>
                     </Grid>
@@ -3612,7 +3537,7 @@
                 <Border Background="{DynamicResource SurfaceBrush}"
                         BorderThickness="0"
                         Padding="0"
-                        ToolTip="Click to expand • Double-click to open Spotify">
+                        ToolTip="Click to expand">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -3845,26 +3770,48 @@
                            FontSize="11"
                            VerticalAlignment="Center"/>
                 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,-2,0,-2">
                     <Button Click="OpenSettings_Click"
-                            Style="{StaticResource WidgetIconButtonStyle}"
+                            Style="{DynamicResource MarathonBtnIcon}"
                             ToolTip="Settings"
-                            Margin="0,0,4,0">
-                        <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            Width="28" Height="28"
+                            Margin="0,0,2,0">
+                        <!-- Sliders icon: three horizontal bars with offset knobs -->
+                        <Canvas Width="14" Height="14">
+                            <Line X1="1" Y1="3" X2="13" Y2="3" Stroke="{DynamicResource TextTertiaryBrush}" StrokeThickness="1.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Line X1="1" Y1="7" X2="13" Y2="7" Stroke="{DynamicResource TextTertiaryBrush}" StrokeThickness="1.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Line X1="1" Y1="11" X2="13" Y2="11" Stroke="{DynamicResource TextTertiaryBrush}" StrokeThickness="1.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Ellipse Canvas.Left="3" Canvas.Top="1" Width="4" Height="4" Fill="{DynamicResource AccentBrush}"/>
+                            <Ellipse Canvas.Left="8" Canvas.Top="5" Width="4" Height="4" Fill="{DynamicResource AccentBrush}"/>
+                            <Ellipse Canvas.Left="5" Canvas.Top="9" Width="4" Height="4" Fill="{DynamicResource AccentBrush}"/>
+                        </Canvas>
                     </Button>
                     <Button x:Name="ThemeToggleButton"
                             Click="ThemeToggle_Click"
-                            Style="{StaticResource WidgetIconButtonStyle}"
+                            Style="{DynamicResource MarathonBtnIcon}"
                             ToolTip="Toggle Light/Dark Mode"
-                            Margin="0,0,4,0">
-                        <TextBlock x:Name="ThemeToggleIcon" Text="&#xE793;" FontFamily="Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            Width="28" Height="28"
+                            Margin="0,0,2,0">
+                        <!-- Half-circle contrast icon -->
+                        <Canvas x:Name="ThemeToggleIcon" Width="14" Height="14">
+                            <Path Data="M 7,1 A 6,6 0 1 1 7,13 A 6,6 0 0 1 7,1 Z"
+                                  Stroke="{DynamicResource TextTertiaryBrush}" StrokeThickness="1.3"
+                                  Fill="Transparent"/>
+                            <Path Data="M 7,1 A 6,6 0 0 1 7,13 Z"
+                                  Fill="{DynamicResource TextTertiaryBrush}"/>
+                        </Canvas>
                     </Button>
                     <Button x:Name="ExportImportMenuButton"
                             Click="ExportImportMenu_Click"
-                            Style="{StaticResource WidgetIconButtonStyle}"
+                            Style="{DynamicResource MarathonBtnIcon}"
                             ToolTip="Export/Import Options"
-                            Margin="0,0,0,0">
-                        <TextBlock Text="&#xE898;" FontFamily="Segoe MDL2 Assets" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            Width="28" Height="28">
+                        <!-- Vertical three-dot menu icon -->
+                        <Canvas Width="14" Height="14">
+                            <Ellipse Canvas.Left="5.5" Canvas.Top="1.5" Width="3" Height="3" Fill="{DynamicResource TextTertiaryBrush}"/>
+                            <Ellipse Canvas.Left="5.5" Canvas.Top="5.5" Width="3" Height="3" Fill="{DynamicResource TextTertiaryBrush}"/>
+                            <Ellipse Canvas.Left="5.5" Canvas.Top="9.5" Width="3" Height="3" Fill="{DynamicResource TextTertiaryBrush}"/>
+                        </Canvas>
                         <Button.ContextMenu>
                             <ContextMenu x:Name="ExportImportMenu">
                                 <MenuItem Header="📄 Export to CSV"
@@ -3963,7 +3910,8 @@
                                 </Button>
                                 <Border Width="1" Height="16" Background="{DynamicResource BorderBrush}"
                                         VerticalAlignment="Center" Margin="2,0" Opacity="0.6"/>
-                                <Button Click="NotesDrawerClose_Click"
+                                <Button x:Name="NotesDrawerCloseButton"
+                                        Click="NotesDrawerClose_Click"
                                         Style="{DynamicResource MarathonBtnIcon}"
                                         Width="32" Height="32" Padding="0"
                                         ToolTip="Close">

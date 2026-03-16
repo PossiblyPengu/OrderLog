@@ -91,10 +91,7 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     private int _repeatMode; // 0=Off, 1=Track, 2=List
     private Color _dominantColor = Colors.Transparent;
     private bool _isCurrentTrackLiked;
-    private string? _currentTrackId;
     private int _volumePercent = 50;
-    private bool _useWebApi;
-    private bool _webApiAllowed; // User setting: whether Web API enhancements are enabled
 
     private const int MaxRecentTracks = 20;
     private readonly ObservableCollection<RecentTrack> _recentTracks = new();
@@ -107,8 +104,6 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     public event EventHandler<string>? TrackChanged;
 
     // ── Public properties ──────────────────────────────────────────────────
-    public bool IsWebApiConnected => _useWebApi && SpotifyAuthService.Instance.IsAuthenticated;
-    public bool IsConnected => IsWebApiConnected;
 
     public string TrackTitle
     {
@@ -252,60 +247,6 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
             if (!_pollTimer.Enabled) _pollTimer.Start();
         }
 
-        // Initialize Web API if auth is available and allowed (enhancement layer)
-        try
-        {
-            await SpotifyAuthService.Instance.InitializeAsync();
-            _useWebApi = _webApiAllowed && SpotifyAuthService.Instance.IsAuthenticated;
-            SpotifyAuthService.Instance.AuthenticationChanged += (s, e) =>
-            {
-                _useWebApi = _webApiAllowed && SpotifyAuthService.Instance.IsAuthenticated;
-                Log.Information("SpotifyService: Web API auth changed, connected={Connected}", _useWebApi);
-            };
-            if (_useWebApi)
-                Log.Information("SpotifyService: Web API connected, enhanced features available");
-        }
-        catch (Exception ex)
-        {
-            Log.Debug(ex, "SpotifyService: Web API initialization skipped");
-        }
-    }
-
-    /// <summary>
-    /// Enable or disable the Web API enhancement layer.
-    /// </summary>
-    public void SetWebApiEnabled(bool enabled)
-    {
-        _webApiAllowed = enabled;
-        _useWebApi = enabled && SpotifyAuthService.Instance.IsAuthenticated;
-        Log.Information("SpotifyService: Web API enhancements {State}", enabled ? "enabled" : "disabled");
-    }
-
-    /// <summary>
-    /// Trigger the Spotify OAuth connect flow.
-    /// </summary>
-    public async Task<bool> ConnectAsync()
-    {
-        try
-        {
-            var result = await SpotifyAuthService.Instance.AuthenticateAsync();
-            _useWebApi = _webApiAllowed && result;
-            return result;
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "SpotifyService: Connect failed");
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// Disconnect from Spotify Web API.
-    /// </summary>
-    public async Task DisconnectAsync()
-    {
-        await SpotifyAuthService.Instance.DisconnectAsync();
-        _useWebApi = false;
     }
 
     // ── SMTC Session Management ────────────────────────────────────────────
@@ -387,13 +328,6 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
         if ((DateTime.Now - _lastUserAction).TotalMilliseconds < UserActionCooldownMs)
             return;
 
-        // Use Web API polling when connected for richer data
-        if (_useWebApi)
-        {
-            await UpdateFromWebApiAsync();
-            return;
-        }
-
         await UpdateMediaInfoAsync();
     }
 
@@ -403,21 +337,6 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     private Task UpdatePositionAsync()
     {
         if (!_isPlaying) return Task.CompletedTask;
-
-        if (_useWebApi)
-        {
-            if (_trackDuration > TimeSpan.Zero)
-            {
-                System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
-                {
-                    var newPos = _trackPosition.Add(TimeSpan.FromMilliseconds(500));
-                    if (newPos <= _trackDuration)
-                        TrackPosition = newPos;
-                });
-            }
-            return Task.CompletedTask;
-        }
-
         if (_currentSession == null) return Task.CompletedTask;
 
         try
@@ -441,92 +360,6 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
             Log.Debug(ex, "Failed to update track position");
         }
         return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Update playback state from Spotify Web API (richer data than SMTC).
-    /// </summary>
-    private async Task UpdateFromWebApiAsync()
-    {
-        try
-        {
-            var state = await SpotifyWebApiClient.Instance.GetPlaybackStateAsync();
-            if (state == null)
-            {
-                // No active playback via API — fall back to SMTC
-                if (_currentSession != null)
-                {
-                    await UpdateMediaInfoAsync();
-                }
-                else
-                {
-                    System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
-                    {
-                        HasMedia = false;
-                        TrackTitle = "No media playing";
-                        ArtistName = "";
-                        IsPlaying = false;
-                    });
-                }
-                return;
-            }
-
-            string currentTrackKey = $"{state.TrackName ?? ""}|{state.ArtistName ?? ""}";
-            bool trackChanged = _lastTrackKey != currentTrackKey;
-
-            BitmapImage? albumArt = null;
-            if (trackChanged && !string.IsNullOrEmpty(state.AlbumArtUrl))
-                albumArt = await SpotifyWebApiClient.Instance.DownloadImageAsync(state.AlbumArtUrl);
-
-            bool isLiked = false;
-            if (trackChanged && !string.IsNullOrEmpty(state.TrackId))
-                isLiked = await SpotifyWebApiClient.Instance.IsTrackSavedAsync(state.TrackId);
-
-            System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
-            {
-                HasMedia = true;
-                TrackTitle = state.TrackName ?? "";
-                ArtistName = state.ArtistName ?? "";
-                AlbumName = state.AlbumName ?? "";
-                DeviceName = state.DeviceName ?? "";
-                IsPlaying = state.IsPlaying;
-                IsShuffleEnabled = state.ShuffleState;
-                RepeatMode = state.RepeatState switch
-                {
-                    "track" => 1,
-                    "context" => 2,
-                    _ => 0
-                };
-                VolumePercent = state.VolumePercent;
-                TrackPosition = TimeSpan.FromMilliseconds(state.ProgressMs);
-                if (state.DurationMs > 0)
-                    TrackDuration = TimeSpan.FromMilliseconds(state.DurationMs);
-
-                _currentTrackId = state.TrackId;
-
-                if (trackChanged)
-                    IsCurrentTrackLiked = isLiked;
-
-                if (albumArt != null)
-                {
-                    CancelArtRetry();
-                    AlbumArt = albumArt;
-                    ExtractDominantColor(albumArt);
-                }
-
-                if (trackChanged && !string.IsNullOrEmpty(state.TrackName))
-                {
-                    _lastTrackKey = currentTrackKey;
-                    AddToRecentTracks(state.TrackName, state.ArtistName ?? "", AlbumArt);
-                    TrackChanged?.Invoke(this, state.TrackName);
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            Log.Debug(ex, "SpotifyService: Web API poll failed, falling back to SMTC");
-            await UpdateMediaInfoAsync();
-        }
     }
 
     // ── SMTC Media Info Update ─────────────────────────────────────────────
@@ -673,145 +506,54 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     }
 
     // ── Playback Control ───────────────────────────────────────────────────
-    public async Task PlayPauseAsync()
+    public Task PlayPauseAsync()
     {
         _lastUserAction = DateTime.Now;
-
-        if (_useWebApi)
-        {
-            bool success = IsPlaying
-                ? await SpotifyWebApiClient.Instance.PauseAsync()
-                : await SpotifyWebApiClient.Instance.PlayAsync();
-            if (success) IsPlaying = !IsPlaying;
-            return;
-        }
-
         SendMediaKey(VK_MEDIA_PLAY_PAUSE);
         IsPlaying = !IsPlaying;
+        return Task.CompletedTask;
     }
 
-    public async Task NextTrackAsync()
+    public Task NextTrackAsync()
     {
         _lastUserAction = DateTime.Now;
-
-        if (_useWebApi)
-        {
-            await SpotifyWebApiClient.Instance.NextAsync();
-            PostUserActionPollsAsync().SafeFireAndForget("NextTrackPolls");
-            return;
-        }
-
         SendMediaKey(VK_MEDIA_NEXT_TRACK);
         PostUserActionPollsAsync().SafeFireAndForget("NextTrackPolls");
+        return Task.CompletedTask;
     }
 
-    public async Task PreviousTrackAsync()
+    public Task PreviousTrackAsync()
     {
         _lastUserAction = DateTime.Now;
-
-        if (_useWebApi)
-        {
-            await SpotifyWebApiClient.Instance.PreviousAsync();
-            PostUserActionPollsAsync().SafeFireAndForget("PreviousTrackPolls");
-            return;
-        }
-
         SendMediaKey(VK_MEDIA_PREV_TRACK);
         PostUserActionPollsAsync().SafeFireAndForget("PreviousTrackPolls");
+        return Task.CompletedTask;
     }
 
-    public async Task VolumeUpAsync()
+    public Task VolumeUpAsync()
     {
-        if (_useWebApi)
-        {
-            var newVol = Math.Min(100, _volumePercent + 10);
-            if (await SpotifyWebApiClient.Instance.SetVolumeAsync(newVol))
-                VolumePercent = newVol;
-            return;
-        }
         SendMediaKey(VK_VOLUME_UP);
         SendMediaKey(VK_VOLUME_UP);
+        return Task.CompletedTask;
     }
 
-    public async Task VolumeDownAsync()
+    public Task VolumeDownAsync()
     {
-        if (_useWebApi)
-        {
-            var newVol = Math.Max(0, _volumePercent - 10);
-            if (await SpotifyWebApiClient.Instance.SetVolumeAsync(newVol))
-                VolumePercent = newVol;
-            return;
-        }
         SendMediaKey(VK_VOLUME_DOWN);
         SendMediaKey(VK_VOLUME_DOWN);
+        return Task.CompletedTask;
     }
 
-    public async Task VolumeMuteAsync()
+    public Task VolumeMuteAsync()
     {
-        if (_useWebApi)
-        {
-            if (_volumePercent > 0)
-            {
-                await SpotifyWebApiClient.Instance.SetVolumeAsync(0);
-                VolumePercent = 0;
-            }
-            else
-            {
-                await SpotifyWebApiClient.Instance.SetVolumeAsync(50);
-                VolumePercent = 50;
-            }
-            return;
-        }
         SendMediaKey(VK_VOLUME_MUTE);
-    }
-
-    public async Task ToggleShuffleAsync()
-    {
-        if (!_useWebApi) return;
-        var newState = !_isShuffleEnabled;
-        if (await SpotifyWebApiClient.Instance.SetShuffleAsync(newState))
-            IsShuffleEnabled = newState;
-    }
-
-    public async Task CycleRepeatAsync()
-    {
-        if (!_useWebApi) return;
-        var nextState = _repeatMode switch
-        {
-            0 => "context",
-            2 => "track",
-            _ => "off"
-        };
-        if (await SpotifyWebApiClient.Instance.SetRepeatAsync(nextState))
-        {
-            RepeatMode = nextState switch
-            {
-                "track" => 1,
-                "context" => 2,
-                _ => 0
-            };
-        }
-    }
-
-    public async Task SeekAsync(TimeSpan position)
-    {
-        if (!_useWebApi) return;
-        var posMs = (int)position.TotalMilliseconds;
-        if (await SpotifyWebApiClient.Instance.SeekAsync(posMs))
-            TrackPosition = position;
+        return Task.CompletedTask;
     }
 
     public void ToggleLikeCurrentTrack()
     {
         if (!HasMedia) return;
 
-        if (_useWebApi && !string.IsNullOrEmpty(_currentTrackId))
-        {
-            ToggleLikeWebApiAsync().SafeFireAndForget("ToggleLike");
-            return;
-        }
-
-        // Fallback: local session-only likes
         if (string.IsNullOrEmpty(_lastTrackKey)) return;
         if (_likedTrackKeys.Contains(_lastTrackKey))
         {
@@ -825,34 +567,16 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
         }
     }
 
-    private async Task ToggleLikeWebApiAsync()
-    {
-        if (string.IsNullOrEmpty(_currentTrackId)) return;
-
-        if (_isCurrentTrackLiked)
-        {
-            if (await SpotifyWebApiClient.Instance.RemoveTrackAsync(_currentTrackId))
-                IsCurrentTrackLiked = false;
-        }
-        else
-        {
-            if (await SpotifyWebApiClient.Instance.SaveTrackAsync(_currentTrackId))
-                IsCurrentTrackLiked = true;
-        }
-    }
-
     // ── Helpers ─────────────────────────────────────────────────────────────
     private async Task PostUserActionPollsAsync()
     {
         try
         {
             await Task.Delay(700);
-            if (_useWebApi) await UpdateFromWebApiAsync();
-            else await UpdateMediaInfoAsync();
+            await UpdateMediaInfoAsync();
 
             await Task.Delay(1200);
-            if (_useWebApi) await UpdateFromWebApiAsync();
-            else await UpdateMediaInfoAsync();
+            await UpdateMediaInfoAsync();
         }
         catch (Exception ex)
         {

@@ -22,7 +22,4 @@ public class OrderLogWidgetSettings
 
     // Startup
     public bool RunAtStartup { get; set; } = false;
-
-    // Spotify Web API
-    public bool SpotifyApiEnabled { get; set; } = false;
 }

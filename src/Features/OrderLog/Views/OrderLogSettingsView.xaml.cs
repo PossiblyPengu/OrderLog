@@ -27,7 +27,6 @@ public partial class OrderLogSettingsView : UserControl
             newVm.PropertyChanged += OnViewModelPropertyChanged;
             UpdateShapeButtonHighlights(newVm.ShapeVariant);
             UpdateColourSwatchHighlights(newVm.ColourTheme);
-            UpdateSpotifyStatus(SpotifyAuthService.Instance.IsAuthenticated);
         }
     }
 
@@ -173,62 +172,4 @@ public partial class OrderLogSettingsView : UserControl
         }
     }
 
-    private async void SpotifyConnect_Click(object sender, RoutedEventArgs e)
-    {
-        var auth = SpotifyAuthService.Instance;
-
-        SpotifyConnectBtn.Content = "Connecting...";
-        SpotifyConnectBtn.IsEnabled = false;
-
-        try
-        {
-            var success = await auth.AuthenticateAsync();
-            if (success)
-            {
-                UpdateSpotifyStatus(true);
-            }
-            else
-            {
-                MessageBox.Show("Spotify authentication failed or was cancelled.", "Spotify Connect",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Spotify connect failed");
-            MessageBox.Show($"Connection failed: {ex.Message}", "Spotify Connect",
-                MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-        finally
-        {
-            SpotifyConnectBtn.Content = "Connect";
-            SpotifyConnectBtn.IsEnabled = true;
-        }
-    }
-
-    private async void SpotifyDisconnect_Click(object sender, RoutedEventArgs e)
-    {
-        await SpotifyAuthService.Instance.DisconnectAsync();
-        UpdateSpotifyStatus(false);
-    }
-
-    private void UpdateSpotifyStatus(bool connected)
-    {
-        if (connected)
-        {
-            SpotifyStatusText.Text = "Connected";
-            SpotifyStatusText.Foreground = (System.Windows.Media.Brush)FindResource("SuccessBrush");
-            SpotifyStatusDesc.Text = "Full Spotify API control is active";
-            SpotifyConnectBtn.Visibility = Visibility.Collapsed;
-            SpotifyDisconnectBtn.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            SpotifyStatusText.Text = "Not Connected";
-            SpotifyStatusText.Foreground = (System.Windows.Media.Brush)FindResource("TextPrimaryBrush");
-            SpotifyStatusDesc.Text = "Connect to enable direct Spotify control";
-            SpotifyConnectBtn.Visibility = Visibility.Visible;
-            SpotifyDisconnectBtn.Visibility = Visibility.Collapsed;
-        }
-    }
 }
