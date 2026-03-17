@@ -332,7 +332,8 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     }
 
     /// <summary>
-    /// Fast position update for smooth progress bar (runs every 500ms).
+    /// Syncs position from SMTC every 500ms and stores a timestamp so the UI
+    /// can interpolate smoothly between syncs.
     /// </summary>
     private Task UpdatePositionAsync()
     {
@@ -349,6 +350,8 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
 
                 System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
                 {
+                    _lastSyncPosition = position;
+                    _lastSyncTime = DateTime.UtcNow;
                     TrackPosition = position;
                     if (duration > TimeSpan.Zero)
                         TrackDuration = duration;
@@ -360,6 +363,31 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
             Log.Debug(ex, "Failed to update track position");
         }
         return Task.CompletedTask;
+    }
+
+    // ── Interpolated position for smooth UI ──────────────────────────────
+    private TimeSpan _lastSyncPosition;
+    private DateTime _lastSyncTime = DateTime.MinValue;
+
+    /// <summary>
+    /// Returns the estimated current position by interpolating from the last
+    /// SMTC sync point. Call this from the UI render loop for fluid progress.
+    /// </summary>
+    public TimeSpan InterpolatedPosition
+    {
+        get
+        {
+            if (!_isPlaying || _lastSyncTime == DateTime.MinValue)
+                return _trackPosition;
+
+            var elapsed = DateTime.UtcNow - _lastSyncTime;
+            var estimated = _lastSyncPosition + elapsed;
+
+            if (_trackDuration > TimeSpan.Zero && estimated > _trackDuration)
+                return _trackDuration;
+
+            return estimated;
+        }
     }
 
     // ── SMTC Media Info Update ─────────────────────────────────────────────

@@ -3180,8 +3180,7 @@
                                                FontSize="17"
                                                FontWeight="Bold"
                                                Foreground="White"
-                                               TextTrimming="CharacterEllipsis"
-                                               TextWrapping="NoWrap">
+                                               TextWrapping="Wrap">
                                         <TextBlock.Effect>
                                             <DropShadowEffect ShadowDepth="0" BlurRadius="2" Opacity="1" Color="Black"/>
                                         </TextBlock.Effect>

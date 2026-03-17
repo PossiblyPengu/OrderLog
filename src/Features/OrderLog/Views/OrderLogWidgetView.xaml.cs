@@ -47,10 +47,12 @@ public partial class OrderLogWidgetView : UserControl
     private double _activeTabScrollPosition = 0;
     private double _archivedTabScrollPosition = 0;
     private SpotifyService? _spotifyService;
+    private bool _progressRenderHooked;
     private System.Windows.Threading.DispatcherTimer? _equalizerTimer;
     private System.Windows.Threading.DispatcherTimer? _marqueeTimer;
     private Storyboard? _marqueeStoryboard;
     private bool _isMarqueeRunning = false;
+    private string? _lastMarqueeTrack;
     private Random _random = new();
     private KeyboardShortcutManager? _keyboardShortcutManager;
     private bool _lastHasMedia = false; // For auto-hide fade tracking
@@ -402,6 +404,17 @@ public partial class OrderLogWidgetView : UserControl
         MarqueeContent.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
         double contentWidth = MarqueeContent.DesiredSize.Width;
         double containerWidth = MarqueeContainer.ActualWidth;
+
+        // Wait for layout to give the container a valid width
+        if (containerWidth <= 0) return;
+
+        // Restart marquee when track changes
+        var currentTrack = CollapsedTrackTitle.Text;
+        if (_isMarqueeRunning && currentTrack != _lastMarqueeTrack)
+        {
+            StopMarquee();
+        }
+        _lastMarqueeTrack = currentTrack;
 
         if (contentWidth > containerWidth && !_isMarqueeRunning)
         {
@@ -960,6 +973,13 @@ public partial class OrderLogWidgetView : UserControl
             _spotifyService.PropertyChanged -= SpotifyService_PropertyChanged;
         }
 
+        // Unhook progress render callback
+        if (_progressRenderHooked)
+        {
+            System.Windows.Media.CompositionTarget.Rendering -= OnProgressRenderFrame;
+            _progressRenderHooked = false;
+        }
+
         // Unsubscribe from ViewModel property changes
         if (DataContext is OrderLogViewModel viewModel)
         {
@@ -1322,48 +1342,64 @@ public partial class OrderLogWidgetView : UserControl
         if (_spotifyService == null) return;
         try
         {
-            var pos = _spotifyService.TrackPosition;
-            var dur = _spotifyService.TrackDuration;
+            TrackDurationText.Text = FormatTimeSpan(_spotifyService.TrackDuration);
 
-            TrackPositionText.Text = FormatTimeSpan(pos);
-            TrackDurationText.Text = FormatTimeSpan(dur);
-
-            double ratio = 0;
-            if (dur.TotalSeconds > 0)
+            // Hook/unhook the per-frame render callback based on playback state
+            if (_spotifyService.IsPlaying && _spotifyService.TrackDuration.TotalSeconds > 0)
             {
-                ratio = Math.Clamp(pos.TotalSeconds / dur.TotalSeconds, 0, 1);
-                var parent = ProgressBarFill.Parent as Grid;
-                if (parent != null && parent.ActualWidth > 0)
+                if (!_progressRenderHooked)
                 {
-                    double targetWidth = parent.ActualWidth * ratio;
-                    var anim = new DoubleAnimation(targetWidth, TimeSpan.FromMilliseconds(450))
-                    {
-                        EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-                    };
-                    ProgressBarFill.BeginAnimation(WidthProperty, anim);
+                    System.Windows.Media.CompositionTarget.Rendering += OnProgressRenderFrame;
+                    _progressRenderHooked = true;
                 }
             }
             else
             {
-                ProgressBarFill.BeginAnimation(WidthProperty, null);
-                ProgressBarFill.Width = 0;
-            }
-
-            // Update mini progress bar in collapsed mini-bar
-            try
-            {
-                var miniParent = MiniProgressBarFill?.Parent as Grid;
-                if (MiniProgressBarFill != null && miniParent != null && miniParent.ActualWidth > 0)
+                if (_progressRenderHooked)
                 {
-                    double miniTarget = miniParent.ActualWidth * ratio;
-                    var miniAnim = new DoubleAnimation(miniTarget, TimeSpan.FromMilliseconds(450))
-                    {
-                        EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-                    };
-                    MiniProgressBarFill.BeginAnimation(WidthProperty, miniAnim);
+                    System.Windows.Media.CompositionTarget.Rendering -= OnProgressRenderFrame;
+                    _progressRenderHooked = false;
                 }
+                // Set final position when paused
+                UpdateProgressBarWidth(_spotifyService.TrackPosition, _spotifyService.TrackDuration);
             }
-            catch { }
+        }
+        catch { }
+    }
+
+    private void OnProgressRenderFrame(object? sender, EventArgs e)
+    {
+        if (_spotifyService == null || !_spotifyService.IsPlaying) return;
+        try
+        {
+            var pos = _spotifyService.InterpolatedPosition;
+            var dur = _spotifyService.TrackDuration;
+            UpdateProgressBarWidth(pos, dur);
+        }
+        catch { }
+    }
+
+    private void UpdateProgressBarWidth(TimeSpan pos, TimeSpan dur)
+    {
+        TrackPositionText.Text = FormatTimeSpan(pos);
+
+        if (dur.TotalSeconds <= 0)
+        {
+            ProgressBarFill.Width = 0;
+            return;
+        }
+
+        double ratio = Math.Clamp(pos.TotalSeconds / dur.TotalSeconds, 0, 1);
+
+        var parent = ProgressBarFill.Parent as Grid;
+        if (parent != null && parent.ActualWidth > 0)
+            ProgressBarFill.Width = parent.ActualWidth * ratio;
+
+        try
+        {
+            var miniParent = MiniProgressBarFill?.Parent as Grid;
+            if (MiniProgressBarFill != null && miniParent != null && miniParent.ActualWidth > 0)
+                MiniProgressBarFill.Width = miniParent.ActualWidth * ratio;
         }
         catch { }
     }
