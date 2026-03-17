@@ -3609,7 +3609,7 @@
                                     <TextBlock x:Name="MusicIcon" Text="♪" FontSize="13"
                                                Foreground="{DynamicResource TextTertiaryBrush}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    <Image x:Name="MiniAlbumArt" Stretch="UniformToFill"
+                                    <Image x:Name="MiniAlbumArt" Stretch="Uniform"
                                            RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Grid>
                             </Border>
