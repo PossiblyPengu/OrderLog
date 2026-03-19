@@ -1143,14 +1143,14 @@
                                           Content="{TemplateBinding SelectionBoxItem}"
                                           ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                          Margin="14,0,36,0"
+                                          Margin="8,0,28,0"
                                           VerticalAlignment="Center"
-                                          HorizontalAlignment="Left"/>
+                                          HorizontalAlignment="Center"/>
                         <TextBox x:Name="PART_EditableTextBox"
                                  Style="{x:Null}"
                                  HorizontalAlignment="Stretch"
                                  VerticalAlignment="Center"
-                                 Margin="14,0,36,0"
+                                 Margin="8,0,28,0"
                                  Focusable="True"
                                  Background="Transparent"
                                  Foreground="{DynamicResource TextPrimaryBrush}"

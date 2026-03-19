@@ -11,7 +11,6 @@ public class OrderLogWidgetSettings
     public string DefaultNoteColor { get; set; } = "#FFD700";
     public bool NotesOnlyMode { get; set; } = false;
     public bool SortStatusDescending { get; set; } = false;
-    public bool AutoColorByVendor { get; set; } = true; // Auto-assign colors based on vendor name
 
     // Status group expand/collapse state
     public bool NotReadyGroupExpanded { get; set; } = true;

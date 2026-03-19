@@ -1,4 +1,5 @@
 <UserControl x:Class="OrderLog.Features.Views.OrderLogWidgetView"
+             x:Name="WidgetRoot"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -22,6 +23,8 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <commonConverters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
         <commonConverters:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
+        <commonConverters:LessThanConverter x:Key="LessThanConverter"/>
+        <commonConverters:MultiplyConverter x:Key="MultiplyConverter"/>
         <converters:StatusToColorConverter x:Key="StatusToColorConverter"/>
         <converters:StatusToCardBrushConverter x:Key="StatusToCardBrushConverter"/>
         <converters:ShowForOrdersConverter x:Key="ShowForOrdersConverter"/>
@@ -66,7 +69,7 @@
                 </MultiDataTrigger>
             </Style.Triggers>
         </Style>
-        
+
         <!-- Modern Editable Field Style - Clean inline editing with focus indicator -->
         <Style x:Key="ModernEditableFieldStyle" TargetType="TextBox">
             <Setter Property="Background" Value="Transparent"/>
@@ -361,7 +364,8 @@
                                            FontStyle="Italic"
                                            IsHitTestVisible="False"
                                            VerticalAlignment="Center"
-                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                                           TextWrapping="Wrap"
+                                           TextTrimming="None">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -382,6 +386,7 @@
                                          FontWeight="SemiBold"
                                          Foreground="{DynamicResource TextPrimaryBrush}"
                                          VerticalAlignment="Center"
+                                         TextWrapping="Wrap"
                                          TabIndex="0"
                                          GotFocus="EditableField_GotFocus"
                                          LostFocus="EditableField_LostFocus">
@@ -391,25 +396,89 @@
                                 </TextBox>
                             </Grid>
 
-                            <!-- Status ComboBox -->
-                            <ComboBox Grid.Column="3"
-                                      HorizontalAlignment="Right"
-                                      SelectedValue="{Binding Status, Mode=TwoWay}"
-                                      SelectedValuePath="Tag"
-                                      SelectionChanged="StatusComboBox_SelectionChanged"
-                                      TabIndex="1"
-                                      FontSize="11"
-                                      FontWeight="SemiBold"
-                                      Padding="8,6"
-                                      MinHeight="28"
-                                      MinWidth="120"
-                                      Foreground="{Binding Status, Converter={StaticResource StatusToColorConverter}}"
-                                      Style="{StaticResource ModernComboBoxStyle}">
-                                <ComboBoxItem Content="Not Ready" Tag="{x:Static models:OrderItem+OrderStatus.NotReady}" Foreground="{DynamicResource DangerBrush}" Style="{StaticResource StatusComboBoxItemStyle}"/>
-                                <ComboBoxItem Content="On Deck" Tag="{x:Static models:OrderItem+OrderStatus.OnDeck}" Foreground="{DynamicResource WarningBrush}" Style="{StaticResource StatusComboBoxItemStyle}"/>
-                                <ComboBoxItem Content="In Progress" Tag="{x:Static models:OrderItem+OrderStatus.InProgress}" Foreground="{DynamicResource SuccessBrush}" Style="{StaticResource StatusComboBoxItemStyle}"/>
-                                <ComboBoxItem Content="Done" Tag="{x:Static models:OrderItem+OrderStatus.Done}" Foreground="{DynamicResource TextTertiaryBrush}" Style="{StaticResource StatusComboBoxItemStyle}"/>
-                            </ComboBox>
+                            <!-- Status Selectors -->
+                            <Grid Grid.Column="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Responsive ComboBox with stoplight visuals -->
+                                <ComboBox x:Name="StatusComboBox"
+                                          HorizontalAlignment="Right"
+                                          SelectedValue="{Binding Status, Mode=TwoWay}"
+                                          SelectedValuePath="Tag"
+                                          SelectionChanged="StatusComboBox_SelectionChanged"
+                                          TabIndex="1"
+                                          FontSize="11"
+                                          FontWeight="SemiBold"
+                                          MinHeight="26"
+                                          Foreground="{Binding Status, Converter={StaticResource StatusToColorConverter}}">
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox" BasedOn="{StaticResource ModernComboBoxStyle}">
+                                            <Setter Property="Width" Value="110"/>
+                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                            <Setter Property="Padding" Value="5,3"/>
+                                            <Setter Property="MinWidth" Value="56"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Value="True">
+                                                    <DataTrigger.Binding>
+                                                        <Binding ElementName="WidgetRoot"
+                                                                 Path="ActualWidth"
+                                                                 Converter="{StaticResource LessThanConverter}"
+                                                                 ConverterParameter="350"/>
+                                                    </DataTrigger.Binding>
+                                                    <Setter Property="Width" Value="52"/>
+                                                    <Setter Property="Padding" Value="2,0"/>
+                                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ComboBox.Style>
+                                    <ComboBox.Resources>
+                                        <!-- Hide text when the control is constrained -->
+                                        <Style x:Key="CompactStatusTextStyle" TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Setter Property="Margin" Value="6,0,0,0"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Value="True">
+                                                    <DataTrigger.Binding>
+                                                        <Binding ElementName="WidgetRoot"
+                                                                 Path="ActualWidth"
+                                                                 Converter="{StaticResource LessThanConverter}"
+                                                                 ConverterParameter="350"/>
+                                                    </DataTrigger.Binding>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ComboBox.Resources>
+
+                                    <ComboBoxItem Tag="{x:Static models:OrderItem+OrderStatus.NotReady}" Style="{StaticResource StatusComboBoxItemStyle}">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusNotReadyBrush}"/>
+                                            <TextBlock Text="Not Ready" Style="{StaticResource CompactStatusTextStyle}"/>
+                                        </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem Tag="{x:Static models:OrderItem+OrderStatus.OnDeck}" Style="{StaticResource StatusComboBoxItemStyle}">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusOnDeckBrush}"/>
+                                            <TextBlock Text="On Deck" Style="{StaticResource CompactStatusTextStyle}"/>
+                                        </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem Tag="{x:Static models:OrderItem+OrderStatus.InProgress}" Style="{StaticResource StatusComboBoxItemStyle}">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusInProgressBrush}"/>
+                                            <TextBlock Text="In Progress" Style="{StaticResource CompactStatusTextStyle}"/>
+                                        </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem Tag="{x:Static models:OrderItem+OrderStatus.Done}" Style="{StaticResource StatusComboBoxItemStyle}">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Ellipse Width="10" Height="10" Fill="{DynamicResource WidgetStatusDoneBrush}"/>
+                                            <TextBlock Text="Done" Style="{StaticResource CompactStatusTextStyle}"/>
+                                        </StackPanel>
+                                    </ComboBoxItem>
+                                </ComboBox>
+                            </Grid>
 
                             <!-- Link Button -->
                             <Button Grid.Column="4" Click="LinkButton_Click" ToolTip="Link with another order" IsTabStop="False"
@@ -1224,7 +1293,9 @@
                                                        Foreground="{DynamicResource TextDisabledBrush}"
                                                        FontStyle="Italic"
                                                        IsHitTestVisible="False"
-                                                       VerticalAlignment="Center">
+                                                       VerticalAlignment="Center"
+                                                       TextWrapping="Wrap"
+                                                       TextTrimming="None">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -1244,6 +1315,7 @@
                                                      FontSize="{DynamicResource CardFontSize}"
                                                      FontWeight="SemiBold"
                                                      Foreground="{DynamicResource TextPrimaryBrush}"
+                                                     TextWrapping="Wrap"
                                                      GotFocus="EditableField_GotFocus"
                                                      LostFocus="EditableField_LostFocus">
                                                 <i:Interaction.Behaviors>
@@ -1421,7 +1493,8 @@
                                             <!-- Vendor name -->
                                             <TextBlock Text="{Binding VendorName, FallbackValue='—'}"
                                                        FontSize="{DynamicResource CardFontSize}" FontWeight="SemiBold"
-                                                       Margin="0,0,0,5"/>
+                                                       Margin="0,0,0,5"
+                                                       TextWrapping="Wrap"/>
 
                                             <!-- Transfer numbers with copy button -->
                                             <Grid Margin="0,0,0,3"
@@ -1808,7 +1881,9 @@
                                          BorderThickness="1"
                                          Padding="10,6"
                                          FontSize="13"
-                                         Margin="0,0,0,10">
+                                         Margin="0,0,0,10"
+                                         TextWrapping="Wrap"
+                                         TabIndex="10">
                                     <i:Interaction.Behaviors>
                                         <behaviors:VendorAutocompleteBehavior/>
                                     </i:Interaction.Behaviors>
@@ -2013,7 +2088,9 @@
                                                                Foreground="{DynamicResource TextDisabledBrush}"
                                                                FontStyle="Italic"
                                                                IsHitTestVisible="False"
-                                                               VerticalAlignment="Center">
+                                                               VerticalAlignment="Center"
+                                                               TextWrapping="Wrap"
+                                                               TextTrimming="None">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -2028,7 +2105,7 @@
                                                             </Style>
                                                         </TextBlock.Style>
                                                     </TextBlock>
-                                                    <TextBox Text="{Binding VendorName, UpdateSourceTrigger=LostFocus}"
+                                                    <TextBox Text="{Binding VendorName, UpdateSourceTrigger=PropertyChanged}"
                                                              Background="Transparent"
                                                              BorderThickness="0"
                                                              FontSize="{DynamicResource CardFontSize}"
@@ -2036,7 +2113,9 @@
                                                              Foreground="{DynamicResource TextPrimaryBrush}"
                                                              CaretBrush="{DynamicResource AccentBrush}"
                                                              SelectionBrush="{DynamicResource AccentBrush}"
-                                                             Padding="0">
+                                                             Padding="0"
+                                                             TextWrapping="Wrap"
+                                                             TabIndex="10">
                                                         <i:Interaction.Behaviors>
                                                             <behaviors:VendorAutocompleteBehavior/>
                                                         </i:Interaction.Behaviors>
@@ -2050,7 +2129,9 @@
                                                                Foreground="{DynamicResource TextDisabledBrush}"
                                                                FontStyle="Italic"
                                                                IsHitTestVisible="False"
-                                                               VerticalAlignment="Center">
+                                                               VerticalAlignment="Center"
+                                                               TextWrapping="Wrap"
+                                                               TextTrimming="None">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -2120,7 +2201,9 @@
                                                            Foreground="{DynamicResource TextDisabledBrush}"
                                                            FontStyle="Italic"
                                                            IsHitTestVisible="False"
-                                                           VerticalAlignment="Center">
+                                                           VerticalAlignment="Center"
+                                                           TextWrapping="Wrap"
+                                                           TextTrimming="None">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -2142,7 +2225,8 @@
                                                          Foreground="{DynamicResource TextSecondaryBrush}"
                                                          FontSize="{DynamicResource CardFontSize}"
                                                          GotFocus="EditableField_GotFocus"
-                                                         LostFocus="EditableField_LostFocus"/>
+                                                         LostFocus="EditableField_LostFocus"
+                                                         TextWrapping="Wrap"/>
                                             </Grid>
 
                                             <!-- Editable WHS Shipment Numbers -->
@@ -2158,7 +2242,9 @@
                                                            Foreground="{DynamicResource TextDisabledBrush}"
                                                            FontStyle="Italic"
                                                            IsHitTestVisible="False"
-                                                           VerticalAlignment="Center">
+                                                           VerticalAlignment="Center"
+                                                           TextWrapping="Wrap"
+                                                           TextTrimming="None">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -2179,13 +2265,20 @@
                                                          Foreground="{DynamicResource TextSecondaryBrush}"
                                                          FontSize="{DynamicResource CardFontSize}"
                                                          GotFocus="EditableField_GotFocus"
-                                                         LostFocus="EditableField_LostFocus"/>
+                                                         LostFocus="EditableField_LostFocus"
+                                                         TextWrapping="Wrap"/>
                                             </Grid>
 
                                             <TextBlock Text="{Binding TimeInProgressDisplay}"
                                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                                        FontSize="{DynamicResource CardFontSize}"
                                                        Margin="0,6,0,0"/>
+
+                                            <TextBlock Text="{Binding TimeOnDeckDisplay}"
+                                                       Foreground="{Binding OnDeckColorHex, Converter={StaticResource HexToBrushConverter}}"
+                                                       FontSize="{DynamicResource CardFontSize}"
+                                                       FontWeight="SemiBold"
+                                                       Margin="0,2,0,0"/>
                                         </StackPanel>
                                         
                                         <!-- STICKY NOTE CONTENT (visible only for sticky notes, with placeholder) -->
@@ -2209,7 +2302,9 @@
                                                            FontStyle="Italic"
                                                            IsHitTestVisible="False"
                                                            VerticalAlignment="Top"
-                                                           Margin="4,4,0,0">
+                                                           Margin="4,4,0,0"
+                                                           TextWrapping="Wrap"
+                                                           TextTrimming="None">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -2733,7 +2828,8 @@
                                             <TextBlock Text="{Binding First.VendorName, FallbackValue='—'}"
                                                        FontSize="{DynamicResource CardFontSize}" FontWeight="SemiBold"
                                                        Margin="0,0,0,5"
-                                                       Visibility="{Binding First.IsStickyNote, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"/>
+                                                       TextWrapping="Wrap"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
                                             <TextBlock Text="{Binding First.NoteContent}"
                                                        FontSize="{DynamicResource CardFontSize}" FontWeight="SemiBold"
                                                        TextTrimming="CharacterEllipsis"
@@ -2901,12 +2997,64 @@
                 </Border.Background>
             </Border>
             
+            <!-- Edge hint for hidden handles -->
+            <StackPanel x:Name="SideHandleEdgeHints"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Panel.ZIndex="145"
+                        Margin="0,0,1,0"
+                        Opacity="0.95">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Opacity" Value="0.95"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=SideHandlePanel, Path=IsHitTestVisible}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation To="0.25" Duration="0:0:0.18" Storyboard.TargetProperty="Opacity"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation To="0.95" Duration="0:0:0.24" Storyboard.TargetProperty="Opacity"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <Border Width="3" Height="40" CornerRadius="1.5" Background="{DynamicResource WarningBrush}" Opacity="0.85"/>
+                <StackPanel Margin="0,6,0,0">
+                    <Border Width="3" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusInProgressBrush}" Margin="0,1,0,0"/>
+                    <Border Width="3" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusOnDeckBrush}" Margin="0,1,0,0"/>
+                    <Border Width="3" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusNotReadyBrush}" Margin="0,1,0,0"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Hover activation zone for side handle -->
+            <Border x:Name="SideHandleHoverZone"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Stretch"
+                    Width="16"
+                    Background="Transparent"
+                    Panel.ZIndex="140"
+                    MouseEnter="SideHandleHoverZone_MouseEnter"/>
+
             <!-- Unified Side Handle Rail: Notes trigger (top) + Status jump (bottom) -->
             <Grid x:Name="SideHandlePanel"
                   VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Panel.ZIndex="150"
-                  MouseLeave="SideHandlePanel_MouseLeave">
+                  MouseLeave="SideHandlePanel_MouseLeave"
+                  Opacity="0"
+                  IsHitTestVisible="False">
+                <Grid.RenderTransform>
+                    <TranslateTransform x:Name="SideHandleSlideTransform" X="20"/>
+                </Grid.RenderTransform>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>  <!-- QuickJump expandable panel -->
                     <ColumnDefinition Width="Auto"/>  <!-- Combined handle strip -->
@@ -2997,32 +3145,106 @@
                         <!-- Notes section (amber) -->
                         <Button x:Name="NotesEdgeTab"
                                 Click="NotesToggle_Click"
-                                Padding="5,14" Background="{DynamicResource WarningBrush}"
-                                BorderThickness="0" Cursor="Hand" ToolTip="Open notes">
+                                Padding="4,8" Background="{DynamicResource WarningBrush}"
+                                BorderThickness="0" Cursor="Hand" ToolTip="Open notes"
+                                Width="38">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border x:Name="NotesBd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
-                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <TextBlock Text="&#x270e;" FontSize="13" Foreground="#1A1A1A"
-                                                       HorizontalAlignment="Center" Margin="0,0,0,4"
-                                                       IsHitTestVisible="False"/>
-                                            <Border CornerRadius="5" Background="#1A1A1A"
-                                                    Width="14" Height="14" HorizontalAlignment="Center"
-                                                    Visibility="{Binding StickyNotes.Count, Converter={StaticResource IntToVisibilityConverter}}">
-                                                <TextBlock Text="{Binding StickyNotes.Count}"
-                                                           FontSize="7" FontWeight="Bold"
-                                                           Foreground="{DynamicResource WarningBrush}"
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                           IsHitTestVisible="False"/>
+                                    <Border x:Name="NotesBd"
+                                            Background="{TemplateBinding Background}"
+                                            Padding="{TemplateBinding Padding}"
+                                            CornerRadius="3"
+                                            SnapsToDevicePixels="True">
+                                        <Grid>
+                                            <Border x:Name="NotesOverlay"
+                                                    CornerRadius="6"
+                                                    Opacity="0.55"
+                                                    IsHitTestVisible="False">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                        <GradientStop Color="#BBFFFFFF" Offset="0"/>
+                                                        <GradientStop Color="#33FFFFFF" Offset="0.45"/>
+                                                        <GradientStop Color="#22000000" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
                                             </Border>
-                                        </StackPanel>
+
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-4,0,0">
+                                                <Grid Width="20" Height="20">
+                                                    <Ellipse Fill="#2CFFFFFF" Stroke="#66FFFFFF" StrokeThickness="1"/>
+                                                    <TextBlock Text="✎"
+                                                               FontSize="12" FontWeight="SemiBold"
+                                                               Foreground="#1A1A1A"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               IsHitTestVisible="False"/>
+                                                </Grid>
+
+                                                <Border x:Name="NotesCountPill"
+                                                        CornerRadius="8"
+                                                        Background="#1A1A1A"
+                                                        Padding="5,1"
+                                                        Margin="0,6,0,4"
+                                                        HorizontalAlignment="Center"
+                                                        Visibility="{Binding StickyNotes.Count, Converter={StaticResource IntToVisibilityConverter}}">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Ellipse Width="3" Height="3" Fill="{DynamicResource WarningBrush}" Margin="0,0,3,0"/>
+                                                        <TextBlock Text="{Binding StickyNotes.Count}"
+                                                                   FontSize="8" FontWeight="Bold"
+                                                                   Foreground="{DynamicResource WarningBrush}"/>
+                                                    </StackPanel>
+                                                </Border>
+
+                                                <Rectangle Height="1" RadiusX="0.5" RadiusY="0.5" Width="14" Fill="#4D1A1A1A" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="NotesBd" Property="Opacity" Value="0.8"/>
+                                            <Trigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="NotesOverlay"
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="0.75" Duration="0:0:0.18"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.EnterActions>
+                                            <Trigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="NotesOverlay"
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="0.55" Duration="0:0:0.22"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.ExitActions>
                                         </Trigger>
                                         <Trigger Property="IsPressed" Value="True">
-                                            <Setter TargetName="NotesBd" Property="Opacity" Value="0.6"/>
+                                            <Trigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="NotesOverlay"
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="0.4" Duration="0:0:0.12"/>
+                                                        <DoubleAnimation Storyboard.TargetName="NotesBd"
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="0.9" Duration="0:0:0.12"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.EnterActions>
+                                            <Trigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="NotesOverlay"
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="0.55" Duration="0:0:0.18"/>
+                                                        <DoubleAnimation Storyboard.TargetName="NotesBd"
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="1" Duration="0:0:0.18"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.ExitActions>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -3068,7 +3290,9 @@
                         <!-- Album Art Background -->
                         <Border CornerRadius="0"
                                 Background="{DynamicResource SurfaceBrush}"
-                                MinHeight="220">
+                                Height="{Binding ElementName=WidgetRoot, Path=ActualWidth, Converter={StaticResource MultiplyConverter}, ConverterParameter=0.72}"
+                                MinHeight="180"
+                                MaxHeight="240">
                             <Grid x:Name="PlayerExpandedGrid">
                                 <Grid.Triggers>
                                     <EventTrigger RoutedEvent="Grid.MouseEnter">
@@ -3582,10 +3806,48 @@
                                     Margin="0,0,10,0"
                                     VerticalAlignment="Center"
                                     ClipToBounds="False">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Width" Value="32"/>
+                                        <Setter Property="Height" Value="32"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <Binding ElementName="WidgetRoot"
+                                                             Path="ActualWidth"
+                                                             Converter="{StaticResource LessThanConverter}"
+                                                             ConverterParameter="360"/>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Width" Value="28"/>
+                                                <Setter Property="Height" Value="28"/>
+                                            </DataTrigger>
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <Binding ElementName="WidgetRoot"
+                                                             Path="ActualWidth"
+                                                             Converter="{StaticResource LessThanConverter}"
+                                                             ConverterParameter="330"/>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Width" Value="24"/>
+                                                <Setter Property="Height" Value="24"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <Grid>
                                     <!-- Animated Equalizer Bars -->
                                     <Canvas x:Name="EqualizerPanel" Width="14" Height="12" Visibility="Collapsed"
                                             HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Canvas.Style>
+                                            <Style TargetType="Canvas">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=NowPlayingContent, Path=Visibility}" Value="Visible">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Canvas.Style>
                                         <Rectangle x:Name="EqBar1" Canvas.Left="0" Canvas.Bottom="0" Width="3" Height="12"
                                                    Fill="{DynamicResource AccentBrush}" RadiusX="1.5" RadiusY="1.5"
                                                    RenderTransformOrigin="0.5,1">
@@ -3612,6 +3874,16 @@
                                                Foreground="{DynamicResource TextTertiaryBrush}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     <Viewbox Stretch="Uniform">
+                                        <Viewbox.Style>
+                                            <Style TargetType="Viewbox">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=NowPlayingContent, Path=Visibility}" Value="Visible">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Viewbox.Style>
                                         <Image x:Name="MiniAlbumArt"
                                                RenderOptions.BitmapScalingMode="HighQuality"
                                                HorizontalAlignment="Center"

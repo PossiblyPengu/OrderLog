@@ -74,11 +74,11 @@
   <Color x:Key="WidgetStatusNotReadyColor">#DD0025</Color>
   <Color x:Key="WidgetStatusOnDeckColor">#D97000</Color>
   <Color x:Key="WidgetStatusInProgressColor">#008035</Color>
-  <Color x:Key="WidgetStatusDoneColor">#006028</Color>
+  <Color x:Key="WidgetStatusDoneColor">#7D8086</Color>
   <Color x:Key="WidgetStatusNotReadyBgColor">#18DD0025</Color>
   <Color x:Key="WidgetStatusOnDeckBgColor">#18D97000</Color>
   <Color x:Key="WidgetStatusInProgressBgColor">#18008035</Color>
-  <Color x:Key="WidgetStatusDoneBgColor">#14006028</Color>
+  <Color x:Key="WidgetStatusDoneBgColor">#147D8086</Color>
 
   <!-- Note Colors — vivid pastels on white -->
   <Color x:Key="WidgetNoteYellowColor">#FFF5CC</Color>

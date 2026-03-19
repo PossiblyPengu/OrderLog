@@ -626,8 +626,8 @@ public partial class OrderLogWidgetView : UserControl
             {
                 // Left dock: col0 = handle strip, col1 = expanding content
                 // Right dock: col0 = expanding content, col1 = handle strip
-                cols[0].Width = isDockedLeft ? GridLength.Auto : GridLength.Auto;
-                cols[1].Width = isDockedLeft ? GridLength.Auto : GridLength.Auto;
+                cols[0].Width = GridLength.Auto;
+                cols[1].Width = GridLength.Auto;
             }
 
             Grid.SetColumn(SideHandleStrip, isDockedLeft ? 0 : 1);
@@ -643,6 +643,11 @@ public partial class OrderLogWidgetView : UserControl
             QuickJumpContent.BorderThickness = isDockedLeft
                 ? new Thickness(0, 1, 1, 1)
                 : new Thickness(1, 1, 0, 1);
+
+            if (SideHandleSlideTransform != null)
+            {
+                SideHandleSlideTransform.X = isDockedLeft ? -20 : 20;
+            }
         }
     }
 
@@ -2171,6 +2176,18 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
+    private void StatusIcon_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button || button.DataContext is not OrderItem order) return;
+        if (button.Tag is not OrderItem.OrderStatus targetStatus) return;
+        if (DataContext is not OrderLogViewModel vm) return;
+
+        var previousStatus = order.Status;
+        if (previousStatus == targetStatus) return;
+
+        _ = vm.SetStatusAsync(order, targetStatus, previousStatus);
+    }
+
     private void UnifiedStatusComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (sender is not ComboBox comboBox) return;
@@ -3289,14 +3306,45 @@ public partial class OrderLogWidgetView : UserControl
         QuickJumpContent.BeginAnimation(OpacityProperty, fadeIn);
     }
 
+    private void SideHandleHoverZone_MouseEnter(object sender, MouseEventArgs e)
+    {
+        if (SideHandlePanel == null || SideHandleSlideTransform == null) return;
+
+        SideHandlePanel.IsHitTestVisible = true;
+        SideHandlePanel.BeginAnimation(OpacityProperty, null);
+        var fadeIn = new DoubleAnimation(1, TimeSpan.FromMilliseconds(180))
+        {
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+        };
+        SideHandlePanel.BeginAnimation(OpacityProperty, fadeIn);
+
+        var slide = new DoubleAnimation(0, TimeSpan.FromMilliseconds(200))
+        {
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+        };
+        SideHandleSlideTransform.BeginAnimation(TranslateTransform.XProperty, slide);
+    }
+
     private void SideHandlePanel_MouseLeave(object sender, MouseEventArgs e)
     {
-        var fadeOut = new DoubleAnimation(0, TimeSpan.FromMilliseconds(120))
+        if (SideHandlePanel == null || SideHandleSlideTransform == null) return;
+
+        QuickJumpContent.BeginAnimation(OpacityProperty, null);
+        QuickJumpContent.Visibility = Visibility.Collapsed;
+
+        var fadeOut = new DoubleAnimation(0, TimeSpan.FromMilliseconds(160))
         {
             EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
         };
-        fadeOut.Completed += (_, _) => QuickJumpContent.Visibility = Visibility.Collapsed;
-        QuickJumpContent.BeginAnimation(OpacityProperty, fadeOut);
+        fadeOut.Completed += (_, _) => SideHandlePanel.IsHitTestVisible = false;
+        SideHandlePanel.BeginAnimation(OpacityProperty, fadeOut);
+
+        var offset = _isDockedLeft ? -20 : 20;
+        var slide = new DoubleAnimation(offset, TimeSpan.FromMilliseconds(200))
+        {
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+        };
+        SideHandleSlideTransform.BeginAnimation(TranslateTransform.XProperty, slide);
     }
 
     #endregion

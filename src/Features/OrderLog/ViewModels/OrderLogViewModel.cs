@@ -11,9 +11,9 @@ using Microsoft.Extensions.Logging;
 using OrderLog.Features.Constants;
 using OrderLog.Features.Models;
 using OrderLog.Helpers;
-using OrderLog.Features.Services;
 using OrderLog.Infrastructure.Services;
 using OrderLog.Services;
+using OrderLog.Features.Services;
 using Microsoft.Win32;
 
 namespace OrderLog.Features.ViewModels;
@@ -36,7 +36,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     private readonly ILogger<OrderLogViewModel>? _logger;
     private readonly OrderSearchService _searchService;
     private readonly OrderLogClipboardService _clipboardService;
-    private readonly VendorColorService _vendorColorService;
     private readonly UndoRedoStack _undoRedoStack;
     private readonly DispatcherTimer _timer;
     private bool _disposed;
@@ -176,9 +175,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _isMultiSelectMode = false;
 
-    // Vendor auto-coloring feature
-    [ObservableProperty]
-    private bool _autoColorByVendor = true;
 
     // ─── Theme proxy properties ─────────────────────────────────────────────
     // Delegate to ThemeService so the settings view can bind directly to the VM.
@@ -303,10 +299,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         RefreshDisplayItems();
     }
 
-    partial void OnAutoColorByVendorChanged(bool value)
-    {
-        SaveWidgetSettings();
-    }
 
     [ObservableProperty]
     private OrderItem? _selectedItem;
@@ -458,7 +450,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         _logger = logger;
         _searchService = new OrderSearchService();
         _clipboardService = new OrderLogClipboardService(null);
-        _vendorColorService = new VendorColorService(null);
         _undoRedoStack = new UndoRedoStack(maxHistorySize: 50);
 
         _timer = new() { Interval = TimeSpan.FromSeconds(TimerIntervalSeconds) };
@@ -571,7 +562,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             DefaultNoteColor = DefaultNoteColor,
             NotesOnlyMode = NotesOnlyMode,
             SortStatusDescending = SortStatusDescending,
-            AutoColorByVendor = AutoColorByVendor,
             NotReadyGroupExpanded = NotReadyGroupExpanded,
             OnDeckGroupExpanded = OnDeckGroupExpanded,
             InProgressGroupExpanded = InProgressGroupExpanded,
@@ -663,8 +653,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             NotesOnlyMode = s.NotesOnlyMode;
             // Sorting preferences
             SortStatusDescending = s.SortStatusDescending;
-            // Vendor auto-coloring
-            AutoColorByVendor = s.AutoColorByVendor;
             // Status group expand/collapse state
             NotReadyGroupExpanded = s.NotReadyGroupExpanded;
             OnDeckGroupExpanded = s.OnDeckGroupExpanded;
@@ -687,18 +675,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         // Templates removed: skip loading templates
         try
         {
-            StatusMessage = "Loading vendor color mappings...";
-            var swColors = System.Diagnostics.Stopwatch.StartNew();
-            _logger?.LogInformation("Loading vendor color mappings...");
-            var colorTask = _vendorColorService.LoadMappingsAsync();
-            if (await Task.WhenAny(colorTask, Task.Delay(5000)) != colorTask)
-            {
-                _logger?.LogWarning("Loading vendor color mappings is taking >5s");
-            }
-            await colorTask;
-            swColors.Stop();
-            _logger?.LogInformation("Loaded vendor color mappings in {Ms}ms", swColors.ElapsedMilliseconds);
-
             StatusMessage = "Loading items...";
             var swLoad = System.Diagnostics.Stopwatch.StartNew();
             _logger?.LogInformation("Loading items from data store...");
@@ -1238,10 +1214,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
         // Apply auto-coloring if enabled and vendor name is set
         var colorToUse = _newNoteColorHex;
-        if (AutoColorByVendor && !string.IsNullOrWhiteSpace(NewNoteVendorName))
-        {
-            colorToUse = _vendorColorService.GetColorForVendor(NewNoteVendorName.Trim());
-        }
 
         var order = new OrderItem
         {
@@ -1885,15 +1857,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
                 return;
         }
 
-        // Apply auto-coloring to pasted items if enabled
-        if (AutoColorByVendor)
-        {
-            foreach (var item in pastedItems.Where(i => i.NoteType == NoteType.Order && !string.IsNullOrWhiteSpace(i.VendorName)))
-            {
-                item.ColorHex = _vendorColorService.GetColorForVendor(item.VendorName!);
-            }
-        }
-
         // Determine insertion index: after selected item or at top
         int insertIndex = 0;
         if (SelectedItem != null && _itemIds.Contains(SelectedItem.Id))
@@ -1931,14 +1894,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
         var duplicatedItems = _clipboardService.CloneItems(itemsToDuplicate);
 
-        // Apply auto-coloring to duplicated items if enabled
-        if (AutoColorByVendor)
-        {
-            foreach (var item in duplicatedItems.Where(i => i.NoteType == NoteType.Order && !string.IsNullOrWhiteSpace(i.VendorName)))
-            {
-                item.ColorHex = _vendorColorService.GetColorForVendor(item.VendorName!);
-            }
-        }
+        // Auto color disabled: keep duplicated color
 
         // Determine insertion index: after selected item or at top
         int insertIndex = 0;

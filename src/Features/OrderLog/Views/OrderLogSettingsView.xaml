@@ -469,21 +469,6 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Auto Color by Vendor" Style="{StaticResource SettingLabel}"/>
-                        <TextBlock Text="Automatically assign consistent colors based on vendor name" Style="{StaticResource SettingDescription}"/>
-                    </StackPanel>
-                    <CheckBox Grid.Column="1" Style="{StaticResource ModernToggle}" VerticalAlignment="Center"
-                              IsChecked="{Binding AutoColorByVendor, Mode=TwoWay}"/>
-                </Grid>
-            </Border>
-
-            <Border Style="{StaticResource SettingCard}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0">
                         <TextBlock Text="Show Now Playing" Style="{StaticResource SettingLabel}"/>
                         <TextBlock Text="Display the Now Playing media panel at the bottom" Style="{StaticResource SettingDescription}"/>
                     </StackPanel>
@@ -527,7 +512,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
-                    </Grid.Columnitions>
+                    </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Undo Timeout" Style="{StaticResource SettingLabel}"/>
                         <TextBlock Text="Seconds the undo action is available after changes" Style="{StaticResource SettingDescription}"/>

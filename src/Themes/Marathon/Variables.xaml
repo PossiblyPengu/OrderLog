@@ -110,11 +110,11 @@
   <Color x:Key="WidgetStatusNotReadyColor">#FF1050</Color>
   <Color x:Key="WidgetStatusOnDeckColor">#FFD000</Color>
   <Color x:Key="WidgetStatusInProgressColor">#00FF88</Color>
-  <Color x:Key="WidgetStatusDoneColor">#00CC70</Color>
+  <Color x:Key="WidgetStatusDoneColor">#98999C</Color>
   <Color x:Key="WidgetStatusNotReadyBgColor">#20FF1050</Color>
   <Color x:Key="WidgetStatusOnDeckBgColor">#20FFD000</Color>
   <Color x:Key="WidgetStatusInProgressBgColor">#1500FF88</Color>
-  <Color x:Key="WidgetStatusDoneBgColor">#1200CC70</Color>
+  <Color x:Key="WidgetStatusDoneBgColor">#1698999C</Color>
 
   <!-- Widget Note Colors — barely-perceptible dark tints -->
   <Color x:Key="WidgetNoteYellowColor">#141000</Color>
