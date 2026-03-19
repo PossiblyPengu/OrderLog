@@ -3,6 +3,7 @@ namespace OrderLog.Features.Models;
 public class OrderLogWidgetSettings
 {
     public double CardFontSize { get; set; } = 13.0;
+    public double WidgetWidth { get; set; } = 380.0;
     public bool ShowNowPlaying { get; set; } = true;
     public bool ShowArchived { get; set; } = true;
     public int UndoTimeoutSeconds { get; set; } = 5;

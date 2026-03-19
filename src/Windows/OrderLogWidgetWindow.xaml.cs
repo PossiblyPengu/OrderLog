@@ -33,8 +33,8 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
     private int _appBarCallbackId;
     private HwndSource? _hwndSource;
 
-    // Default width for the docked appbar
-    private readonly int _dockedWidth = 380;
+    // Current width for the docked appbar/window; user-adjustable
+    private double _dockedWidth = 380;
 
     #region Windows API Imports
 
@@ -100,7 +100,10 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
         _viewModel = viewModel;
         _serviceProvider = serviceProvider;
 
+        DataContext = _viewModel;
         WidgetView.DataContext = _viewModel;
+
+        _viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
         Loaded += OnLoaded;
         SourceInitialized += OnSourceInitialized;
@@ -154,6 +157,7 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        ApplyWidgetWidth(_viewModel.WidgetWidth);
         DockToEdge(AppBarEdge.Right);
         InitializeWidgetAsync();
     }
@@ -202,6 +206,11 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
             }
         }
         catch { }
+
+        if (_viewModel != null)
+        {
+            _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+        }
 
         if (_isAppBarRegistered)
         {
@@ -288,7 +297,7 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
             }
         };
 
-        int appBarWidth = (int)(_dockedWidth * GetDpiScale());
+        int appBarWidth = (int)Math.Round(_dockedWidth * GetDpiScale());
 
         switch (_currentEdge)
         {
@@ -396,6 +405,29 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
         // Only apply window-local overrides here.
         if (_viewModel.CardFontSize > 0)
             Resources["CardFontSize"] = _viewModel.CardFontSize;
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(OrderLogViewModel.WidgetWidth))
+        {
+            Dispatcher.Invoke(() => ApplyWidgetWidth(_viewModel.WidgetWidth));
+        }
+    }
+
+    private void ApplyWidgetWidth(double requestedWidth)
+    {
+        double clamped = Math.Clamp(requestedWidth,
+            OrderLogViewModel.MinWidgetWidth,
+            OrderLogViewModel.MaxWidgetWidth);
+
+        _dockedWidth = clamped;
+        Width = clamped;
+
+        if (_isAppBarRegistered)
+        {
+            PositionAppBar();
+        }
     }
 
     private void OnThemeChanged(object? sender, bool isDarkMode)

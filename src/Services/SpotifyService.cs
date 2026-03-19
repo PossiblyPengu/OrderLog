@@ -84,6 +84,8 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     private DateTime _lastUserAction = DateTime.MinValue;
     private const int UserActionCooldownMs = 3000;
     private CancellationTokenSource? _artRetryCts;
+    private DateTime _lastValidMediaTimestamp = DateTime.MinValue;
+    private static readonly TimeSpan MediaHoldDuration = TimeSpan.FromSeconds(6);
 
     private TimeSpan _trackPosition;
     private TimeSpan _trackDuration;
@@ -296,13 +298,10 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
             {
                 System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
                 {
-                    HasMedia = false;
-                    TrackTitle = "No media playing";
-                    ArtistName = "";
-                    IsPlaying = false;
-                    AlbumArt = null;
-                    TrackPosition = TimeSpan.Zero;
-                    TrackDuration = TimeSpan.Zero;
+                    if (ShouldHoldLastMedia())
+                        return;
+
+                    ClearMediaState();
                 });
             }
         }
@@ -476,6 +475,7 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
             {
                 if (!string.IsNullOrEmpty(title))
                 {
+                    _lastValidMediaTimestamp = DateTime.UtcNow;
                     HasMedia = true;
                     TrackTitle = cleanTitle;
                     ArtistName = completeArtist;
@@ -517,13 +517,10 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
                 }
                 else
                 {
-                    HasMedia = false;
-                    TrackTitle = "No media playing";
-                    ArtistName = "";
-                    IsPlaying = false;
-                    AlbumArt = null;
-                    TrackPosition = TimeSpan.Zero;
-                    TrackDuration = TimeSpan.Zero;
+                    if (ShouldHoldLastMedia())
+                        return;
+
+                    ClearMediaState();
                 }
             });
         }
@@ -531,6 +528,26 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
         {
             Log.Warning(ex, "Failed to update media info");
         }
+    }
+
+    private bool ShouldHoldLastMedia()
+    {
+        if (_lastValidMediaTimestamp == DateTime.MinValue)
+            return false;
+
+        return (DateTime.UtcNow - _lastValidMediaTimestamp) < MediaHoldDuration;
+    }
+
+    private void ClearMediaState()
+    {
+        HasMedia = false;
+        TrackTitle = "No media playing";
+        ArtistName = "";
+        IsPlaying = false;
+        AlbumArt = null;
+        TrackPosition = TimeSpan.Zero;
+        TrackDuration = TimeSpan.Zero;
+        _lastValidMediaTimestamp = DateTime.MinValue;
     }
 
     // ── Playback Control ───────────────────────────────────────────────────

@@ -3130,19 +3130,21 @@
                                 </Image>
 
                                 <!-- Album Art - old image for crossfade -->
-                                <Image x:Name="AlbumArtImageOld"
-                                       Stretch="Uniform"
-                                       RenderOptions.BitmapScalingMode="HighQuality"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Opacity="0"/>
+                                <Grid HorizontalAlignment="Center" VerticalAlignment="Center" ClipToBounds="False">
+                                    <Image x:Name="AlbumArtImageOld"
+                                           Stretch="Uniform"
+                                           RenderOptions.BitmapScalingMode="HighQuality"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Opacity="0"/>
 
-                                <!-- Album Art - current -->
-                                <Image x:Name="AlbumArtImage"
-                                       Stretch="Uniform"
-                                       RenderOptions.BitmapScalingMode="HighQuality"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                                    <!-- Album Art - current -->
+                                    <Image x:Name="AlbumArtImage"
+                                           Stretch="Uniform"
+                                           RenderOptions.BitmapScalingMode="HighQuality"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                                </Grid>
 
                                 <!-- Placeholder when no art -->
                                 <TextBlock x:Name="AlbumArtPlaceholder"
@@ -3579,7 +3581,7 @@
                                     Width="32" Height="32"
                                     Margin="0,0,10,0"
                                     VerticalAlignment="Center"
-                                    ClipToBounds="True">
+                                    ClipToBounds="False">
                                 <Grid>
                                     <!-- Animated Equalizer Bars -->
                                     <Canvas x:Name="EqualizerPanel" Width="14" Height="12" Visibility="Collapsed"
@@ -3609,8 +3611,12 @@
                                     <TextBlock x:Name="MusicIcon" Text="♪" FontSize="13"
                                                Foreground="{DynamicResource TextTertiaryBrush}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    <Image x:Name="MiniAlbumArt" Stretch="Uniform"
-                                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <Viewbox Stretch="Uniform">
+                                        <Image x:Name="MiniAlbumArt"
+                                               RenderOptions.BitmapScalingMode="HighQuality"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                    </Viewbox>
                                 </Grid>
                             </Border>
 

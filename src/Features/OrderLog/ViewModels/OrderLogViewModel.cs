@@ -25,6 +25,9 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     private const int DefaultUndoTimeoutSeconds = 5;
     private const int StatusClearSeconds = 3;
     private const double DefaultCardFontSize = 13.0;
+    private const double DefaultWidgetWidth = 380.0;
+    public const double MinWidgetWidth = 320.0;
+    public const double MaxWidgetWidth = 520.0;
 
     private readonly IOrderLogService _orderLogService;
     private readonly GroupStateStore _groupStateStore;
@@ -87,6 +90,9 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     // UI settings persisted for widget
     [ObservableProperty]
     private double _cardFontSize = DefaultCardFontSize;
+
+    [ObservableProperty]
+    private double _widgetWidth = DefaultWidgetWidth;
 
     [ObservableProperty]
     private bool _showNowPlaying = true;
@@ -482,9 +488,24 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     {
         // Update the DynamicResource so the widget reflects the change immediately
         if (Application.Current != null)
+        {
             Application.Current.Resources["CardFontSize"] = value;
+
+            foreach (Window window in Application.Current.Windows)
+            {
+                try
+                {
+                    window.Resources["CardFontSize"] = value;
+                }
+                catch
+                {
+                    // Window might not define the resource locally; ignore
+                }
+            }
+        }
         SaveWidgetSettings();
     }
+    partial void OnWidgetWidthChanged(double value) => SaveWidgetSettings();
     partial void OnShowNowPlayingChanged(bool value) => SaveWidgetSettings();
     partial void OnShowArchivedChanged(bool value) => SaveWidgetSettings();
     partial void OnDefaultOrderColorChanged(string value) => SaveWidgetSettings();
@@ -542,6 +563,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         var settings = new OrderLogWidgetSettings
         {
             CardFontSize = CardFontSize,
+            WidgetWidth = WidgetWidth,
             ShowNowPlaying = ShowNowPlaying,
             ShowArchived = ShowArchived,
             UndoTimeoutSeconds = UndoTimeoutSeconds,
@@ -629,6 +651,9 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             swSettings.Stop();
             _logger?.LogInformation("Loaded widget settings in {Ms}ms", swSettings.ElapsedMilliseconds);
             CardFontSize = s.CardFontSize <= 0 ? DefaultCardFontSize : s.CardFontSize;
+            WidgetWidth = s.WidgetWidth <= 0
+                ? DefaultWidgetWidth
+                : Math.Clamp(s.WidgetWidth, MinWidgetWidth, MaxWidgetWidth);
             // Note: ShowNowPlaying defaults to true in the model, so we can use it directly
             ShowNowPlaying = s.ShowNowPlaying;
             ShowArchived = s.ShowArchived;
