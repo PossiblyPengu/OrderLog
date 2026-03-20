@@ -2056,33 +2056,55 @@ public partial class OrderLogWidgetView : UserControl
     {
         if (sender is Button btn && btn.Tag is string value && !string.IsNullOrWhiteSpace(value))
         {
+            System.Windows.Shapes.Path? icon = null;
+            Border? border = null;
+            System.Windows.Media.Geometry? originalData = null;
+            
             try
             {
                 System.Windows.Clipboard.SetText(value);
 
                 // Show visual feedback - find the Path icon and Border in the button
-                if (btn.Template.FindName("Icon", btn) is System.Windows.Shapes.Path icon &&
-                    btn.Template.FindName("Bd", btn) is Border border)
+                if (btn.Template.FindName("Icon", btn) is System.Windows.Shapes.Path foundIcon &&
+                    btn.Template.FindName("Bd", btn) is Border foundBorder)
                 {
+                    icon = foundIcon;
+                    border = foundBorder;
+                    
                     // Store original icon data (fill and background are dynamic resources, so we reset via resource lookup)
-                    var originalData = icon.Data;
+                    originalData = icon.Data;
 
                     // Show checkmark icon and success color
                     icon.Data = System.Windows.Media.Geometry.Parse("M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41-1.41z");
                     icon.Fill = System.Windows.Media.Brushes.White;
                     border.Background = (System.Windows.Media.Brush)FindResource("SuccessBrush");
-
-                    // Wait briefly then restore to default (not hover) state
-                    await Task.Delay(800);
-
-                    icon.Data = originalData;
-                    icon.Fill = (System.Windows.Media.Brush)FindResource("TextSecondaryBrush");
-                    border.Background = (System.Windows.Media.Brush)FindResource("SurfaceBrush");
                 }
+
+                // Wait briefly then restore to default (not hover) state
+                await Task.Delay(800);
             }
             catch (Exception ex)
             {
                 Serilog.Log.Warning(ex, "Failed to copy {FieldName} to clipboard", fieldName);
+            }
+            finally
+            {
+                // Always restore the button state, even if an error occurred
+                try
+                {
+                    if (icon != null && border != null && originalData != null)
+                    {
+                        icon.Data = originalData;
+                        icon.Fill = (System.Windows.Media.Brush)FindResource("TextSecondaryBrush");
+                        border.Background = (System.Windows.Media.Brush)FindResource("SurfaceBrush");
+                    }
+                }
+                catch
+                {
+                    // If restoration fails, try to force a template reload
+                    btn.InvalidateVisual();
+                    btn.InvalidateProperty(Button.TemplateProperty);
+                }
             }
         }
     }

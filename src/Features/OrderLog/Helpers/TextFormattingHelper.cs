@@ -247,7 +247,7 @@ public static class TextFormattingHelper
 
         foreach (var paragraph in document.Blocks.OfType<Paragraph>())
         {
-            paragraph.Margin = new Thickness(0, 2, 0, 2);
+            paragraph.Margin = new Thickness(0, 1, 0, 1);
             paragraph.LineHeight = double.NaN;
             paragraph.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
         }

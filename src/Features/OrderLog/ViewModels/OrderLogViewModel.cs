@@ -371,7 +371,11 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     private bool IsDefaultStatusMessage(string message)
     {
         // Default status shows counts like "5 active · 3 archived"
-        return message.Contains(" active") && message.Contains(" archived");
+        // Archived/unarchived notifications should not be treated as default
+        return message.Contains(" active") && 
+               message.Contains(" archived") && 
+               !message.StartsWith("Archived") && 
+               !message.StartsWith("Unarchived");
     }
 
     private void UpdateDefaultStatus()
