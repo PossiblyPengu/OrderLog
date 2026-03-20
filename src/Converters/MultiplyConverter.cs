@@ -11,7 +11,7 @@ public class MultiplyConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is double numericValue && parameter != null && double.TryParse(parameter.ToString(), out double factor))
+        if (value is double numericValue && parameter != null && double.TryParse(parameter.ToString(), System.Globalization.NumberStyles.Float, CultureInfo.InvariantCulture, out double factor))
         {
             return numericValue * factor;
         }

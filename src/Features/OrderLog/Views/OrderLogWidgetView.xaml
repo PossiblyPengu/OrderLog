@@ -3068,7 +3068,11 @@
                         BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="1,1,0,1"
                         CornerRadius="{DynamicResource CardStripeSmCornerRadius}"
-                        Padding="4,8">
+                        Padding="6,8"
+                        RenderTransformOrigin="1,0.5">
+                    <Border.RenderTransform>
+                        <ScaleTransform x:Name="QuickJumpSlideTransform" ScaleX="0.75"/>
+                    </Border.RenderTransform>
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="10" ShadowDepth="0" Opacity="0.35" Color="#000000"/>
                     </Border.Effect>
@@ -3076,12 +3080,26 @@
                         <!-- In Progress Jump -->
                         <Button x:Name="JumpInProgressBtn" Click="JumpToInProgress_Click"
                                 ToolTip="Jump to In Progress"
-                                Width="28" Height="28" Padding="0" Cursor="Hand"
+                                Height="26" Padding="0" Cursor="Hand"
                                 Background="Transparent" BorderThickness="0">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}">
-                                        <Border Width="8" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusInProgressBrush}"/>
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}" Padding="6,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Width="6" Height="6" CornerRadius="1" Background="{DynamicResource WidgetStatusInProgressBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="IN PROG" FontSize="9"
+                                                       FontFamily="{DynamicResource FontMono}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       VerticalAlignment="Center" Margin="6,0,8,0"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding InProgressCount}" FontSize="10" FontWeight="Bold"
+                                                       Foreground="{DynamicResource WidgetStatusInProgressBrush}"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
@@ -3094,12 +3112,26 @@
                         <!-- On Deck Jump -->
                         <Button x:Name="JumpOnDeckBtn" Click="JumpToOnDeck_Click"
                                 ToolTip="Jump to On Deck"
-                                Width="28" Height="28" Padding="0" Cursor="Hand"
+                                Height="26" Padding="0" Cursor="Hand"
                                 Background="Transparent" BorderThickness="0">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}">
-                                        <Border Width="8" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusOnDeckBrush}"/>
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}" Padding="6,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Width="6" Height="6" CornerRadius="1" Background="{DynamicResource WidgetStatusOnDeckBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="ON DECK" FontSize="9"
+                                                       FontFamily="{DynamicResource FontMono}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       VerticalAlignment="Center" Margin="6,0,8,0"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding OnDeckCount}" FontSize="10" FontWeight="Bold"
+                                                       Foreground="{DynamicResource WidgetStatusOnDeckBrush}"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
@@ -3112,12 +3144,26 @@
                         <!-- Not Ready Jump -->
                         <Button x:Name="JumpNotReadyBtn" Click="JumpToNotReady_Click"
                                 ToolTip="Jump to Not Ready"
-                                Width="28" Height="28" Padding="0" Cursor="Hand"
+                                Height="26" Padding="0" Cursor="Hand"
                                 Background="Transparent" BorderThickness="0">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}">
-                                        <Border Width="8" Height="8" CornerRadius="1" Background="{DynamicResource WidgetStatusNotReadyBrush}"/>
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource RadiusXs}" Padding="6,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Width="6" Height="6" CornerRadius="1" Background="{DynamicResource WidgetStatusNotReadyBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="NOT RDY" FontSize="9"
+                                                       FontFamily="{DynamicResource FontMono}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       VerticalAlignment="Center" Margin="6,0,8,0"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding NotReadyCount}" FontSize="10" FontWeight="Bold"
+                                                       Foreground="{DynamicResource WidgetStatusNotReadyBrush}"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
@@ -3146,8 +3192,18 @@
                         <Button x:Name="NotesEdgeTab"
                                 Click="NotesToggle_Click"
                                 Padding="4,8" Background="{DynamicResource WarningBrush}"
-                                BorderThickness="0" Cursor="Hand" ToolTip="Open notes"
+                                BorderThickness="0" Cursor="Hand"
                                 Width="38">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="ToolTip" Value="Open notes"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding NotesExpanded}" Value="True">
+                                            <Setter Property="ToolTip" Value="Close notes"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border x:Name="NotesBd"
@@ -3196,10 +3252,20 @@
                                                 </Border>
 
                                                 <Rectangle Height="1" RadiusX="0.5" RadiusY="0.5" Width="14" Fill="#4D1A1A1A" HorizontalAlignment="Center"/>
+                                                <TextBlock x:Name="NotesChevron"
+                                                           Text="◀"
+                                                           FontSize="7" FontWeight="Bold"
+                                                           Foreground="#881A1A1A"
+                                                           HorizontalAlignment="Center"
+                                                           Margin="0,5,0,0"/>
                                             </StackPanel>
                                         </Grid>
                                     </Border>
                                     <ControlTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding NotesExpanded}" Value="True">
+                                            <Setter TargetName="NotesChevron" Property="Text" Value="▶"/>
+                                            <Setter TargetName="NotesBd" Property="Opacity" Value="0.82"/>
+                                        </DataTrigger>
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Trigger.EnterActions>
                                                 <BeginStoryboard>
@@ -3290,9 +3356,9 @@
                         <!-- Album Art Background -->
                         <Border CornerRadius="0"
                                 Background="{DynamicResource SurfaceBrush}"
-                                Height="{Binding ElementName=WidgetRoot, Path=ActualWidth, Converter={StaticResource MultiplyConverter}, ConverterParameter=0.72}"
-                                MinHeight="180"
-                                MaxHeight="240">
+                                Height="{Binding ElementName=WidgetRoot, Path=ActualWidth, Converter={StaticResource MultiplyConverter}, ConverterParameter=0.88}"
+                                MinHeight="200"
+                                MaxHeight="300">
                             <Grid x:Name="PlayerExpandedGrid">
                                 <Grid.Triggers>
                                     <EventTrigger RoutedEvent="Grid.MouseEnter">
@@ -3836,7 +3902,7 @@
                                 </Border.Style>
                                 <Grid>
                                     <!-- Animated Equalizer Bars -->
-                                    <Canvas x:Name="EqualizerPanel" Width="14" Height="12" Visibility="Collapsed"
+                                    <Canvas x:Name="EqualizerPanel" Width="14" Height="12"
                                             HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <Canvas.Style>
                                             <Style TargetType="Canvas">

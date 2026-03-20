@@ -129,15 +129,6 @@ public partial class OrderLogWidgetView : UserControl
                 MainScrollViewer.ScrollToVerticalOffset(_archivedTabScrollPosition);
             }), System.Windows.Threading.DispatcherPriority.Loaded);
         }
-
-        // Restore archived tab scroll position
-        if (MainScrollViewer != null)
-        {
-            _ = Dispatcher.BeginInvoke(new Action(() =>
-            {
-                MainScrollViewer.ScrollToVerticalOffset(_archivedTabScrollPosition);
-            }), System.Windows.Threading.DispatcherPriority.Loaded);
-        }
     }
 
     private void UpdateTabState()
@@ -648,6 +639,20 @@ public partial class OrderLogWidgetView : UserControl
             {
                 SideHandleSlideTransform.X = isDockedLeft ? -20 : 20;
             }
+
+            // Flip edge hints and hover zone to match dock side
+            if (SideHandleEdgeHints != null)
+            {
+                SideHandleEdgeHints.HorizontalAlignment = isDockedLeft ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+                SideHandleEdgeHints.Margin = isDockedLeft ? new Thickness(1, 0, 0, 0) : new Thickness(0, 0, 1, 0);
+            }
+            if (SideHandleHoverZone != null)
+            {
+                SideHandleHoverZone.HorizontalAlignment = isDockedLeft ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+            }
+
+            // Flip QuickJumpContent slide-in origin to match dock side
+            QuickJumpContent.RenderTransformOrigin = isDockedLeft ? new Point(0, 0.5) : new Point(1, 0.5);
         }
     }
 
@@ -812,7 +817,7 @@ public partial class OrderLogWidgetView : UserControl
         _nowPlayingExpanded = expanded;
         NowPlayingToggleIcon.Text = _nowPlayingExpanded ? "▼" : "▲";
 
-        double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.8, 180), 340);
+        double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.88, 200), 300);
 
         if (_nowPlayingExpanded)
         {
@@ -821,6 +826,11 @@ public partial class OrderLogWidgetView : UserControl
             var expandAnimation = new DoubleAnimation(0, targetHeight, TimeSpan.FromMilliseconds(200))
             {
                 EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            expandAnimation.Completed += (_, _) =>
+            {
+                NowPlayingContent.BeginAnimation(HeightProperty, null);
+                NowPlayingContent.Height = double.NaN;
             };
             NowPlayingContent.BeginAnimation(HeightProperty, expandAnimation);
         }
@@ -1457,7 +1467,7 @@ public partial class OrderLogWidgetView : UserControl
         NowPlayingToggleIcon.Text = _nowPlayingExpanded ? "▼" : "▲";
 
         // Calculate target height based on widget width (for square-ish album art)
-        double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.8, 180), 340);
+        double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.88, 200), 300);
 
         // Animated expand/collapse
         if (_nowPlayingExpanded)
@@ -1467,6 +1477,11 @@ public partial class OrderLogWidgetView : UserControl
             var expandAnimation = new DoubleAnimation(0, targetHeight, TimeSpan.FromMilliseconds(200))
             {
                 EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            expandAnimation.Completed += (_, _) =>
+            {
+                NowPlayingContent.BeginAnimation(HeightProperty, null);
+                NowPlayingContent.Height = double.NaN;
             };
             NowPlayingContent.BeginAnimation(HeightProperty, expandAnimation);
         }
@@ -3297,13 +3312,24 @@ public partial class OrderLogWidgetView : UserControl
 
     private void QuickJumpHandle_MouseEnter(object sender, MouseEventArgs e)
     {
+        QuickJumpContent.Opacity = 0;
         QuickJumpContent.Visibility = Visibility.Visible;
+
         QuickJumpContent.BeginAnimation(OpacityProperty, null);
-        var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150))
+        var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(160))
         {
-            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
         };
         QuickJumpContent.BeginAnimation(OpacityProperty, fadeIn);
+
+        if (QuickJumpSlideTransform != null)
+        {
+            var slideIn = new DoubleAnimation(0.75, 1.0, TimeSpan.FromMilliseconds(200))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            QuickJumpSlideTransform.BeginAnimation(ScaleTransform.ScaleXProperty, slideIn);
+        }
     }
 
     private void SideHandleHoverZone_MouseEnter(object sender, MouseEventArgs e)
@@ -3330,6 +3356,11 @@ public partial class OrderLogWidgetView : UserControl
         if (SideHandlePanel == null || SideHandleSlideTransform == null) return;
 
         QuickJumpContent.BeginAnimation(OpacityProperty, null);
+        if (QuickJumpSlideTransform != null)
+        {
+            QuickJumpSlideTransform.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+            QuickJumpSlideTransform.ScaleX = 0.75;
+        }
         QuickJumpContent.Visibility = Visibility.Collapsed;
 
         var fadeOut = new DoubleAnimation(0, TimeSpan.FromMilliseconds(160))

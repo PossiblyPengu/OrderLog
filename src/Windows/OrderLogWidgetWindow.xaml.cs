@@ -1,15 +1,12 @@
 using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using OrderLog.Features.ViewModels;
@@ -36,6 +33,11 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
     // Current width for the docked appbar/window; user-adjustable
     private double _dockedWidth = 380;
 
+    // Drag-to-resize state
+    private bool _isResizing = false;
+    private double _resizeStartScreenX;
+    private double _resizeStartWidth;
+
     #region Windows API Imports
 
     [DllImport("shell32.dll", CallingConvention = CallingConvention.StdCall, SetLastError = true)]
@@ -59,9 +61,7 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
     private const uint ABN_FULLSCREENAPP = 0x02;
 
     private const uint ABE_LEFT = 0;
-    private const uint ABE_TOP = 1;
     private const uint ABE_RIGHT = 2;
-    private const uint ABE_BOTTOM = 3;
 
     [StructLayout(LayoutKind.Sequential)]
     private struct APPBARDATA
@@ -87,9 +87,7 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
     {
         None,
         Left,
-        Right,
-        Top,
-        Bottom
+        Right
     }
 
     #endregion
@@ -291,8 +289,6 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
             {
                 AppBarEdge.Left => ABE_LEFT,
                 AppBarEdge.Right => ABE_RIGHT,
-                AppBarEdge.Top => ABE_TOP,
-                AppBarEdge.Bottom => ABE_BOTTOM,
                 _ => ABE_RIGHT
             }
         };
@@ -372,6 +368,12 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
         PositionAppBar();
         WidgetView.ApplyDockSide(edge == AppBarEdge.Left);
 
+        // Flip resize grip to inner edge
+        if (ResizeGrip != null)
+            ResizeGrip.HorizontalAlignment = edge == AppBarEdge.Left
+                ? HorizontalAlignment.Right
+                : HorizontalAlignment.Left;
+
         Log.Debug("Docked to {Edge}", edge);
     }
 
@@ -422,11 +424,41 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
             OrderLogViewModel.MaxWidgetWidth);
 
         _dockedWidth = clamped;
-        Width = clamped;
 
-        if (_isAppBarRegistered)
+        if (!_isResizing)
         {
-            PositionAppBar();
+            var easing = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var dur = TimeSpan.FromMilliseconds(200);
+
+            // Animate width
+            var widthAnim = new DoubleAnimation(clamped, dur) { EasingFunction = easing };
+            widthAnim.Completed += (_, _) =>
+            {
+                BeginAnimation(WidthProperty, null);
+                BeginAnimation(LeftProperty, null);
+                Width = clamped;
+                if (_isAppBarRegistered) PositionAppBar();
+            };
+            BeginAnimation(WidthProperty, widthAnim);
+
+            // Pin docked edge: for right-dock, slide Left so the right edge stays fixed
+            if (_currentEdge == AppBarEdge.Right)
+            {
+                double newLeft = Left + Width - clamped;
+                var leftAnim = new DoubleAnimation(newLeft, dur) { EasingFunction = easing };
+                BeginAnimation(LeftProperty, leftAnim);
+            }
+        }
+        else
+        {
+            // Live drag: pin docked edge by adjusting Left for right-dock
+            if (_currentEdge == AppBarEdge.Right)
+            {
+                double rightEdge = Left + Width;
+                Left = rightEdge - clamped;
+            }
+            Width = clamped;
+            if (_isAppBarRegistered) PositionAppBar();
         }
     }
 
@@ -444,6 +476,56 @@ public partial class OrderLogWidgetWindow : AnimatedWindow
                 Log.Warning(ex, "Failed to apply theme change");
             }
         });
+    }
+
+    #endregion
+
+    #region Drag Resize
+
+    private void ResizeGrip_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        _isResizing = true;
+        _resizeStartScreenX = PointToScreen(e.GetPosition(this)).X;
+        _resizeStartWidth = _dockedWidth;
+        ((UIElement)sender).CaptureMouse();
+        e.Handled = true;
+    }
+
+    private void ResizeGrip_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!_isResizing) return;
+
+        double currentScreenX = PointToScreen(e.GetPosition(this)).X;
+        double delta = _currentEdge == AppBarEdge.Left
+            ? currentScreenX - _resizeStartScreenX   // left-dock: drag right = wider
+            : _resizeStartScreenX - currentScreenX;  // right-dock: drag left = wider
+
+        double newWidth = Math.Clamp(
+            _resizeStartWidth + delta,
+            OrderLogViewModel.MinWidgetWidth,
+            OrderLogViewModel.MaxWidgetWidth);
+
+        // Pin the docked edge: for right-dock, adjust Left so right edge stays fixed
+        if (_currentEdge == AppBarEdge.Right)
+        {
+            double rightEdge = Left + Width;
+            Left = rightEdge - newWidth;
+        }
+
+        _dockedWidth = newWidth;
+        Width = newWidth;
+    }
+
+    private void ResizeGrip_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (!_isResizing) return;
+        _isResizing = false;
+        ((UIElement)sender).ReleaseMouseCapture();
+
+        // Commit final width to viewmodel (saves settings) and reposition AppBar
+        _viewModel.WidgetWidth = _dockedWidth;
+        if (_isAppBarRegistered) PositionAppBar();
+        e.Handled = true;
     }
 
     #endregion
