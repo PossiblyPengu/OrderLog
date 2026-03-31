@@ -661,7 +661,6 @@
                             <MenuItem Header="Idea" Click="SetNoteCategory_Click" Tag="Idea"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="Archive" Click="ArchiveNote_Click"/>
                         <MenuItem Header="Delete" Click="DeleteNote_Click" Foreground="{DynamicResource DangerBrush}"/>
                     </ContextMenu>
                 </Border.ContextMenu>
@@ -780,7 +779,7 @@
                         <!-- Archive button (top-right of header) -->
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
                             <!-- Archive button -->
-                            <Button Click="QuickArchive_Click" ToolTip="Archive note"
+                            <Button Click="QuickArchive_Click" ToolTip="Delete note"
                                     IsTabStop="False" Focusable="False">
                                 <Button.Style>
                                     <Style TargetType="Button">
@@ -3042,7 +3041,8 @@
                     Width="16"
                     Background="Transparent"
                     Panel.ZIndex="140"
-                    MouseEnter="SideHandleHoverZone_MouseEnter"/>
+                    MouseEnter="SideHandleHoverZone_MouseEnter"
+                    MouseLeave="SideHandleHoverZone_MouseLeave"/>
 
             <!-- Unified Side Handle Rail: Notes trigger (top) + Status jump (bottom) -->
             <Grid x:Name="SideHandlePanel"

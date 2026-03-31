@@ -900,9 +900,8 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         RefreshDisplayItems();
         RefreshArchivedDisplayItems();
         await SaveAsync();
-        StatusMessage = itemsToArchive.Count == 1 
-            ? "Archived item" 
-            : $"Archived {itemsToArchive.Count} linked items";
+        var archiveMsg = itemsToArchive.Count == 1 ? "Archived item" : $"Archived {itemsToArchive.Count} linked items";
+        StartUndoTimer(archiveMsg);
     }
 
     [RelayCommand]
@@ -2509,7 +2508,12 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             }
 
             _undoCountdownTimer?.Stop();
-            _statusClearTimer?.Stop();
+
+            if (_statusClearTimer != null)
+            {
+                _statusClearTimer.Tick -= OnStatusClearTimerTick;
+                _statusClearTimer.Stop();
+            }
 
             _saveDebounceCts?.Cancel();
             _saveDebounceCts?.Dispose();

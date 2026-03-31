@@ -2127,6 +2127,12 @@ public partial class OrderLogWidgetView : UserControl
 
         try
         {
+            if (order.IsStickyNote)
+            {
+                await vm.DeleteCommand.ExecuteAsync(order);
+                return;
+            }
+
             // Toggle archive state based on current state
             if (order.IsArchived)
             {
@@ -2472,6 +2478,11 @@ public partial class OrderLogWidgetView : UserControl
             var order = GetOrderItemFromContextMenu(sender);
             if (order != null && DataContext is OrderLogViewModel vm)
             {
+                if (order.IsStickyNote)
+                {
+                    await vm.DeleteCommand.ExecuteAsync(order);
+                    return;
+                }
                 // Store previous status before archiving so it can be restored
                 order.PreviousStatus = order.Status;
                 await vm.ArchiveOrderCommand.ExecuteAsync(order);
@@ -3354,6 +3365,13 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
+    private void SideHandleHoverZone_MouseLeave(object sender, MouseEventArgs e)
+    {
+        if (SideHandlePanel == null || SideHandleSlideTransform == null) return;
+        if (SideHandlePanel.IsMouseOver) return;
+        SideHandlePanel_MouseLeave(sender, e);
+    }
+
     private void SideHandleHoverZone_MouseEnter(object sender, MouseEventArgs e)
     {
         if (SideHandlePanel == null || SideHandleSlideTransform == null) return;
@@ -3389,7 +3407,7 @@ public partial class OrderLogWidgetView : UserControl
         {
             EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
         };
-        fadeOut.Completed += (_, _) => SideHandlePanel.IsHitTestVisible = false;
+        fadeOut.Completed += (_, _) => { if (!SideHandlePanel.IsMouseOver) SideHandlePanel.IsHitTestVisible = false; };
         SideHandlePanel.BeginAnimation(OpacityProperty, fadeOut);
 
         var offset = _isDockedLeft ? -20 : 20;
