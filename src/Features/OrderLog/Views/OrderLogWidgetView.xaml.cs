@@ -1148,7 +1148,12 @@ public partial class OrderLogWidgetView : UserControl
 
     private void SpotifyService_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        Dispatcher.Invoke(() => UpdateNowPlayingUI());
+        if (e.PropertyName is nameof(SpotifyService.TrackPosition) or nameof(SpotifyService.TrackDuration))
+        {
+            Dispatcher.BeginInvoke(UpdateProgressBar);
+            return;
+        }
+        Dispatcher.BeginInvoke(UpdateNowPlayingUI);
     }
 
     private void UpdateNowPlayingUI()
@@ -1189,13 +1194,21 @@ public partial class OrderLogWidgetView : UserControl
             };
             fadeOut.Completed += (s, _) =>
             {
-                NowPlayingSection.Visibility = Visibility.Collapsed;
-                NowPlayingSection.BeginAnimation(OpacityProperty, null);
+                // Guard: if media returned while fade-out was running, don't collapse
+                var vm2 = DataContext as OrderLogViewModel;
+                bool stillHidden = !(vm2?.ShowNowPlaying == true && _spotifyService?.HasMedia == true);
+                if (stillHidden)
+                {
+                    NowPlayingSection.Visibility = Visibility.Collapsed;
+                    NowPlayingSection.BeginAnimation(OpacityProperty, null);
+                }
             };
             NowPlayingSection.BeginAnimation(OpacityProperty, fadeOut);
         }
         else if (!shouldBeVisible)
         {
+            // Abort any in-progress fade-out so its Completed callback never fires
+            NowPlayingSection.BeginAnimation(OpacityProperty, null);
             NowPlayingSection.Visibility = Visibility.Collapsed;
         }
         _lastHasMedia = shouldBeVisible;
