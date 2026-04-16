@@ -121,6 +121,12 @@ public partial class App : Application
     {
         try
         {
+            // Dispose static singletons not managed by the DI container.
+            // SpotifyService holds two System.Timers.Timer instances and WinRT SMTC
+            // event subscriptions (COM apartment thread); not disposing these prevents
+            // the process from exiting cleanly.
+            SpotifyService.Instance.Dispose();
+
             using (_host)
             {
                 await _host.StopAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
