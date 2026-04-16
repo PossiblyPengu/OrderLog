@@ -87,7 +87,10 @@ public class VendorColorService
             if (collection == null || collection.Version != 1)
             {
                 _logger?.LogWarning("Unsupported vendor color mappings version: {Version}", collection?.Version ?? 0);
-                _vendorColorMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                lock (_lock)
+                {
+                    _vendorColorMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                }
                 return;
             }
 

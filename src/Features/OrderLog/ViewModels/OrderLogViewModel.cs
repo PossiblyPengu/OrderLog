@@ -262,20 +262,24 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     {
         try
         {
-            var name = "OrderLog";
+            const string keyName = "SSCommandCentre";
+            const string legacyKeyName = "OrderLog";
             var exe = System.Reflection.Assembly.GetEntryAssembly()?.Location ?? string.Empty;
             if (string.IsNullOrEmpty(exe)) return;
 
             using var rk = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true)
                        ?? Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
 
+            // Migrate: remove legacy key if present
+            rk.DeleteValue(legacyKeyName, false);
+
             if (enable)
             {
-                rk.SetValue(name, $"\"{exe}\"");
+                rk.SetValue(keyName, $"\"{exe}\"");
             }
             else
             {
-                rk.DeleteValue(name, false);
+                rk.DeleteValue(keyName, false);
             }
         }
         catch (Exception ex)
@@ -1372,6 +1376,12 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         var action = new ArchiveAction(itemsToArchive);
         _undoRedoStack.ExecuteAction(action);
 
+        // Ensure Done status so CompletedAt is stamped (mirrors ArchiveOrderAsync behaviour)
+        foreach (var item in itemsToArchive)
+        {
+            item.Status = OrderItem.OrderStatus.Done;
+        }
+
         // Move items from Items to ArchivedItems
         foreach (var item in itemsToArchive)
         {
@@ -1383,7 +1393,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         RefreshDisplayItems();
         await SaveAsync();
         StartUndoTimer($"Archived {itemsToArchive.Count} item(s)");
-        StatusMessage = $"Archived {itemsToArchive.Count} item(s)";
     }
 
     [RelayCommand]
@@ -1410,7 +1419,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         RefreshDisplayItems();
         await SaveAsync();
         StartUndoTimer($"Unarchived {itemsToUnarchive.Count} item(s)");
-        StatusMessage = $"Unarchived {itemsToUnarchive.Count} item(s)";
     }
 
     [RelayCommand]
@@ -1458,7 +1466,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         await SaveAsync();
 
         StartUndoTimer($"Deleted {itemsToDelete.Count} item(s)");
-        StatusMessage = $"Deleted {itemsToDelete.Count} item(s)";
     }
 
     [RelayCommand]
@@ -1483,6 +1490,12 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             var action = new ArchiveAction(itemsToUpdate);
             _undoRedoStack.ExecuteAction(action);
 
+            // Ensure Done status so CompletedAt is stamped
+            foreach (var item in itemsToUpdate)
+            {
+                item.Status = OrderItem.OrderStatus.Done;
+            }
+
             foreach (var item in itemsToUpdate)
             {
                 RemoveFromItems(item);
@@ -1501,7 +1514,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         await SaveAsync();
 
         StartUndoTimer($"Updated {itemsToUpdate.Count} item(s) to {newStatus}");
-        StatusMessage = $"Updated {itemsToUpdate.Count} item(s) to {newStatus}";
     }
 
     [RelayCommand]
@@ -1526,7 +1538,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         RefreshDisplayItems();
         await SaveAsync();
         StartUndoTimer($"Updated color for {stickyNotes.Count} sticky note(s)");
-        StatusMessage = $"Updated color for {stickyNotes.Count} sticky note(s)";
     }
 
     [RelayCommand]
@@ -1546,7 +1557,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         RefreshDisplayItems();
         await SaveAsync();
         StartUndoTimer($"Linked {itemsToLink.Count} item(s)");
-        StatusMessage = $"Linked {itemsToLink.Count} item(s)";
     }
 
     [RelayCommand]
@@ -1571,7 +1581,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         RefreshDisplayItems();
         await SaveAsync();
         StartUndoTimer($"Unlinked {itemsToUnlink.Count} item(s)");
-        StatusMessage = $"Unlinked {itemsToUnlink.Count} item(s)";
     }
 
     // Navigation Commands
@@ -1678,7 +1687,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             }
 
             var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var defaultFileName = $"OrderLog_Export_{timestamp}.csv";
+            var defaultFileName = $"SSCommandCentre_Export_{timestamp}.csv";
 
             var filePath = await _dialogService.ShowSaveFileDialogAsync(
                 "Export to CSV",
@@ -1726,7 +1735,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             }
 
             var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var defaultFileName = $"OrderLog_Export_{timestamp}.json";
+            var defaultFileName = $"SSCommandCentre_Export_{timestamp}.json";
 
             var filePath = await _dialogService.ShowSaveFileDialogAsync(
                 "Export to JSON",
@@ -1875,7 +1884,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         await SaveAsync();
 
         StartUndoTimer($"Pasted {pastedItems.Count} item(s)");
-        StatusMessage = $"Pasted {pastedItems.Count} item(s)";
         _logger?.LogInformation("Pasted {Count} items", pastedItems.Count);
     }
 
@@ -1914,7 +1922,6 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         await SaveAsync();
 
         StartUndoTimer($"Duplicated {duplicatedItems.Count} item(s)");
-        StatusMessage = $"Duplicated {duplicatedItems.Count} item(s)";
         _logger?.LogInformation("Duplicated {Count} items", duplicatedItems.Count);
     }
 

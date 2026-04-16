@@ -69,10 +69,35 @@ public partial class OrderLogWidgetView : UserControl
 
     private void UserControl_KeyDown(object sender, KeyEventArgs e)
     {
-        // ESC cancels link mode
-        if (e.Key == Key.Escape && DataContext is OrderLogViewModel vm && vm.IsLinkMode)
+        if (e.Key == Key.Escape)
         {
-            vm.CancelLinkMode();
+            // ESC cancels link mode first
+            if (DataContext is OrderLogViewModel vm && vm.IsLinkMode)
+            {
+                vm.CancelLinkMode();
+                e.Handled = true;
+                return;
+            }
+
+            // ESC closes the inline Add Order card if it is open
+            if (AddOrderCard?.Visibility == Visibility.Visible)
+            {
+                CancelAddOrder_Click(sender, new RoutedEventArgs());
+                e.Handled = true;
+            }
+        }
+    }
+
+    private void AddOrderForm_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            ConfirmAddOrder_Click(sender, new RoutedEventArgs());
+            e.Handled = true;
+        }
+        else if (e.Key == Key.Escape)
+        {
+            CancelAddOrder_Click(sender, new RoutedEventArgs());
             e.Handled = true;
         }
     }
@@ -2692,6 +2717,15 @@ public partial class OrderLogWidgetView : UserControl
     }
 
     // Inline editing for order card fields
+    private void EditableField_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && sender is UIElement el)
+        {
+            el.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            e.Handled = true;
+        }
+    }
+
     private void EditableField_GotFocus(object sender, RoutedEventArgs e)
     {
         if (sender is TextBox tb)
@@ -2781,6 +2815,12 @@ public partial class OrderLogWidgetView : UserControl
     {
         if (sender is RichTextBox rtb)
             Helpers.TextFormattingHelper.HandleListAutoContinuation(rtb, e);
+
+        if (e.Key == Key.Escape && !e.Handled && sender is UIElement el)
+        {
+            el.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
+            e.Handled = true;
+        }
     }
 
     private void NoteContent_Loaded(object sender, RoutedEventArgs e)

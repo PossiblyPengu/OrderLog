@@ -89,10 +89,16 @@ public class OrderTemplateService
                 Directory.CreateDirectory(directory);
             }
 
+            List<OrderTemplate> snapshot;
+            lock (_lock)
+            {
+                snapshot = new List<OrderTemplate>(_templates);
+            }
+
             var collection = new OrderTemplateCollection
             {
                 Version = 1,
-                Templates = _templates
+                Templates = snapshot
             };
 
             var json = JsonSerializer.Serialize(collection, s_writeOptions);
