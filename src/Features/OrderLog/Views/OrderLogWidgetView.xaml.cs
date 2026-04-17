@@ -2149,12 +2149,17 @@ public partial class OrderLogWidgetView : UserControl
 
     private async void QuickArchive_Click(object sender, RoutedEventArgs e)
     {
+        var debugPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sscc_debug.txt");
+        System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [QuickArchive_Click] Handler called\n");
+
         // Get the OrderItem from the sender's DataContext
         OrderItem? order = null;
         if (sender is FrameworkElement fe)
         {
             order = fe.DataContext as OrderItem;
         }
+
+        System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [QuickArchive_Click] order={(order?.Id.ToString() ?? "null")}, IsArchived={(order?.IsArchived.ToString() ?? "n/a")}\n");
 
         if (order == null)
         {
@@ -2623,14 +2628,27 @@ public partial class OrderLogWidgetView : UserControl
     {
         try
         {
+            var debugPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sscc_debug.txt");
+            System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [UnarchiveNote_Click] Handler called\n");
+
             var order = GetOrderItemFromContextMenu(sender);
+            System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [UnarchiveNote_Click] Got order: {(order?.Id.ToString() ?? "null")}\n");
+
             if (order != null && DataContext is OrderLogViewModel vm)
             {
+                System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [UnarchiveNote_Click] Calling UnarchiveOrderCommand\n");
                 await vm.UnarchiveOrderCommand.ExecuteAsync(order);
+                System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [UnarchiveNote_Click] Command completed\n");
+            }
+            else
+            {
+                System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [UnarchiveNote_Click] Early exit - order={order != null}, DataContext is OrderLogViewModel={DataContext is OrderLogViewModel}\n");
             }
         }
         catch (Exception ex)
         {
+            var debugPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sscc_debug.txt");
+            System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [UnarchiveNote_Click] EXCEPTION: {ex.Message}\n");
             Log.Warning(ex, "Failed to unarchive order");
         }
     }
@@ -2658,6 +2676,9 @@ public partial class OrderLogWidgetView : UserControl
 
     private async void RestoreGroup_Click(object sender, RoutedEventArgs e)
     {
+        var debugPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sscc_debug.txt");
+        System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [RestoreGroup_Click] Handler called\n");
+
         try
         {
             if (sender is not FrameworkElement fe) return;
@@ -2665,17 +2686,22 @@ public partial class OrderLogWidgetView : UserControl
             if (DataContext is not OrderLogViewModel vm) return;
 
             var representative = group.First;
+            System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [RestoreGroup_Click] Calling UnarchiveOrderAsync for {representative?.Id}\n");
             if (representative != null)
                 await vm.UnarchiveOrderAsync(representative);
         }
         catch (Exception ex)
         {
+            System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [RestoreGroup_Click] EXCEPTION: {ex.Message}\n");
             Log.Warning(ex, "Failed to restore group");
         }
     }
 
     private async void UnarchiveGroup_Click(object sender, RoutedEventArgs e)
     {
+        var debugPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sscc_debug.txt");
+        System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [UnarchiveGroup_Click] Handler called\n");
+
         try
         {
             if (sender is not MenuItem menuItem) return;
@@ -2685,11 +2711,13 @@ public partial class OrderLogWidgetView : UserControl
             if (DataContext is not OrderLogViewModel vm) return;
 
             var representative = group.First;
+            System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [UnarchiveGroup_Click] Calling UnarchiveOrderAsync for {representative?.Id}\n");
             if (representative != null)
                 await vm.UnarchiveOrderAsync(representative);
         }
         catch (Exception ex)
         {
+            System.IO.File.AppendAllText(debugPath, $"{DateTime.Now:HH:mm:ss.fff} [UnarchiveGroup_Click] EXCEPTION: {ex.Message}\n");
             Log.Warning(ex, "Failed to unarchive group");
         }
     }

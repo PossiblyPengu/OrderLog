@@ -83,6 +83,12 @@ public class ArchiveAction : UndoableAction
             ? "Archive item"
             : $"Archive {_items.Count} items";
 
+    private static void DebugLog(string msg)
+    {
+        var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sscc_debug.txt");
+        System.IO.File.AppendAllText(path, $"{DateTime.Now:HH:mm:ss.fff} {msg}\n");
+    }
+
     public ArchiveAction(IEnumerable<OrderItem> items)
     {
         _items = items.ToList();
@@ -96,8 +102,15 @@ public class ArchiveAction : UndoableAction
     {
         foreach (var item in _items)
         {
-            item.PreviousStatus = item.Status;
+            var oldPrev = item.PreviousStatus;
+            // Only set PreviousStatus if it hasn't been set before
+            // This prevents clobbering the original status when re-archiving an already-archived item
+            if (item.PreviousStatus == null)
+            {
+                item.PreviousStatus = item.Status;
+            }
             item.IsArchived = true;
+            DebugLog($"[ArchiveAction] Item {item.Id}: Status={item.Status}, OldPrevStatus={oldPrev}, NewPrevStatus={item.PreviousStatus}, IsArchived={item.IsArchived}");
         }
     }
 
@@ -136,12 +149,23 @@ public class UnarchiveAction : UndoableAction
         );
     }
 
+    private static void DebugLog(string msg)
+    {
+        var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sscc_debug.txt");
+        System.IO.File.AppendAllText(path, $"{DateTime.Now:HH:mm:ss.fff} {msg}\n");
+    }
+
     public override void Execute()
     {
+        DebugLog($"[UnarchiveAction] Executing for {_items.Count} items");
         foreach (var item in _items)
         {
+            var oldStatus = item.Status;
+            var oldPrevStatus = item.PreviousStatus;
             item.IsArchived = false;
-            item.Status = item.PreviousStatus ?? OrderItem.OrderStatus.InProgress;
+            item.Status = item.PreviousStatus ?? OrderItem.OrderStatus.NotReady;
+            item.PreviousStatus = null;
+            DebugLog($"[UnarchiveAction] Item {item.Id}: {oldStatus}->{item.Status}, Prev={oldPrevStatus}, IsArchived={item.IsArchived}");
         }
     }
 

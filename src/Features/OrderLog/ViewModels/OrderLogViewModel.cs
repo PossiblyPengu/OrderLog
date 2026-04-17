@@ -908,11 +908,23 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         StartUndoTimer(archiveMsg);
     }
 
+    private static void DebugLog(string msg)
+    {
+        var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sscc_debug.txt");
+        System.IO.File.AppendAllText(path, $"{DateTime.Now:HH:mm:ss.fff} {msg}\n");
+    }
+
     [RelayCommand]
     public async Task UnarchiveOrderAsync(OrderItem? item)
     {
-        if (item == null) return;
-        if (!_archivedItemIds.Contains(item.Id)) return;
+        DebugLog($"[Unarchive] Method called with item={(item?.Id.ToString() ?? "null")}");
+        if (item == null) { DebugLog("[Unarchive] Early exit: item is null"); return; }
+        if (!_archivedItemIds.Contains(item.Id))
+        {
+            DebugLog($"[Unarchive] Early exit: Item {item.Id} not in _archivedItemIds (count={_archivedItemIds.Count})");
+            _logger?.LogWarning("UnarchiveOrderAsync: Item {Id} not found in _archivedItemIds", item.Id);
+            return;
+        }
 
         // Get all linked items to unarchive together
         List<OrderItem> itemsToUnarchive;
@@ -926,17 +938,37 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             itemsToUnarchive = new List<OrderItem> { item };
         }
 
+        _logger?.LogInformation("UnarchiveOrderAsync: Unarchiving {Count} items", itemsToUnarchive.Count);
+        DebugLog($"[Unarchive] Unarchiving {itemsToUnarchive.Count} items");
+
         foreach (var it in itemsToUnarchive)
         {
+            var oldStatus = it.Status;
+            var oldPreviousStatus = it.PreviousStatus;
+            var wasInItemIds = _itemIds.Contains(it.Id);
+            var wasInArchivedIds = _archivedItemIds.Contains(it.Id);
+
             RemoveFromArchived(it);
+            // Restore previous status so the item appears in the active view
+            // (Done status is excluded from NotReady/OnDeck/InProgress groups)
+            it.Status = it.PreviousStatus ?? OrderItem.OrderStatus.NotReady;
+            it.PreviousStatus = null; // Clear so repair doesn't recapture
             AddToItems(it, insertAtTop: true);
+
+            var nowInItemIds = _itemIds.Contains(it.Id);
+            DebugLog($"[Unarchive] Item {it.Id}: OldStatus={oldStatus}, PrevStatus={oldPreviousStatus}, NewStatus={it.Status}, Vendor={it.VendorName}, IsRenderable={it.IsRenderable}, IsStickyNote={it.IsStickyNote}");
+            _logger?.LogInformation("UnarchiveOrderAsync: Item {Id} - OldStatus={OldStatus}, PrevStatus={PrevStatus}, NewStatus={NewStatus}, WasInItemIds={WasInItemIds}, NowInItemIds={NowInItemIds}",
+                it.Id, oldStatus, oldPreviousStatus, it.Status, wasInItemIds, nowInItemIds);
         }
+
+        _logger?.LogInformation("UnarchiveOrderAsync: Items collection now has {Count} items, _itemIds has {IdCount} ids",
+            Items.Count, _itemIds.Count);
 
         RefreshDisplayItems();
         RefreshArchivedDisplayItems();
         await SaveAsync();
-        StatusMessage = itemsToUnarchive.Count == 1 
-            ? "Unarchived item" 
+        StatusMessage = itemsToUnarchive.Count == 1
+            ? "Unarchived item"
             : $"Unarchived {itemsToUnarchive.Count} linked items";
     }
 
@@ -2268,6 +2300,10 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
                 NoteCategoryFilter);
         }
 
+        var beforeNotReady = NotReadyItems.Count;
+        var beforeOnDeck = OnDeckItems.Count;
+        var beforeInProgress = InProgressItems.Count;
+
         // Convert to ObservableCollection for grouping service
         var filteredCollection = new ObservableCollection<OrderItem>(filtered);
 
@@ -2278,6 +2314,15 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         NotReadyCount = NotReadyItems.Count;
         OnDeckCount = OnDeckItems.Count;
         InProgressCount = InProgressItems.Count;
+
+        _logger?.LogInformation("RefreshStatusGroups: Items={Items}, Filtered={Filtered}, NotReady={NotReady}({NotReadyBefore}), OnDeck={OnDeck}({OnDeckBefore}), InProgress={InProgress}({InProgressBefore})",
+            Items.Count, filteredCollection.Count, NotReadyItems.Count, beforeNotReady, OnDeckItems.Count, beforeOnDeck, InProgressItems.Count, beforeInProgress);
+
+        DebugLog($"[RefreshStatusGroups] Items={Items.Count}, Filtered={filteredCollection.Count}, NotReady={NotReadyItems.Count}({beforeNotReady}), OnDeck={OnDeckItems.Count}({beforeOnDeck}), InProgress={InProgressItems.Count}({beforeInProgress})");
+        foreach (var it in Items.Take(5))
+        {
+            DebugLog($"[RefreshStatusGroups]   Item {it.Id}: Status={it.Status}, Vendor={it.VendorName?.Substring(0, Math.Min(20, it.VendorName?.Length ?? 0))}, IsRenderable={it.IsRenderable}, IsArchived={it.IsArchived}");
+        }
     }
 
     /// <summary>
@@ -2437,13 +2482,18 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     {
         lock (_collectionLock)
         {
-            if (_itemIds.Contains(item.Id)) return;
+            if (_itemIds.Contains(item.Id))
+            {
+                DebugLog($"[AddToItems] Item {item.Id} already in _itemIds, skipping");
+                return;
+            }
 
             if (insertAtTop)
                 Items.Insert(0, item);
             else
                 Items.Add(item);
             _itemIds.Add(item.Id);
+            DebugLog($"[AddToItems] Item {item.Id} added to Items at {(insertAtTop ? "top" : "bottom")}");
         }
     }
 
@@ -2483,11 +2533,16 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     {
         lock (_collectionLock)
         {
-            if (!_archivedItemIds.Contains(item.Id)) return;
+            if (!_archivedItemIds.Contains(item.Id))
+            {
+                DebugLog($"[RemoveFromArchived] Item {item.Id} NOT in _archivedItemIds, skipping");
+                return;
+            }
 
             item.IsArchived = false;
             ArchivedItems.Remove(item);
             _archivedItemIds.Remove(item.Id);
+            DebugLog($"[RemoveFromArchived] Item {item.Id} removed from ArchivedItems");
         }
     }
 
