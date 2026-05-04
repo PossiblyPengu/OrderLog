@@ -825,6 +825,20 @@ public partial class OrderLogWidgetView : UserControl
                     }
                     catch { }
                 };
+
+                // Collapse NowPlaying when the user clicks anything behind/outside it
+                MainScrollViewer.AddHandler(UIElement.PreviewMouseLeftButtonDownEvent,
+                    new MouseButtonEventHandler((s, ev) =>
+                    {
+                        try
+                        {
+                            if (!_nowPlayingExpanded) return;
+                            // Only collapse if the click is outside the NowPlayingSection
+                            if (NowPlayingSection != null && NowPlayingSection.IsMouseOver) return;
+                            SetNowPlayingExpanded(false);
+                        }
+                        catch { }
+                    }), true);
             }
         }
         catch (Exception ex) { Log.Debug(ex, "Optional scroll enhancement setup failed"); }
