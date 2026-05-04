@@ -129,7 +129,7 @@ public partial class App : Application
 
             using (_host)
             {
-                await _host.StopAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                await _host.StopAsync(TimeSpan.FromSeconds(5));
             }
         }
         catch (Exception ex)

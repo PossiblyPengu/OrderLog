@@ -65,7 +65,8 @@ public sealed class VendorAutocompleteService
     public IReadOnlyList<string> GetAllVendorNames()
     {
         EnsureLoaded();
-        return _cachedVendors
+        var snapshot = GetVendorSnapshot();
+        return snapshot
             .OrderByDescending(v => v.UseCount)
             .ThenBy(v => v.DisplayName)
             .Select(v => v.DisplayName)
@@ -81,11 +82,12 @@ public sealed class VendorAutocompleteService
     public IReadOnlyList<string> Search(string searchTerm, int limit = 15)
     {
         EnsureLoaded();
+        var snapshot = GetVendorSnapshot();
 
         if (string.IsNullOrWhiteSpace(searchTerm))
         {
             // Return top vendors by usage when no search term
-            return _cachedVendors
+            return snapshot
                 .OrderByDescending(v => v.UseCount)
                 .ThenBy(v => v.DisplayName)
                 .Take(limit)
@@ -96,7 +98,7 @@ public sealed class VendorAutocompleteService
         var term = searchTerm.Trim();
         
         // Score-based matching: exact start > word start > contains
-        var matches = _cachedVendors
+        var matches = snapshot
             .Select(v => new
             {
                 Vendor = v,
@@ -111,6 +113,14 @@ public sealed class VendorAutocompleteService
             .ToList();
 
         return matches;
+    }
+
+    private List<VendorEntity> GetVendorSnapshot()
+    {
+        lock (_lock)
+        {
+            return new List<VendorEntity>(_cachedVendors);
+        }
     }
 
     /// <summary>

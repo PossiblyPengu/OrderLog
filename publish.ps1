@@ -41,7 +41,29 @@ Get-ChildItem -Path $appFolder -Directory | Where-Object {
 if (Test-Path $zipPath) {
     Remove-Item $zipPath -Force
 }
-Compress-Archive -Path (Join-Path $appFolder '*') -DestinationPath $zipPath
+$maxZipAttempts = 5
+$zipDelaySeconds = 2
+$zipSucceeded = $false
+
+for ($attempt = 1; $attempt -le $maxZipAttempts; $attempt++) {
+    try {
+        Compress-Archive -Path (Join-Path $appFolder '*') -DestinationPath $zipPath -Force
+        $zipSucceeded = $true
+        break
+    }
+    catch {
+        if ($attempt -eq $maxZipAttempts) {
+            throw
+        }
+
+        Write-Host "Zip attempt $attempt failed due to a locked file. Retrying in $zipDelaySeconds seconds..." -ForegroundColor Yellow
+        Start-Sleep -Seconds $zipDelaySeconds
+    }
+}
+
+if (-not $zipSucceeded) {
+    throw "Failed to create zip archive after $maxZipAttempts attempts."
+}
 
 Write-Host "`nStructured publish output:" -ForegroundColor Green
 Write-Host " - App:        $appFolder" -ForegroundColor Gray

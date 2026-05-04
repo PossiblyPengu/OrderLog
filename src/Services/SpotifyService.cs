@@ -84,8 +84,9 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     private DateTime _lastUserAction = DateTime.MinValue;
     private const int UserActionCooldownMs = 3000;
     private CancellationTokenSource? _artRetryCts;
+    private bool _disposed;
     private DateTime _lastValidMediaTimestamp = DateTime.MinValue;
-    private static readonly TimeSpan MediaHoldDuration = TimeSpan.FromSeconds(6);
+    private static readonly TimeSpan MediaHoldDuration = TimeSpan.FromMinutes(5);
 
     private TimeSpan _trackPosition;
     private TimeSpan _trackDuration;
@@ -206,6 +207,11 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
 
     public void Dispose()
     {
+        if (_disposed) return;
+        _disposed = true;
+
+        CancelArtRetry();
+
         _pollTimer?.Stop();
         _pollTimer?.Dispose();
         _positionTimer?.Stop();
@@ -392,6 +398,8 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     // ── SMTC Media Info Update ─────────────────────────────────────────────
     private async Task UpdateMediaInfoAsync()
     {
+        if (_disposed) return;
+
         if (_currentSession == null)
         {
             await UpdateCurrentSessionAsync();
@@ -449,7 +457,8 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
 
             string currentTrackKey = $"{title ?? ""}|{artist ?? ""}";
             bool trackChanged = _lastTrackKey != currentTrackKey;
-            _lastTrackKey = currentTrackKey;
+            if (!string.IsNullOrEmpty(title))
+                _lastTrackKey = currentTrackKey;
 
             BitmapImage? albumArt = null;
             if (mediaProperties?.Thumbnail != null)
@@ -708,8 +717,14 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
                 return null;
             }
 
+            var dispatcher = System.Windows.Application.Current?.Dispatcher;
+            if (dispatcher == null)
+            {
+                return null;
+            }
+
             BitmapImage? bitmap = null;
-            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            await dispatcher.InvokeAsync(() =>
             {
                 bitmap = new BitmapImage();
                 bitmap.BeginInit();

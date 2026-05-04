@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -352,7 +353,15 @@ public static class TextFormattingHelper
     /// <summary>
     /// Updates the NoteContent property on the OrderItem by serializing the RichTextBox document.
     /// </summary>
-    public static async void UpdateNoteContent(object sender, FrameworkElement view)
+    public static void UpdateNoteContent(object sender, FrameworkElement view)
+    {
+        _ = UpdateNoteContentAsync(sender, view);
+    }
+
+    /// <summary>
+    /// Updates the NoteContent property on the OrderItem by serializing the RichTextBox document.
+    /// </summary>
+    public static async Task UpdateNoteContentAsync(object sender, FrameworkElement view)
     {
         OrderItem? order = null;
         if (sender is Button btn && btn.Tag is OrderItem o) order = o;

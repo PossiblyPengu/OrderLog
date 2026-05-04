@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace OrderLog.Infrastructure.Services;
 
@@ -93,7 +94,20 @@ public sealed class SettingsService
             await File.WriteAllTextAsync(filePath, json).ConfigureAwait(false);
 
             // Notify subscribers that settings have changed
-            SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(appName));
+            var handler = SettingsChanged;
+            if (handler != null)
+            {
+                var dispatcher = Application.Current?.Dispatcher;
+                var args = new SettingsChangedEventArgs(appName);
+                if (dispatcher == null || dispatcher.CheckAccess())
+                {
+                    handler(this, args);
+                }
+                else
+                {
+                    await dispatcher.InvokeAsync(() => handler(this, args));
+                }
+            }
         }
         catch (Exception ex)
         {

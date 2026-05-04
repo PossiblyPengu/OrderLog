@@ -49,7 +49,13 @@ public partial class OrderTemplateManagerDialog : Window
     private void RefreshTemplateList(List<OrderTemplate> templates)
     {
         // Sort templates based on current sort mode
-        var sorted = _templateService.GetTemplatesSorted(_currentSortBy);
+        var sorted = _currentSortBy switch
+        {
+            TemplateSortBy.Name => templates.OrderBy(t => t.Name).ToList(),
+            TemplateSortBy.UseCount => templates.OrderByDescending(t => t.UseCount).ThenBy(t => t.Name).ToList(),
+            TemplateSortBy.DateCreated => templates.OrderByDescending(t => t.CreatedAt).ToList(),
+            _ => templates.ToList()
+        };
 
         Templates.Clear();
         foreach (var template in sorted)

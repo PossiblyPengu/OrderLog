@@ -40,7 +40,7 @@ public class OrderTemplateService
             {
                 _logger?.LogInformation("Templates file not found, starting with empty list");
                 _templates = new List<OrderTemplate>();
-                return _templates;
+                return new List<OrderTemplate>(_templates);
             }
 
             var json = await File.ReadAllTextAsync(_templatesFilePath);
@@ -48,7 +48,7 @@ public class OrderTemplateService
             {
                 _logger?.LogWarning("Templates file is empty");
                 _templates = new List<OrderTemplate>();
-                return _templates;
+                return new List<OrderTemplate>(_templates);
             }
 
             var collection = JsonSerializer.Deserialize<OrderTemplateCollection>(json, s_readOptions);
@@ -56,7 +56,7 @@ public class OrderTemplateService
             {
                 _logger?.LogWarning("Unsupported templates version: {Version}", collection?.Version ?? 0);
                 _templates = new List<OrderTemplate>();
-                return _templates;
+                return new List<OrderTemplate>(_templates);
             }
 
             lock (_lock)
@@ -65,13 +65,13 @@ public class OrderTemplateService
             }
 
             _logger?.LogInformation("Loaded {Count} templates", _templates.Count);
-            return _templates;
+            return new List<OrderTemplate>(_templates);
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to load templates");
             _templates = new List<OrderTemplate>();
-            return _templates;
+            return new List<OrderTemplate>(_templates);
         }
     }
 
