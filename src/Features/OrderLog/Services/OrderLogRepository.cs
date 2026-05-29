@@ -27,6 +27,9 @@ public sealed class OrderLogRepository : IOrderLogService
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private bool _disposed;
 
+    /// <inheritdoc/>
+    public event EventHandler<OrderItemsSavedEventArgs>? ItemsSaved;
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -34,9 +37,6 @@ public sealed class OrderLogRepository : IOrderLogService
         Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter(allowIntegerValues: true) }
     };
 
-    /// <summary>
-    /// Gets or creates the singleton instance of the repository.
-    /// </summary>
     public static OrderLogRepository GetInstance(ILogger<OrderLogRepository>? logger = null)
     {
         lock (_lock)
@@ -88,7 +88,6 @@ public sealed class OrderLogRepository : IOrderLogService
             cmd.ExecuteNonQuery();
         }
 
-        // Create orders table
         using (var cmd = connection.CreateCommand())
         {
             cmd.CommandText = @"
@@ -147,6 +146,10 @@ public sealed class OrderLogRepository : IOrderLogService
 
     public async Task SaveAsync(List<OrderItem> items)
     {
+        List<OrderItem> savedItems = new();
+        List<Guid> deletedIds = new();
+        bool succeeded = false;
+
         await _semaphore.WaitAsync();
         try
         {
@@ -160,10 +163,8 @@ public sealed class OrderLogRepository : IOrderLogService
             using var transaction = connection.BeginTransaction();
             try
             {
-                // Get all current IDs from the filtered set
                 var currentIds = toSave.Select(i => i.Id).ToHashSet();
 
-                // Delete items that are no longer in the list
                 using (var deleteCmd = connection.CreateCommand())
                 {
                     deleteCmd.Transaction = transaction;
@@ -194,9 +195,10 @@ public sealed class OrderLogRepository : IOrderLogService
                         cmd.ExecuteNonQuery();
                         _logger?.LogDebug("Deleted {Count} obsolete records", idsToDelete.Count);
                     }
+
+                    deletedIds = idsToDelete;
                 }
 
-                // Upsert all items
                 foreach (var item in toSave)
                 {
                     using var cmd = connection.CreateCommand();
@@ -215,6 +217,8 @@ public sealed class OrderLogRepository : IOrderLogService
                 }
 
                 transaction.Commit();
+                savedItems = toSave;
+                succeeded = true;
                 _logger?.LogInformation("Saved {Count} orders", toSave.Count);
             }
             catch
@@ -230,6 +234,19 @@ public sealed class OrderLogRepository : IOrderLogService
         finally
         {
             _semaphore.Release();
+        }
+
+        // Fire event outside the lock so handlers can call back into the repo.
+        if (succeeded)
+        {
+            try
+            {
+                ItemsSaved?.Invoke(this, new OrderItemsSavedEventArgs(savedItems, deletedIds));
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "ItemsSaved handler threw");
+            }
         }
     }
 

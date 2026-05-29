@@ -15,7 +15,17 @@
       "Bash(powershell -ExecutionPolicy Bypass -File IconMaker.ps1 -ConfigFile \"orderlog-windows.json\" -OutputPath \"d:/CODE/SOUP/OrderLog/src/Assets\" -ProjectName \"OrderLog\")",
       "Bash(powershell -ExecutionPolicy Bypass -File IconMaker-v2.ps1 -ConfigFile \"orderlog-windows.json\" -OutputPath \"d:/CODE/SOUP/OrderLog/src/Assets\" -ProjectName \"OrderLog\")",
       "Bash(D:/CODE/\"important files\"/dotnet-sdk-8.0.404-win-x64/dotnet.exe publish src/OrderLog.csproj -c Release -r win-x64 --self-contained -o publish)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(git -C d:/CODE/WORK/OrderLog status --short)",
+      "PowerShell($env:DOTNET_ROOT = \"D:\\\\CODE\\\\important files\\\\dotnet-sdk-8.0.404-win-x64\"; $env:PATH = \"$env:DOTNET_ROOT;$env:PATH\"; dotnet build src\\\\OrderLog.csproj -c Debug -v minimal 2>&1 | Select-Object -Last 50)",
+      "PowerShell($env:DOTNET_ROOT = \"D:\\\\CODE\\\\important files\\\\dotnet-sdk-8.0.404-win-x64\"; $env:PATH = \"$env:DOTNET_ROOT;$env:PATH\"; dotnet build src\\\\OrderLog.csproj -c Debug -v minimal 2>&1 | Select-Object -Last 60)",
+      "PowerShell($env:DOTNET_ROOT = \"D:\\\\CODE\\\\important files\\\\dotnet-sdk-8.0.404-win-x64\"; $env:PATH = \"$env:DOTNET_ROOT;$env:PATH\"; dotnet build src\\\\OrderLog.csproj -c Debug -v minimal 2>&1 | Select-Object -Last 80)",
+      "PowerShell($env:DOTNET_ROOT = \"D:\\\\CODE\\\\important files\\\\dotnet-sdk-8.0.404-win-x64\"; $env:PATH = \"$env:DOTNET_ROOT;$env:PATH\"; dotnet build src\\\\OrderLog.csproj -c Release -v minimal 2>&1 | Select-Object -Last 60)",
+      "WebFetch(domain:uiverse.io)",
+      "Bash(curl -s -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" \"https://uiverse.io/Satwinder04/pink-bat-77\" -o /tmp/uiverse.html -w \"HTTP %{http_code}\\\\n%{size_download} bytes\\\\n\")",
+      "Bash(grep -oE '\"html\":\"[^\"]*\"|\"css\":\"[^\"]*\"' /tmp/uiverse.html | head -20)",
+      "Read(//tmp/**)",
+      "PowerShell($env:DOTNET_ROOT = \"D:\\\\CODE\\\\important files\\\\dotnet-sdk-8.0.404-win-x64\"; $env:PATH = \"$env:DOTNET_ROOT;$env:PATH\"; dotnet build src\\\\OrderLog.csproj -c Debug -v minimal 2>&1 | Select-Object -Last 30)"
     ]
   }
 }

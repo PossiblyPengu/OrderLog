@@ -10,9 +10,6 @@ using OrderLog.Features.Models;
 
 namespace OrderLog.Features.Services;
 
-/// <summary>
-/// Service for exporting OrderLog data to various formats.
-/// </summary>
 public interface IOrderLogExportService
 {
     Task ExportToCsvAsync(IEnumerable<OrderItem> items, string filePath);
@@ -31,11 +28,6 @@ public class OrderLogExportService : IOrderLogExportService
         _logger = logger;
     }
 
-    /// <summary>
-    /// Exports order items to CSV format.
-    /// </summary>
-    /// <param name="items">Items to export</param>
-    /// <param name="filePath">Full path to save the file</param>
     public async Task ExportToCsvAsync(IEnumerable<OrderItem> items, string filePath)
     {
         try
@@ -54,11 +46,6 @@ public class OrderLogExportService : IOrderLogExportService
         }
     }
 
-    /// <summary>
-    /// Exports order items to JSON format.
-    /// </summary>
-    /// <param name="items">Items to export</param>
-    /// <param name="filePath">Full path to save the file</param>
     public async Task ExportToJsonAsync(IEnumerable<OrderItem> items, string filePath)
     {
         try
@@ -80,10 +67,8 @@ public class OrderLogExportService : IOrderLogExportService
     {
         var csv = new StringBuilder();
 
-        // Header
         csv.AppendLine("Type,Vendor/Title,Status,Created,Completed,Transfer Numbers,WHS Shipment Numbers,Note Content");
 
-        // Rows
         foreach (var item in items)
         {
             var type = item.NoteType == NoteType.StickyNote ? "Note" : "Order";
@@ -115,11 +100,6 @@ public class OrderLogExportService : IOrderLogExportService
         return field;
     }
 
-    /// <summary>
-    /// Imports order items from CSV format.
-    /// </summary>
-    /// <param name="filePath">Full path to the CSV file</param>
-    /// <returns>Tuple with success status, imported items, and error message</returns>
     public async Task<(bool Success, List<OrderItem> Items, string ErrorMessage)> ImportFromCsvAsync(string filePath)
     {
         try
@@ -136,7 +116,6 @@ public class OrderLogExportService : IOrderLogExportService
                 return (false, new List<OrderItem>(), "CSV file is empty or contains only the header");
             }
 
-            // Skip header line
             var dataLines = lines.Skip(1).Where(line => !string.IsNullOrWhiteSpace(line)).ToList();
             var importedItems = new List<OrderItem>();
             var errors = new List<string>();

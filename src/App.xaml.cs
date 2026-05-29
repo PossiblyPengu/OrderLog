@@ -7,7 +7,11 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using OrderLog.Features.Services;
+using OrderLog.Features.Sync.Backends.JsonBin;
+using OrderLog.Features.Sync.Models;
+using OrderLog.Features.Sync.Services;
 using OrderLog.Features.ViewModels;
+using OrderLog.Infrastructure.Services;
 using OrderLog.Services;
 using OrderLog.Windows;
 
@@ -33,7 +37,7 @@ public partial class App : Application
 
         try
         {
-            Log.Information("Starting SS Command Centre");
+            Log.Information("Starting Order Log");
 
             AppDomain.CurrentDomain.UnhandledException += (s, ev) =>
             {
@@ -79,6 +83,10 @@ public partial class App : Application
         services.AddSingleton<OrderLogViewModel>();
         services.AddSingleton<GroupStateStore>();
 
+        // Cloud sync services (JSONBin.io)
+        services.AddSingleton<TombstoneStore>();
+        services.AddSingleton<JsonBinSyncService>();
+
         // Shared services
         services.AddSingleton(ThemeService.Instance);
         services.AddSingleton<DialogService>();
@@ -105,6 +113,40 @@ public partial class App : Application
             var viewModel = _host.Services.GetRequiredService<OrderLogViewModel>();
             var window = new OrderLogWidgetWindow(viewModel, _host.Services);
             window.Show();
+
+            // Wire JSONBin cloud sync into the view-model.
+            try
+            {
+                var settingsService = _host.Services.GetRequiredService<SettingsService>();
+                var shared = await settingsService.LoadSettingsAsync<SyncSettings>("OrderLogSync");
+
+                // Generate a device id once if this is the first run.
+                if (shared.DeviceId == Guid.Empty)
+                {
+                    shared.DeviceId = Guid.NewGuid();
+                    await settingsService.SaveSettingsAsync("OrderLogSync", shared);
+                }
+                if (string.IsNullOrWhiteSpace(shared.DeviceName))
+                    shared.DeviceName = Environment.MachineName;
+
+                var cloudSync = _host.Services.GetRequiredService<JsonBinSyncService>();
+                cloudSync.RemoteChangesReceived += async (s, args) =>
+                {
+                    try
+                    {
+                        await viewModel.ApplyRemoteChangesAsync(args.Items, args.Tombstones, args.SourceDeviceName);
+                    }
+                    catch (Exception mergeEx)
+                    {
+                        Log.Warning(mergeEx, "ApplyRemoteChangesAsync failed");
+                    }
+                };
+                await cloudSync.InitializeAsync(shared);
+            }
+            catch (Exception syncEx)
+            {
+                Log.Warning(syncEx, "Failed to initialize sync");
+            }
         }
         catch (Exception ex)
         {
@@ -126,6 +168,18 @@ public partial class App : Application
             // event subscriptions (COM apartment thread); not disposing these prevents
             // the process from exiting cleanly.
             SpotifyService.Instance.Dispose();
+
+            // Stop the cloud sync service so the polling HTTP loop is
+            // cancelled before the process exits.
+            try
+            {
+                var cloudSync = _host?.Services.GetService<JsonBinSyncService>();
+                if (cloudSync != null) await cloudSync.StopAsync();
+            }
+            catch (Exception syncEx)
+            {
+                Log.Warning(syncEx, "Failed to stop JsonBinSyncService on exit");
+            }
 
             using (_host)
             {

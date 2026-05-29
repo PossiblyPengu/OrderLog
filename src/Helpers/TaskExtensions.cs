@@ -1,4 +1,4 @@
-using Serilog;
+﻿using Serilog;
 
 namespace OrderLog.Helpers;
 
@@ -21,7 +21,7 @@ public static class TaskExtensions
         }
         catch (OperationCanceledException)
         {
-            // Expected during shutdown — don't log
+            // Expected during shutdown - don't log
         }
         catch (Exception ex)
         {

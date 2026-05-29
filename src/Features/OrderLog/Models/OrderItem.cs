@@ -23,6 +23,44 @@ public partial class OrderItem : ObservableObject
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
+    // Properties whose changes should NOT bump UpdatedAt (display-only/computed
+    // or sync metadata itself).
+    private static readonly HashSet<string> NonDataProperties = new()
+    {
+        nameof(LinkedItemCount),
+        nameof(TimeInProgress),
+        nameof(TimeInProgressDisplay),
+        nameof(TimeOnDeck),
+        nameof(TimeOnDeckDisplay),
+        nameof(TotalTimeInProgress),
+        nameof(HasPreviousLaps),
+        nameof(DisplayTitle),
+        nameof(IsStickyNote),
+        nameof(IsPracticallyEmpty),
+        nameof(IsRenderable),
+        nameof(IsPlaceholder),
+        nameof(CreatedAtDisplay),
+        nameof(AccumulatedTime),
+        nameof(OnDeckDuration),
+    };
+
+    /// <summary>
+    /// When true, suppresses auto-bumping of <see cref="UpdatedAt"/> from
+    /// PropertyChanged. Used while applying remote sync changes so they don't
+    /// echo back to peers.
+    /// </summary>
+    [JsonIgnore]
+    internal bool SuppressUpdatedAtBump { get; set; }
+
+    protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+        if (SuppressUpdatedAtBump) return;
+        if (e.PropertyName is null) return;
+        if (NonDataProperties.Contains(e.PropertyName)) return;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     [ObservableProperty]
     private NoteType _noteType = NoteType.Order;
 
@@ -109,6 +147,28 @@ public partial class OrderItem : ObservableObject
     public DateTime? OnDeckAt { get; set; }
     public DateTime? StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
+
+    /// <summary>
+    /// Last time this item was modified (UTC). Used by P2P sync for conflict
+    /// resolution (last-write-wins). Bumped by <see cref="MarkUpdated"/> or by
+    /// the auto-bump on property changes for known data properties.
+    ///
+    /// The high <see cref="JsonPropertyOrderAttribute"/> ensures this is the
+    /// LAST property serialised/deserialised, so the persisted value isn't
+    /// overwritten by intermediate property-change bumps during JSON load.
+    /// </summary>
+    [JsonPropertyOrder(int.MaxValue)]
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Marks this item as updated, bumping <see cref="UpdatedAt"/> to UtcNow.
+    /// Call this after modifying an item locally so that P2P sync recognises
+    /// the change as newer than its peer's copy.
+    /// </summary>
+    public void MarkUpdated()
+    {
+        UpdatedAt = DateTime.UtcNow;
+    }
 
     /// <summary>
     /// Formatted display of the creation timestamp.

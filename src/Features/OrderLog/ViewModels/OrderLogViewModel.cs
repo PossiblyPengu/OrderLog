@@ -14,6 +14,7 @@ using OrderLog.Helpers;
 using OrderLog.Infrastructure.Services;
 using OrderLog.Services;
 using OrderLog.Features.Services;
+using OrderLog.Features.Sync.Models;
 using Microsoft.Win32;
 
 namespace OrderLog.Features.ViewModels;
@@ -58,7 +59,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private int _selectedItemsCount;
-    public ObservableCollection<OrderItem> StickyNotes { get; } = new(); // Dedicated sticky notes collection
+    public ObservableCollection<OrderItem> StickyNotes { get; } = new();
     public ObservableCollection<OrderItemGroup> DisplayItems { get; } = new();
     public ObservableCollection<OrderItemGroup> DisplayArchivedItems { get; } = new();
     private Task? _archivedRefreshTask;
@@ -374,7 +375,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
     private bool IsDefaultStatusMessage(string message)
     {
-        // Default status shows counts like "5 active · 3 archived"
+        // Default status shows counts like "5 active . 3 archived"
         // Archived/unarchived notifications should not be treated as default
         return message.Contains(" active") && 
                message.Contains(" archived") && 
@@ -384,7 +385,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
     private void UpdateDefaultStatus()
     {
-        StatusMessage = $"{Items.Count} active · {ArchivedItems.Count} archived";
+        StatusMessage = $"{Items.Count} active . {ArchivedItems.Count} archived";
     }
 
     private void OnStatusClearTimerTick(object? sender, EventArgs e)
@@ -640,7 +641,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
         try
         {
             IsLoading = true;
-            StatusMessage = "Loading…";
+            StatusMessage = "Loading...";
         }
         catch { }
         // load persisted widget settings
@@ -757,8 +758,21 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             _itemIds.Clear();
             _archivedItemIds.Clear();
 
+            int autoRepaired = 0;
             foreach (var it in all.OrderBy(i => i.Order))
             {
+                // Auto-repair: any item logically completed (Status==Done) but
+                // not flagged archived is a victim of an older bug where the
+                // IsArchived flag wasn't set. Treat it as archived and re-
+                // persist the corrected flag on the next save.
+                if (!it.IsArchived && it.Status == OrderItem.OrderStatus.Done)
+                {
+                    it.SuppressUpdatedAtBump = true;
+                    try { it.IsArchived = true; }
+                    finally { it.SuppressUpdatedAtBump = false; }
+                    autoRepaired++;
+                }
+
                 if (it.IsArchived)
                 {
                     ArchivedItems.Add(it);
@@ -771,11 +785,20 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
                 }
             }
 
-            _logger?.LogInformation("OrderLogViewModel.LoadAsync: Items={ItemsCount}, Archived={ArchivedCount}", Items.Count, ArchivedItems.Count);
+            _logger?.LogInformation(
+                "OrderLogViewModel.LoadAsync: Items={ItemsCount}, Archived={ArchivedCount}, AutoRepaired={AutoRepaired}",
+                Items.Count, ArchivedItems.Count, autoRepaired);
 
             RefreshDisplayItems();
             RefreshArchivedDisplayItems();
             UpdateDefaultStatus();
+
+            // Persist any auto-repaired flags so they stick across launches.
+            if (autoRepaired > 0)
+            {
+                try { await SaveAsync(); }
+                catch (Exception ex) { _logger?.LogWarning(ex, "Failed to persist auto-repair after load"); }
+            }
         }
         catch (Exception ex)
         {
@@ -816,26 +839,153 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>
-    /// Repairs data inconsistencies caused by the archiving bug where IsArchived wasn't being set.
-    /// Finds items that have Status=Done or have PreviousStatus set (indicating they were archived before)
-    /// but are in the active Items collection with IsArchived=false, and moves them to ArchivedItems.
+    /// Merges remote sync changes into the local collections. Items with a
+    /// newer <see cref="OrderItem.UpdatedAt"/> than the local copy replace it;
+    /// tombstones remove items irrespective of local edits. Persists once after
+    /// merging. Safe to call from any thread.
+    /// </summary>
+    public async Task ApplyRemoteChangesAsync(
+        IReadOnlyList<OrderItem> remoteItems,
+        IReadOnlyList<Tombstone> tombstones,
+        string sourceDeviceName)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher != null && !dispatcher.CheckAccess())
+        {
+            await dispatcher.InvokeAsync(() => ApplyRemoteChangesAsync(remoteItems, tombstones, sourceDeviceName));
+            return;
+        }
+
+        bool anyChange = false;
+
+        // Index existing items for fast lookup.
+        var byId = new Dictionary<Guid, OrderItem>();
+        foreach (var it in Items) byId[it.Id] = it;
+        foreach (var it in ArchivedItems) byId[it.Id] = it;
+
+        // Apply tombstones (deletes).
+        foreach (var tomb in tombstones)
+        {
+            if (byId.TryGetValue(tomb.OrderId, out var existing))
+            {
+                if (existing.UpdatedAt > tomb.DeletedAt)
+                {
+                    // Local edit is newer than the delete; keep the item.
+                    continue;
+                }
+                RemoveFromItems(existing);
+                RemoveFromArchived(existing);
+                byId.Remove(tomb.OrderId);
+                anyChange = true;
+            }
+        }
+
+        // Apply item upserts.
+        foreach (var remote in remoteItems)
+        {
+            if (remote == null || remote.Id == Guid.Empty) continue;
+
+            // Respect tombstones: skip resurrecting an item we know is deleted.
+            // (Caller has already merged tombstones into the store.)
+            if (byId.TryGetValue(remote.Id, out var local))
+            {
+                if (remote.UpdatedAt <= local.UpdatedAt)
+                    continue; // local is at-least-as-fresh; ignore
+
+                // Replace the local item in-place so existing UI bindings see
+                // the new content via the CollectionChanged Replace event.
+                ReplaceItem(local, remote);
+                anyChange = true;
+            }
+            else
+            {
+                // New item from peer.
+                remote.SuppressUpdatedAtBump = true;
+                try
+                {
+                    if (remote.IsArchived)
+                        AddToArchived(remote);
+                    else
+                        AddToItems(remote, insertAtTop: false);
+                }
+                finally { remote.SuppressUpdatedAtBump = false; }
+                byId[remote.Id] = remote;
+                anyChange = true;
+            }
+        }
+
+        if (!anyChange) return;
+
+        RefreshDisplayItems();
+        RefreshArchivedDisplayItems();
+        try { await SaveAsync(); } catch (Exception ex) { _logger?.LogWarning(ex, "Save after remote merge failed"); }
+        StatusMessage = $"Synced from {sourceDeviceName} - {Items.Count} active . {ArchivedItems.Count} archived";
+        _logger?.LogInformation(
+            "ApplyRemoteChangesAsync done: source={Source}, remoteCount={Remote}, tombstones={Tombs}, Items={Items}, Archived={Archived}",
+            sourceDeviceName, remoteItems.Count, tombstones.Count, Items.Count, ArchivedItems.Count);
+    }
+
+    /// <summary>Replace an existing item in its collection with a remote copy.</summary>
+    private void ReplaceItem(OrderItem local, OrderItem remote)
+    {
+        remote.SuppressUpdatedAtBump = true;
+        try
+        {
+            // Active collection
+            var idx = Items.IndexOf(local);
+            if (idx >= 0)
+            {
+                if (remote.IsArchived)
+                {
+                    // Item moved from active to archived on the peer.
+                    RemoveFromItems(local);
+                    AddToArchived(remote);
+                }
+                else
+                {
+                    Items[idx] = remote;
+                    // _itemIds already has local.Id which equals remote.Id; nothing to do.
+                }
+                return;
+            }
+
+            var aidx = ArchivedItems.IndexOf(local);
+            if (aidx >= 0)
+            {
+                if (!remote.IsArchived)
+                {
+                    RemoveFromArchived(local);
+                    AddToItems(remote, insertAtTop: false);
+                }
+                else
+                {
+                    ArchivedItems[aidx] = remote;
+                }
+            }
+        }
+        finally { remote.SuppressUpdatedAtBump = false; }
+    }
+
+    /// <summary>
+    /// Repairs data inconsistencies caused by the archiving bug where
+    /// <c>IsArchived</c> wasn't being set. Moves to the archive any item in
+    /// the active list that is logically completed:
+    ///   - <c>Status == Done</c> (the canonical "this is finished" signal), OR
+    ///   - <c>PreviousStatus != null</c> (signals it was already archived once
+    ///     but ended up back in the active list via a buggy code path).
     /// </summary>
     [RelayCommand]
     public async Task RepairArchivedItemsAsync()
     {
-        // Check for items that should be archived:
-        // 1. Status is Done (completed)
-        // 2. PreviousStatus is set (meaning they were archived at some point)
-        // Only repair items that are flagged active but have a PreviousStatus set,
-        // meaning they were archived at some point but ended up back in the active list.
         var itemsToRepair = Items.Where(i =>
-            i.IsArchived == false && i.PreviousStatus != null).ToList();
-        
-        // Log diagnostic info
+                i.IsArchived == false
+                && (i.Status == OrderItem.OrderStatus.Done || i.PreviousStatus != null))
+            .ToList();
+
         var totalActive = Items.Count;
         var totalArchived = ArchivedItems.Count;
         _logger?.LogInformation(
-            "Repair diagnostic: Active={Active}, Archived={Archived}, ToRepair={ToRepair}", 
+            "Repair diagnostic: Active={Active}, Archived={Archived}, ToRepair={ToRepair}",
             totalActive, totalArchived, itemsToRepair.Count);
 
         if (itemsToRepair.Count == 0)
@@ -846,8 +996,15 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
 
         foreach (var item in itemsToRepair)
         {
-            RemoveFromItems(item);
-            AddToArchived(item);
+            // Make sure the item carries IsArchived=true once moved so it doesn't
+            // get re-loaded into the active list next launch.
+            item.SuppressUpdatedAtBump = true;
+            try
+            {
+                RemoveFromItems(item);
+                AddToArchived(item);
+            }
+            finally { item.SuppressUpdatedAtBump = false; }
         }
 
         RefreshDisplayItems();
@@ -1718,7 +1875,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             }
 
             var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var defaultFileName = $"SSCommandCentre_Export_{timestamp}.csv";
+            var defaultFileName = $"OrderLog_Export_{timestamp}.csv";
 
             var filePath = await _dialogService.ShowSaveFileDialogAsync(
                 "Export to CSV",
@@ -1766,7 +1923,7 @@ public partial class OrderLogViewModel : ObservableObject, IDisposable
             }
 
             var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var defaultFileName = $"SSCommandCentre_Export_{timestamp}.json";
+            var defaultFileName = $"OrderLog_Export_{timestamp}.json";
 
             var filePath = await _dialogService.ShowSaveFileDialogAsync(
                 "Export to JSON",

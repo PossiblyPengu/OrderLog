@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -44,7 +44,7 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
     private const uint KEYEVENTF_KEYUP = 0x0002;
 
     // Pre-compiled regex patterns for extracting/removing featured artists from titles
-#pragma warning disable MA0023 // Capture groups are intentional — used by ExtractFeaturedArtists
+#pragma warning disable MA0023 // Capture groups are intentional - used by ExtractFeaturedArtists
     private static readonly System.Text.RegularExpressions.Regex[] FeatExtractPatterns =
     [
         new(@"\(feat\.?\s+(.+?)\)", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled),
@@ -797,7 +797,7 @@ public class SpotifyService : INotifyPropertyChanged, IDisposable
             var current = Interlocked.CompareExchange(ref _artRetryCts, null, null);
             if (current != null && !token.IsCancellationRequested)
             {
-                Log.Debug("Album art retries exhausted for track key '{TrackKey}' — will retry on next poll", expectedTrackKey);
+                Log.Debug("Album art retries exhausted for track key '{TrackKey}' - will retry on next poll", expectedTrackKey);
                 Interlocked.CompareExchange(ref _artRetryCts, null, current);
             }
         }

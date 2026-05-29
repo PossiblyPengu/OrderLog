@@ -6,18 +6,12 @@ using System.Windows;
 
 namespace OrderLog.Infrastructure.Services;
 
-/// <summary>
-/// Event args for settings changed notifications.
-/// </summary>
 public class SettingsChangedEventArgs : EventArgs
 {
     public string AppName { get; }
     public SettingsChangedEventArgs(string appName) => AppName = appName;
 }
 
-/// <summary>
-/// Service for loading and saving application settings
-/// </summary>
 public sealed class SettingsService
 {
     private readonly string _settingsDirectory;
@@ -93,7 +87,6 @@ public sealed class SettingsService
             var json = JsonSerializer.Serialize(settings, _jsonOptions);
             await File.WriteAllTextAsync(filePath, json).ConfigureAwait(false);
 
-            // Notify subscribers that settings have changed
             var handler = SettingsChanged;
             if (handler != null)
             {
@@ -115,9 +108,6 @@ public sealed class SettingsService
         }
     }
 
-    /// <summary>
-    /// Get the full file path for settings file
-    /// </summary>
     private string GetSettingsFilePath(string appName)
     {
         // Sanitize the app name to prevent path injection

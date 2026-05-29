@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:helpers="clr-namespace:OrderLog.Helpers"
         xmlns:views="clr-namespace:OrderLog.Features.Views"
-        Title="SS Command Centre Settings"
+        Title="Order Log Settings"
         Width="480" Height="620"
         MinWidth="400" MinHeight="500"
         WindowStartupLocation="CenterScreen"

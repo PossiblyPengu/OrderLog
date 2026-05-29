@@ -1,10 +1,7 @@
-using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Interop;
 using Microsoft.Win32;
 using OrderLog.Windows;
 
@@ -13,83 +10,8 @@ namespace OrderLog.Services;
 /// <summary>
 /// Service for displaying dialogs, message boxes, and file pickers in WPF.
 /// </summary>
-/// <remarks>
-/// <para>
-/// This service provides a consistent API for all dialog interactions in the application,
-/// including message boxes, confirmation dialogs, and file open/save dialogs.
-/// </para>
-/// <para>
-/// All methods are async-compatible for consistency with MVVM patterns, though WPF
-/// dialogs are inherently synchronous.
-/// </para>
-/// </remarks>
 public class DialogService
 {
-    // Windows DWM API for dark title bar
-    [DllImport("dwmapi.dll", PreserveSig = true, SetLastError = true)]
-    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
-
-    private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
-
-    /// <summary>
-    /// Apply dark mode to the window title bar
-    /// </summary>
-    private static void ApplyDarkTitleBar(Window window)
-    {
-        if (!ThemeService.Instance.IsDarkMode) return;
-
-        var hwnd = new WindowInteropHelper(window).EnsureHandle();
-        int useImmersiveDarkMode = 1;
-        try
-        {
-            var hr = DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref useImmersiveDarkMode, sizeof(int));
-            if (hr != 0)
-            {
-                Serilog.Log.Debug("DwmSetWindowAttribute failed (hr={Hr}) when applying dark title bar", hr);
-            }
-        }
-        catch (Exception ex)
-        {
-            Serilog.Log.Debug(ex, "Exception calling DwmSetWindowAttribute");
-        }
-    }
-
-    /// <summary>
-    /// Shows an informational message dialog.
-    /// </summary>
-    /// <param name="title">The dialog title.</param>
-    /// <param name="message">The message content.</param>
-    /// <returns>A completed task.</returns>
-    public Task ShowMessageAsync(string title, string message)
-    {
-        MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Shows an error message dialog with an error icon.
-    /// </summary>
-    /// <param name="title">The dialog title.</param>
-    /// <param name="message">The error message content.</param>
-    /// <returns>A completed task.</returns>
-    public Task ShowErrorAsync(string title, string message)
-    {
-        MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error);
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Shows a Yes/No confirmation dialog.
-    /// </summary>
-    /// <param name="title">The dialog title.</param>
-    /// <param name="message">The confirmation message.</param>
-    /// <returns><c>true</c> if the user clicked Yes; otherwise, <c>false</c>.</returns>
-    public Task<bool> ShowConfirmationAsync(string title, string message)
-    {
-        var result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-        return Task.FromResult(result == MessageBoxResult.Yes);
-    }
-
     /// <summary>
     /// Shows an open file dialog that allows selecting multiple files.
     /// </summary>
@@ -137,76 +59,6 @@ public class DialogService
         };
 
         return Task.FromResult(dialog.ShowDialog() == true ? dialog.FileName : null);
-    }
-
-    /// <summary>
-    /// Shows a custom window as a modal dialog.
-    /// </summary>
-    /// <param name="dialog">The window to display.</param>
-    /// <returns>The dialog result.</returns>
-    public Task<bool?> ShowDialogAsync(Window dialog)
-    {
-        // Only set owner if MainWindow is visible (don't block other windows like widget)
-        if (Application.Current?.MainWindow is { IsVisible: true } mainWindow)
-        {
-            dialog.Owner = mainWindow;
-        }
-        dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        return Task.FromResult(dialog.ShowDialog());
-    }
-
-    /// <summary>
-    /// Shows a UserControl embedded in a dialog window and returns a result.
-    /// </summary>
-    /// <typeparam name="T">The type of result expected from the dialog.</typeparam>
-    /// <param name="content">The UserControl to display as dialog content.</param>
-    /// <returns>The result from the dialog, or default if closed without result.</returns>
-    /// <remarks>
-    /// The content UserControl should set its Tag property to an <see cref="Action{T}"/>
-    /// and invoke it with the result when the dialog should close.
-    /// </remarks>
-    public Task<T> ShowContentDialogAsync<T>(System.Windows.Controls.UserControl content)
-    {
-        var tcs = new TaskCompletionSource<T>();
-
-        var dialog = new Window
-        {
-            Content = content,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            SizeToContent = SizeToContent.WidthAndHeight,
-            WindowStyle = WindowStyle.None,
-            AllowsTransparency = true,
-            ResizeMode = ResizeMode.NoResize,
-            MinWidth = 450,
-            MinHeight = 350,
-            MaxWidth = 1000,
-            MaxHeight = 900,
-            ShowInTaskbar = false,
-            Background = System.Windows.Media.Brushes.Transparent
-        };
-
-        // Set owner only when MainWindow is visible (don't block other windows like widget)
-        if (Application.Current?.MainWindow is { IsVisible: true } mainWindow)
-        {
-            dialog.Owner = mainWindow;
-        }
-
-        // Store the result handler
-        content.Tag = new Action<T>(result =>
-        {
-            tcs.TrySetResult(result);
-            dialog.Close();
-        });
-
-        dialog.ShowDialog();
-
-        // If not already set, return default
-        if (!tcs.Task.IsCompleted)
-        {
-            tcs.TrySetResult(default(T)!);
-        }
-
-        return tcs.Task;
     }
 
     /// <summary>
@@ -271,33 +123,4 @@ public class DialogService
         MessageDialog.Show($"Import failed:\n\n{errorMessage}", "Import Error", DialogType.Warning);
     }
 
-    /// <summary>
-    /// Shows a generic error dialog with custom message.
-    /// </summary>
-    /// <param name="message">The error message to display.</param>
-    /// <param name="title">The dialog title.</param>
-    public void ShowError(string message, string title = "Error")
-    {
-        MessageDialog.Show(message, title, DialogType.Error);
-    }
-
-    /// <summary>
-    /// Shows a generic warning dialog with custom message.
-    /// </summary>
-    /// <param name="message">The warning message to display.</param>
-    /// <param name="title">The dialog title.</param>
-    public void ShowWarning(string message, string title = "Warning")
-    {
-        MessageDialog.Show(message, title, DialogType.Warning);
-    }
-
-    /// <summary>
-    /// Shows a generic info dialog with custom message.
-    /// </summary>
-    /// <param name="message">The info message to display.</param>
-    /// <param name="title">The dialog title.</param>
-    public void ShowInfo(string message, string title = "Information")
-    {
-        MessageDialog.Show(message, title, DialogType.Information);
-    }
 }

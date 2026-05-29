@@ -1,0 +1,253 @@
+<UserControl x:Class="OrderLog.Features.Sync.Views.SyncSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel>
+
+        <!-- SYNC Section Header -->
+        <TextBlock Text="CLOUD SYNC"
+                   FontFamily="{DynamicResource FontMono}"
+                   FontSize="13" FontWeight="SemiBold"
+                   Foreground="{DynamicResource AccentBrush}"
+                   Margin="0,20,0,12"/>
+
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,12"
+                   FontFamily="{DynamicResource FontMono}"
+                   FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
+            <Run Text="Share orders between this PC and your other PC over the internet via jsonbin.io. No admin rights or firewall changes required."/>
+        </TextBlock>
+
+        <!-- Status -->
+        <Border Background="{DynamicResource SurfaceHoverBrush}"
+                CornerRadius="{DynamicResource CardCornerRadius}"
+                Padding="16" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="Status"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock x:Name="StatusLine"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextWrapping="Wrap" Margin="0,4,0,0"/>
+                <TextBlock x:Name="LastSyncLine"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="11" Foreground="{DynamicResource TextTertiaryBrush}"
+                           Margin="0,2,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Device Name -->
+        <Border Background="{DynamicResource SurfaceHoverBrush}"
+                CornerRadius="{DynamicResource CardCornerRadius}"
+                Padding="16" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="Device Name"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="How this computer appears to other peers"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                           Margin="0,2,0,8"/>
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusSm}"
+                        Padding="8,6">
+                    <TextBox x:Name="DeviceNameBox"
+                             FontFamily="{DynamicResource FontMono}"
+                             FontSize="12"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             LostFocus="DeviceNameBox_LostFocus"
+                             KeyDown="DeviceNameBox_KeyDown"/>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Step 1: Master Key -->
+        <Border Background="{DynamicResource SurfaceHoverBrush}"
+                CornerRadius="{DynamicResource CardCornerRadius}"
+                Padding="16" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="JSONBin Master Key"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock TextWrapping="Wrap" Margin="0,2,0,8"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
+                    <Run Text="Sign up free at jsonbin.io, then copy your X-Master-Key. Stored encrypted on this PC (Windows DPAPI, per-user)."/>
+                </TextBlock>
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusSm}"
+                        Padding="8,6">
+                    <PasswordBox x:Name="MasterKeyBox"
+                                 FontFamily="{DynamicResource FontMono}"
+                                 FontSize="12"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"/>
+                </Border>
+                <TextBlock x:Name="KeyStatusLine" Margin="0,6,0,0"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="11"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Step 2: Pair -->
+        <Border Background="{DynamicResource SurfaceHoverBrush}"
+                CornerRadius="{DynamicResource CardCornerRadius}"
+                Padding="16" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="Pairing"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock TextWrapping="Wrap" Margin="0,2,0,10"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
+                    <Run Text="On the FIRST PC click &quot;Start New Sync&quot;. Copy the pairing code it gives you. On the SECOND PC paste that code and click &quot;Join Existing&quot;."/>
+                </TextBlock>
+
+                <!-- Existing pairing summary (visible only after pairing) -->
+                <StackPanel x:Name="PairedSummary" Visibility="Collapsed" Margin="0,0,0,10">
+                    <TextBlock Text="Pairing Code (share with the other PC):"
+                               FontFamily="{DynamicResource FontMono}"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <Border Background="{DynamicResource SurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusSm}"
+                            Padding="8,6" Margin="0,4,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="PairingCodeReadout"
+                                     Grid.Column="0"
+                                     FontFamily="{DynamicResource FontMono}"
+                                     FontSize="12"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
+                                     IsReadOnly="True"
+                                     VerticalAlignment="Center"/>
+                            <Button Grid.Column="1"
+                                    Content="Copy"
+                                    Click="CopyPairingCode_Click"
+                                    Cursor="Hand"
+                                    Padding="10,4">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border CornerRadius="{DynamicResource RadiusSm}"
+                                                Background="{DynamicResource AccentBrush}"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"
+                                                              TextElement.Foreground="{DynamicResource TextOnPrimaryBrush}"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Join: paste a code from the first PC -->
+                <StackPanel x:Name="JoinRow">
+                    <TextBlock Text="Pairing code from the first PC:"
+                               FontFamily="{DynamicResource FontMono}"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <Border Background="{DynamicResource SurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusSm}"
+                            Padding="8,6" Margin="0,4,0,10">
+                        <TextBox x:Name="JoinCodeBox"
+                                 FontFamily="{DynamicResource FontMono}"
+                                 FontSize="12"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="HostBtn" Content="Start New Sync"
+                            Click="StartNewSync_Click"
+                            Cursor="Hand"
+                            Margin="0,0,8,0" Padding="12,6">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border CornerRadius="{DynamicResource RadiusSm}"
+                                        Background="{DynamicResource AccentBrush}"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"
+                                                      TextElement.Foreground="{DynamicResource TextOnPrimaryBrush}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button x:Name="JoinBtn" Content="Join Existing"
+                            Click="JoinSync_Click"
+                            Cursor="Hand"
+                            Margin="0,0,8,0" Padding="12,6">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border CornerRadius="{DynamicResource RadiusSm}"
+                                        Background="{DynamicResource SurfaceBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}"
+                                        BorderThickness="1"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"
+                                                      TextElement.Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button x:Name="UnpairBtn" Content="Unpair"
+                            Click="Unpair_Click"
+                            Cursor="Hand"
+                            Visibility="Collapsed"
+                            Padding="12,6">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border CornerRadius="{DynamicResource RadiusSm}"
+                                        Background="{DynamicResource DangerBrush}"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"
+                                                      TextElement.Foreground="{DynamicResource TextOnPrimaryBrush}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Activity readout (sync is always-on once paired) -->
+        <Border Background="{DynamicResource SurfaceHoverBrush}"
+                CornerRadius="{DynamicResource CardCornerRadius}"
+                Padding="16" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="Activity"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock x:Name="PeerCountLine"
+                           FontFamily="{DynamicResource FontMono}"
+                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextWrapping="Wrap" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
+
+    </StackPanel>
+</UserControl>

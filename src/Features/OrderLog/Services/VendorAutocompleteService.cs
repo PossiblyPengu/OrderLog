@@ -16,16 +16,10 @@ public sealed class VendorAutocompleteService
     private bool _isLoaded;
     private readonly object _lock = new();
 
-    /// <summary>
-    /// Singleton instance for shared access
-    /// </summary>
     public static VendorAutocompleteService Instance { get; } = new();
 
     private VendorAutocompleteService() { }
 
-    /// <summary>
-    /// Ensures vendors are loaded into memory cache
-    /// </summary>
     public void EnsureLoaded()
     {
         if (_isLoaded) return;
@@ -47,9 +41,6 @@ public sealed class VendorAutocompleteService
         }
     }
 
-    /// <summary>
-    /// Refreshes the vendor cache from database
-    /// </summary>
     public void RefreshCache()
     {
         lock (_lock)
@@ -86,7 +77,6 @@ public sealed class VendorAutocompleteService
 
         if (string.IsNullOrWhiteSpace(searchTerm))
         {
-            // Return top vendors by usage when no search term
             return snapshot
                 .OrderByDescending(v => v.UseCount)
                 .ThenBy(v => v.DisplayName)
@@ -123,9 +113,6 @@ public sealed class VendorAutocompleteService
         }
     }
 
-    /// <summary>
-    /// Calculate a match score for ranking results
-    /// </summary>
     private static int CalculateMatchScore(string displayName, string term)
     {
         var name = displayName.ToUpperInvariant();
@@ -161,7 +148,6 @@ public sealed class VendorAutocompleteService
         {
             DictionaryDbContext.Instance.IncrementVendorUseCount(vendorName);
 
-            // Update cache
             lock (_lock)
             {
                 var vendor = _cachedVendors.FirstOrDefault(v =>

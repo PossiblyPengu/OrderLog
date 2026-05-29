@@ -68,7 +68,6 @@ public class OrderGroupingService
                 : orderGroups.OrderBy(keySelector).ToList();
         }
 
-        // If not sorting by status, apply the selected sort mode
         if (!sortByStatus)
         {
             switch (sortMode)

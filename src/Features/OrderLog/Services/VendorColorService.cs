@@ -10,9 +10,6 @@ using OrderLog.Helpers;
 
 namespace OrderLog.Features.Services;
 
-/// <summary>
-/// Service for managing automatic color assignment to vendors
-/// </summary>
 public class VendorColorService
 {
     private static readonly JsonSerializerOptions s_readOptions = new() { PropertyNameCaseInsensitive = true };
@@ -44,9 +41,6 @@ public class VendorColorService
         _mappingsFilePath = Path.Combine(AppPaths.OrderLogDir, "vendor-colors.json");
     }
 
-    /// <summary>
-    /// Load vendor color mappings from file
-    /// </summary>
     public async Task LoadMappingsAsync()
     {
         try
@@ -113,14 +107,10 @@ public class VendorColorService
         }
     }
 
-    /// <summary>
-    /// Save vendor color mappings to file
-    /// </summary>
     public async Task SaveMappingsAsync()
     {
         try
         {
-            // Ensure directory exists
             var directory = Path.GetDirectoryName(_mappingsFilePath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
@@ -169,7 +159,6 @@ public class VendorColorService
 
         lock (_lock)
         {
-            // Return existing mapping if available
             if (_vendorColorMap.TryGetValue(normalizedVendor, out var existingColor))
             {
                 return existingColor;
@@ -187,9 +176,6 @@ public class VendorColorService
         }
     }
 
-    /// <summary>
-    /// Set custom color for a vendor
-    /// </summary>
     public async Task SetVendorColorAsync(string vendorName, string colorHex)
     {
         if (string.IsNullOrWhiteSpace(vendorName))

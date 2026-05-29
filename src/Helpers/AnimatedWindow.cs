@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media.Animation;
@@ -17,13 +17,13 @@ public abstract class AnimatedWindow : Window
     /// <summary>Duration of the closing animation in milliseconds. Override to customise.</summary>
     protected virtual double CloseAnimDurationMs => 150.0;
 
-    /// <summary>Target scale at the end of the closing animation (0–1). Override to customise.</summary>
+    /// <summary>Target scale at the end of the closing animation (0-1). Override to customise.</summary>
     protected virtual double CloseAnimScale => 0.93;
 
     /// <summary>
     /// Plays the closing animation then either sets <see cref="Window.DialogResult"/>
     /// (if <paramref name="dialogResult"/> is provided) or calls <see cref="Window.Close"/>.
-    /// Safe to call multiple times — subsequent calls are ignored while animation is running.
+    /// Safe to call multiple times - subsequent calls are ignored while animation is running.
     /// </summary>
     protected void BeginCloseAnimation(bool? dialogResult = null)
     {

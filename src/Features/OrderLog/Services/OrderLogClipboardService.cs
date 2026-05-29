@@ -56,11 +56,6 @@ public class OrderLogClipboardService
         }
     }
 
-    /// <summary>
-    /// Try to paste items from clipboard
-    /// </summary>
-    /// <param name="items">Output list of pasted items (transformed for pasting)</param>
-    /// <returns>True if successful, false if clipboard doesn't contain valid OrderLog data</returns>
     public bool TryPasteFromClipboard(out List<OrderItem> items)
     {
         items = new List<OrderItem>();
@@ -133,7 +128,6 @@ public class OrderLogClipboardService
     /// <returns>Transformed items ready for insertion</returns>
     private List<OrderItem> TransformForPasting(List<OrderItem> originals)
     {
-        // Check if any original items had linked groups
         var originalGroupIds = originals
             .Where(i => i.LinkedGroupId != null)
             .Select(i => i.LinkedGroupId)

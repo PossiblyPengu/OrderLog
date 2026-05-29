@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using OrderLog.Features.ViewModels;
 using OrderLog.Features.Models;
@@ -6,9 +6,6 @@ using OrderLog.Services;
 
 namespace OrderLog.Features.Helpers;
 
-/// <summary>
-/// Manages keyboard shortcuts for the Order Log widget
-/// </summary>
 public class KeyboardShortcutManager
 {
     private readonly OrderLogViewModel _viewModel;
@@ -19,18 +16,12 @@ public class KeyboardShortcutManager
         _viewModel = viewModel;
     }
 
-    /// <summary>
-    /// Registers keyboard shortcuts on the specified UI element
-    /// </summary>
     public void RegisterShortcuts(UIElement element)
     {
         _targetElement = element;
         element.PreviewKeyDown += OnPreviewKeyDown;
     }
 
-    /// <summary>
-    /// Unregisters keyboard shortcuts
-    /// </summary>
     public void UnregisterShortcuts()
     {
         if (_targetElement != null)
@@ -57,7 +48,7 @@ public class KeyboardShortcutManager
             }
 
             // If the user is typing inside an editable text control (TextBox/RichTextBox),
-            // do not hijack clipboard/navigation shortcuts—let the control handle them.
+            // do not hijack clipboard/navigation shortcuts-let the control handle them.
             if (!textInput.IsReadOnly)
             {
                 return;
@@ -208,7 +199,7 @@ public class KeyboardShortcutManager
 
             }
         }
-        // Alt key combinations — media controls
+        // Alt key combinations - media controls
         if (modifiers.HasFlag(ModifierKeys.Alt))
         {
             switch (key)

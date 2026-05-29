@@ -70,7 +70,7 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Modern Editable Field Style - Clean inline editing with focus indicator -->
+        <!-- Inline editable field. -->
         <Style x:Key="ModernEditableFieldStyle" TargetType="TextBox">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -120,7 +120,7 @@
             </Setter>
         </Style>
 
-        <!-- Modern Copy Button Style - Enhanced for better UX -->
+        <!-- Inline field copy button. -->
         <Style x:Key="FieldCopyButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="24"/>
             <Setter Property="Height" Value="24"/>
@@ -1617,7 +1617,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Marathon Toolbar — frosted dark header with neon accent border -->
+        <!-- Marathon toolbar with neon accent border. -->
         <Border Grid.Row="0"
                 Background="{DynamicResource SurfaceBrush}"
                 BorderThickness="0,0,0,1">

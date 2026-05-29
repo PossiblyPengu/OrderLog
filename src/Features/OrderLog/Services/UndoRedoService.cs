@@ -5,33 +5,19 @@ using OrderLog.Features.Models;
 
 namespace OrderLog.Features.Services;
 
-/// <summary>
-/// Base class for all undoable actions
-/// </summary>
 public abstract class UndoableAction
 {
     public DateTime Timestamp { get; init; } = DateTime.Now;
     public abstract string Description { get; }
 
-    /// <summary>
-    /// Executes the action
-    /// </summary>
     public abstract void Execute();
 
-    /// <summary>
-    /// Undoes the action
-    /// </summary>
     public abstract void Undo();
 
-    /// <summary>
-    /// Re-executes the action (default implementation calls Execute)
-    /// </summary>
+    /// <summary>Default calls Execute(); override if redo needs to differ.</summary>
     public virtual void Redo() => Execute();
 }
 
-/// <summary>
-/// Action for changing item status
-/// </summary>
 public class StatusChangeAction : UndoableAction
 {
     private readonly List<OrderItem> _items;
@@ -70,9 +56,6 @@ public class StatusChangeAction : UndoableAction
     }
 }
 
-/// <summary>
-/// Action for archiving items
-/// </summary>
 public class ArchiveAction : UndoableAction
 {
     private readonly List<OrderItem> _items;
@@ -119,9 +102,6 @@ public class ArchiveAction : UndoableAction
     }
 }
 
-/// <summary>
-/// Action for unarchiving items
-/// </summary>
 public class UnarchiveAction : UndoableAction
 {
     private readonly List<OrderItem> _items;
@@ -164,9 +144,6 @@ public class UnarchiveAction : UndoableAction
     }
 }
 
-/// <summary>
-/// Action for editing a field value
-/// </summary>
 public class FieldEditAction : UndoableAction
 {
     private readonly OrderItem _item;

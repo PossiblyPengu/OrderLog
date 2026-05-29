@@ -6,9 +6,6 @@ using OrderLog.Features.Models;
 
 namespace OrderLog.Features.Services;
 
-/// <summary>
-/// Result of a bulk operation
-/// </summary>
 public class BulkOperationResult
 {
     public int SuccessCount { get; set; }
@@ -17,17 +14,8 @@ public class BulkOperationResult
     public bool IsSuccess => FailureCount == 0;
 }
 
-/// <summary>
-/// Service for performing bulk operations on order items
-/// </summary>
 public class OrderBulkOperationsService
 {
-    /// <summary>
-    /// Sets the status for multiple items at once
-    /// </summary>
-    /// <param name="items">Items to update</param>
-    /// <param name="newStatus">New status to apply</param>
-    /// <returns>Result of the operation</returns>
     public BulkOperationResult SetStatusBulk(IEnumerable<OrderItem> items, OrderItem.OrderStatus newStatus)
     {
         var result = new BulkOperationResult();
@@ -49,11 +37,6 @@ public class OrderBulkOperationsService
         return result;
     }
 
-    /// <summary>
-    /// Archives multiple items at once
-    /// </summary>
-    /// <param name="items">Items to archive</param>
-    /// <returns>Result of the operation</returns>
     public BulkOperationResult ArchiveBulk(IEnumerable<OrderItem> items)
     {
         var result = new BulkOperationResult();
@@ -62,7 +45,6 @@ public class OrderBulkOperationsService
         {
             try
             {
-                // Store previous status before archiving
                 item.PreviousStatus = item.Status;
                 item.IsArchived = true;
                 result.SuccessCount++;
@@ -77,11 +59,6 @@ public class OrderBulkOperationsService
         return result;
     }
 
-    /// <summary>
-    /// Unarchives multiple items at once
-    /// </summary>
-    /// <param name="items">Items to unarchive</param>
-    /// <returns>Result of the operation</returns>
     public BulkOperationResult UnarchiveBulk(IEnumerable<OrderItem> items)
     {
         var result = new BulkOperationResult();
@@ -105,12 +82,6 @@ public class OrderBulkOperationsService
         return result;
     }
 
-    /// <summary>
-    /// Deletes multiple items (marks them for removal)
-    /// </summary>
-    /// <param name="items">Items to delete</param>
-    /// <param name="itemsCollection">The collection to remove items from</param>
-    /// <returns>Result of the operation</returns>
     public BulkOperationResult DeleteBulk(IEnumerable<OrderItem> items, ICollection<OrderItem> itemsCollection)
     {
         var result = new BulkOperationResult();
@@ -133,12 +104,6 @@ public class OrderBulkOperationsService
         return result;
     }
 
-    /// <summary>
-    /// Sets the color for multiple sticky notes at once
-    /// </summary>
-    /// <param name="items">Items to update (must be sticky notes)</param>
-    /// <param name="colorHex">Hex color to apply (e.g., "#FF5733")</param>
-    /// <returns>Result of the operation</returns>
     public BulkOperationResult SetColorBulk(IEnumerable<OrderItem> items, string colorHex)
     {
         var result = new BulkOperationResult();
@@ -168,12 +133,6 @@ public class OrderBulkOperationsService
         return result;
     }
 
-    /// <summary>
-    /// Links multiple items together with a shared group ID
-    /// </summary>
-    /// <param name="items">Items to link</param>
-    /// <param name="groupId">Optional group ID (generates new one if null)</param>
-    /// <returns>Result of the operation</returns>
     public BulkOperationResult LinkItemsBulk(IEnumerable<OrderItem> items, Guid? groupId = null)
     {
         var result = new BulkOperationResult();

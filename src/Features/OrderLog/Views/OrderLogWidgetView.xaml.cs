@@ -22,7 +22,7 @@ using OrderLog.Services;
 namespace OrderLog.Features.Views;
 
 /// <summary>
-/// Full-featured widget view for Order Log - designed for AppBar docking
+/// Main widget view for Order Log.
 /// </summary>
 public partial class OrderLogWidgetView : UserControl
 {
@@ -104,61 +104,66 @@ public partial class OrderLogWidgetView : UserControl
 
     private void ActiveTab_Click(object sender, RoutedEventArgs e)
     {
-        // Save archived tab scroll position before switching
-        if (_showingArchivedTab && MainScrollViewer != null)
-        {
-            _archivedTabScrollPosition = MainScrollViewer.VerticalOffset;
-        }
-
-        _showingArchivedTab = false;
-        UpdateTabState();
-
-        // Force refresh of active display items
-        if (DataContext is OrderLogViewModel vm)
-        {
-            vm.RefreshDisplayItems();
-        }
-
-        // Restore active tab scroll position
-        if (MainScrollViewer != null)
-        {
-            _ = Dispatcher.BeginInvoke(new Action(() =>
-            {
-                MainScrollViewer.ScrollToVerticalOffset(_activeTabScrollPosition);
-            }), System.Windows.Threading.DispatcherPriority.Loaded);
-        }
+        SwitchArchivedTab(showArchived: false);
     }
 
     private void ArchivedTab_Click(object sender, RoutedEventArgs e)
     {
-        // Save active tab scroll position before switching
-        if (!_showingArchivedTab && MainScrollViewer != null)
+        SwitchArchivedTab(showArchived: true);
+    }
+
+    private void SwitchArchivedTab(bool showArchived)
+    {
+        SaveCurrentTabScrollPosition();
+        _showingArchivedTab = showArchived;
+        UpdateTabState();
+
+        if (DataContext is OrderLogViewModel vm)
+        {
+            if (showArchived)
+            {
+                _ = vm.RefreshArchivedDisplayItemsAsync();
+            }
+            else
+            {
+                vm.RefreshDisplayItems();
+            }
+        }
+
+        RestoreCurrentTabScrollPosition();
+    }
+
+    private void SaveCurrentTabScrollPosition()
+    {
+        if (MainScrollViewer == null)
+        {
+            return;
+        }
+
+        if (_showingArchivedTab)
+        {
+            _archivedTabScrollPosition = MainScrollViewer.VerticalOffset;
+        }
+        else
         {
             _activeTabScrollPosition = MainScrollViewer.VerticalOffset;
         }
+    }
 
-        _showingArchivedTab = true;
-        UpdateTabState();
-
-        // Force refresh of archived display items
-        if (DataContext is OrderLogViewModel vm)
-        {
-            _ = vm.RefreshArchivedDisplayItemsAsync();
-        }
-
-        // Restore archived tab scroll position
+    private void RestoreCurrentTabScrollPosition()
+    {
         if (MainScrollViewer != null)
         {
+            var targetOffset = _showingArchivedTab ? _archivedTabScrollPosition : _activeTabScrollPosition;
             _ = Dispatcher.BeginInvoke(new Action(() =>
             {
-                MainScrollViewer.ScrollToVerticalOffset(_archivedTabScrollPosition);
+                MainScrollViewer.ScrollToVerticalOffset(targetOffset);
             }), System.Windows.Threading.DispatcherPriority.Loaded);
         }
     }
 
     private void UpdateTabState()
     {
-        // Update tab button styles - using modern segmented control style
         if (_showingArchivedTab)
         {
             // Apply inactive style to Active tab
@@ -1515,43 +1520,7 @@ public partial class OrderLogWidgetView : UserControl
             return;
         }
 
-        _nowPlayingExpanded = !_nowPlayingExpanded;
-        NowPlayingToggleIcon.Text = _nowPlayingExpanded ? "▼" : "▲";
-
-        // Calculate target height based on widget width (for square-ish album art)
-        double targetHeight = Math.Min(Math.Max(this.ActualWidth * 0.88, 200), 300);
-
-        // Animated expand/collapse
-        if (_nowPlayingExpanded)
-        {
-            NowPlayingContent.Visibility = Visibility.Visible;
-            NowPlayingContent.BeginAnimation(HeightProperty, null); // Clear previous animation
-            var expandAnimation = new DoubleAnimation(0, targetHeight, TimeSpan.FromMilliseconds(200))
-            {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-            };
-            expandAnimation.Completed += (_, _) =>
-            {
-                NowPlayingContent.BeginAnimation(HeightProperty, null);
-                NowPlayingContent.Height = double.NaN;
-            };
-            NowPlayingContent.BeginAnimation(HeightProperty, expandAnimation);
-        }
-        else
-        {
-            var currentHeight = NowPlayingContent.ActualHeight;
-            var collapseAnimation = new DoubleAnimation(currentHeight, 0, TimeSpan.FromMilliseconds(150))
-            {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
-            collapseAnimation.Completed += (s, _) =>
-            {
-                NowPlayingContent.Visibility = Visibility.Collapsed;
-                NowPlayingContent.BeginAnimation(HeightProperty, null); // Clear animation to allow auto-sizing
-            };
-            NowPlayingContent.BeginAnimation(HeightProperty, collapseAnimation);
-        }
-        UpdateNowPlayingUI();
+        SetNowPlayingExpanded(!_nowPlayingExpanded);
     }
 
     private System.Windows.Point _dragStartPoint;
@@ -1870,37 +1839,7 @@ public partial class OrderLogWidgetView : UserControl
 
     private void CancelAddOrder_Click(object sender, RoutedEventArgs e)
     {
-        // Hide the inline add order card with animation
-        if (AddOrderCard != null)
-        {
-            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150))
-            {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
-
-            var scaleX = new DoubleAnimation(1, 0.95, TimeSpan.FromMilliseconds(150))
-            {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
-
-            var scaleY = new DoubleAnimation(1, 0.95, TimeSpan.FromMilliseconds(150))
-            {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
-
-            fadeOut.Completed += (s, _) =>
-            {
-                AddOrderCard.Visibility = Visibility.Collapsed;
-                AddOrderCard.BeginAnimation(OpacityProperty, null);
-            };
-
-            AddOrderCard.BeginAnimation(OpacityProperty, fadeOut);
-            if (AddOrderCard.RenderTransform is ScaleTransform scale)
-            {
-                scale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleX);
-                scale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleY);
-            }
-        }
+        HideAddOrderCard();
     }
 
     private async void ConfirmAddOrder_Click(object sender, RoutedEventArgs e)
@@ -1928,39 +1867,45 @@ public partial class OrderLogWidgetView : UserControl
 
         await vm.AddOrderAsync(order);
 
-        // Hide the card with animation and scroll to top to show the new order
-        if (AddOrderCard != null)
-        {
-            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150))
-            {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
-
-            var scaleX = new DoubleAnimation(1, 0.95, TimeSpan.FromMilliseconds(150))
-            {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
-
-            var scaleY = new DoubleAnimation(1, 0.95, TimeSpan.FromMilliseconds(150))
-            {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
-
-            fadeOut.Completed += (s, _) =>
-            {
-                AddOrderCard.Visibility = Visibility.Collapsed;
-                AddOrderCard.BeginAnimation(OpacityProperty, null);
-            };
-
-            AddOrderCard.BeginAnimation(OpacityProperty, fadeOut);
-            if (AddOrderCard.RenderTransform is ScaleTransform scale)
-            {
-                scale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleX);
-                scale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleY);
-            }
-        }
+        HideAddOrderCard();
 
         MainScrollViewer?.ScrollToTop();
+    }
+
+    private void HideAddOrderCard()
+    {
+        if (AddOrderCard == null)
+        {
+            return;
+        }
+
+        var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150))
+        {
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+        };
+
+        var scaleX = new DoubleAnimation(1, 0.95, TimeSpan.FromMilliseconds(150))
+        {
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+        };
+
+        var scaleY = new DoubleAnimation(1, 0.95, TimeSpan.FromMilliseconds(150))
+        {
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+        };
+
+        fadeOut.Completed += (s, _) =>
+        {
+            AddOrderCard.Visibility = Visibility.Collapsed;
+            AddOrderCard.BeginAnimation(OpacityProperty, null);
+        };
+
+        AddOrderCard.BeginAnimation(OpacityProperty, fadeOut);
+        if (AddOrderCard.RenderTransform is ScaleTransform scale)
+        {
+            scale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleX);
+            scale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleY);
+        }
     }
 
     private void AddBlankNote_Click(object sender, RoutedEventArgs e)
@@ -2087,11 +2032,6 @@ public partial class OrderLogWidgetView : UserControl
             order.ColorHex = picker.SelectedColor;
             _ = vm.SaveAsync();
         }
-    }
-
-    private void CopyVendorName_Click(object sender, RoutedEventArgs e)
-    {
-        CopyFieldToClipboard(sender, "Vendor name");
     }
 
     private void CopyTransferNumbers_Click(object sender, RoutedEventArgs e)
@@ -2276,18 +2216,6 @@ public partial class OrderLogWidgetView : UserControl
         }
     }
 
-    private void StatusIcon_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is not Button button || button.DataContext is not OrderItem order) return;
-        if (button.Tag is not OrderItem.OrderStatus targetStatus) return;
-        if (DataContext is not OrderLogViewModel vm) return;
-
-        var previousStatus = order.Status;
-        if (previousStatus == targetStatus) return;
-
-        _ = vm.SetStatusAsync(order, targetStatus, previousStatus);
-    }
-
     private void UnifiedStatusComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (sender is not ComboBox comboBox) return;
@@ -2387,29 +2315,6 @@ public partial class OrderLogWidgetView : UserControl
         catch (Exception ex)
         {
             Log.Warning(ex, "Failed to start link mode from button");
-        }
-    }
-
-    private void LinkWith_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            var order = GetOrderItemFromContextMenu(sender);
-            if (order == null)
-            {
-                Log.Warning("LinkWith_Click: Could not get OrderItem from context menu");
-                return;
-            }
-
-            if (DataContext is OrderLogViewModel vm)
-            {
-                // Enter link mode - user clicks another card to complete
-                vm.StartLinkMode(order);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Failed to start link mode");
         }
     }
 
@@ -2822,9 +2727,6 @@ public partial class OrderLogWidgetView : UserControl
     private void InsertTimestamp_Click(object sender, RoutedEventArgs e)
         => Helpers.TextFormattingHelper.InsertTimestamp(sender, this);
 
-    private void InsertDivider_Click(object sender, RoutedEventArgs e)
-        => Helpers.TextFormattingHelper.InsertDivider(sender, this);
-
     private void NoteContent_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         // Ensure the RichTextBox gets focus when clicked - prevents drag behavior from blocking
@@ -2959,174 +2861,7 @@ public partial class OrderLogWidgetView : UserControl
 
     #endregion
 
-    #region Merged Card Drag and Drop
-
-    private System.Windows.Point _mergedCardDragStartPoint;
-
-    private void MergedCard_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-    {
-        if (sender is FrameworkElement fe)
-        {
-            _mergedCardDragStartPoint = e.GetPosition(null);
-        }
-    }
-
-    private void MergedCard_MouseMove(object sender, MouseEventArgs e)
-    {
-        if (e.LeftButton != MouseButtonState.Pressed) return;
-        if (sender is not FrameworkElement fe || fe.DataContext is not ViewModels.OrderItemGroup group) return;
-
-        var pos = e.GetPosition(null);
-        if (Math.Abs(pos.X - _mergedCardDragStartPoint.X) < SystemParameters.MinimumHorizontalDragDistance &&
-            Math.Abs(pos.Y - _mergedCardDragStartPoint.Y) < SystemParameters.MinimumVerticalDragDistance) return;
-
-        // Drag all member IDs
-        var ids = group.Members.Select(m => m.Id).ToArray();
-        var data = new DataObject();
-        data.SetData("OrderItemIds", ids);
-        data.SetData("IsMergedCard", true); // Flag to indicate it's a merged card drag
-
-        DragDrop.DoDragDrop(fe, data, DragDropEffects.Move);
-    }
-
-    private void MergedCard_DragOver(object sender, DragEventArgs e)
-    {
-        if (e.Data.GetDataPresent("OrderItemId") || e.Data.GetDataPresent("OrderItemIds"))
-        {
-            e.Effects = DragDropEffects.Move;
-
-            // Visual feedback
-            if (sender is Border b)
-            {
-                if (b.Tag == null) b.Tag = b.BorderBrush;
-                b.BorderBrush = Application.Current?.Resources["AccentBrush"] as Brush ?? System.Windows.Media.Brushes.LightBlue;
-                b.BorderThickness = new Thickness(3);
-            }
-        }
-        else
-        {
-            e.Effects = DragDropEffects.None;
-        }
-        e.Handled = true;
-    }
-
-    private void MergedCard_DragLeave(object sender, DragEventArgs e)
-    {
-        if (sender is Border b && b.Tag is System.Windows.Media.Brush orig)
-        {
-            b.BorderBrush = orig;
-            b.BorderThickness = new Thickness(1);
-            b.Tag = null;
-        }
-    }
-
-    private async void MergedCard_Drop(object sender, DragEventArgs e)
-    {
-        try
-        {
-            // Reset visual feedback
-            if (sender is Border b && b.Tag is System.Windows.Media.Brush orig)
-            {
-                b.BorderBrush = orig;
-                b.BorderThickness = new Thickness(1);
-                b.Tag = null;
-            }
-
-            if (!e.Data.GetDataPresent("OrderItemId") && !e.Data.GetDataPresent("OrderItemIds")) return;
-
-            var droppedIds = new System.Collections.Generic.List<Guid>();
-            if (e.Data.GetDataPresent("OrderItemIds") && e.Data.GetData("OrderItemIds") is Guid[] arr)
-            {
-                droppedIds.AddRange(arr);
-            }
-            else if (e.Data.GetDataPresent("OrderItemId"))
-            {
-                droppedIds.Add((Guid)e.Data.GetData("OrderItemId"));
-            }
-
-            if (DataContext is not OrderLogViewModel vm) return;
-            if (sender is not FrameworkElement fe || fe.DataContext is not ViewModels.OrderItemGroup targetGroup) return;
-
-            var droppedItems = vm.Items.Concat(vm.ArchivedItems).Where(i => droppedIds.Contains(i.Id)).ToList();
-            var target = targetGroup.First; // Drop before the first item of target group
-
-            // Check if this is a split-drag (dragging from section handle to unlink)
-            bool isSplitDrag = e.Data.GetDataPresent("SplitFromGroup") && e.Data.GetData("SplitFromGroup") is bool split && split;
-
-            // If split-drag, unlink the dragged item
-            if (isSplitDrag && droppedItems.Count == 1)
-            {
-                droppedItems[0].LinkedGroupId = null;
-            }
-
-            if (droppedItems.Count > 0)
-            {
-                // If Ctrl is held, link with target group
-                if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
-                {
-                    await vm.LinkItemsAsync(droppedItems, target);
-                    vm.StatusMessage = "Linked items";
-                }
-                else
-                {
-                    await vm.MoveOrdersAsync(droppedItems, target);
-                    if (isSplitDrag)
-                    {
-                        vm.StatusMessage = "Split and moved order";
-                    }
-                    else
-                    {
-                        vm.StatusMessage = $"Moved {droppedItems.Count} item(s)";
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Merged card drop failed");
-        }
-    }
-
-    #endregion
-
-    #region Section Drag Handles (Split-Drag)
-
-    private System.Windows.Point _sectionDragStartPoint;
-
-    private void SectionDragHandle_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-    {
-        if (sender is FrameworkElement fe)
-        {
-            _sectionDragStartPoint = e.GetPosition(null);
-            e.Handled = true; // Prevent merged card drag from starting
-        }
-    }
-
-    private void SectionDragHandle_MouseMove(object sender, MouseEventArgs e)
-    {
-        if (e.LeftButton != MouseButtonState.Pressed) return;
-        if (sender is not Border border) return;
-
-        // Find the OrderItem from the Border's DataContext
-        var current = border.DataContext;
-        if (current is not OrderItem orderItem) return;
-
-        var pos = e.GetPosition(null);
-        if (Math.Abs(pos.X - _sectionDragStartPoint.X) < SystemParameters.MinimumHorizontalDragDistance &&
-            Math.Abs(pos.Y - _sectionDragStartPoint.Y) < SystemParameters.MinimumVerticalDragDistance) return;
-
-        // Drag this single order (will auto-unlink when dropped elsewhere)
-        var data = new DataObject();
-        data.SetData("OrderItemId", orderItem.Id);
-        data.SetData("SplitFromGroup", true); // Flag to indicate split-drag
-
-        DragDrop.DoDragDrop(border, data, DragDropEffects.Move);
-        e.Handled = true;
-    }
-
-    #endregion
-
-    #region Container Drop Zone (iOS-like behavior)
+    #region Container Drop Zone
 
     private void Container_DragOver(object sender, DragEventArgs e)
     {

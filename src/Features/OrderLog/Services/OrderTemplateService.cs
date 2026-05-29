@@ -10,9 +10,7 @@ using OrderLog.Features.Models;
 
 namespace OrderLog.Features.Services;
 
-/// <summary>
-/// Service for managing order templates (create, read, update, delete)
-/// </summary>
+/// <summary>CRUD service for order templates.</summary>
 public class OrderTemplateService
 {
     private static readonly JsonSerializerOptions s_readOptions = new() { PropertyNameCaseInsensitive = true };
@@ -29,9 +27,6 @@ public class OrderTemplateService
         _templatesFilePath = Path.Combine(AppPaths.OrderLogDir, "templates.json");
     }
 
-    /// <summary>
-    /// Load templates from file
-    /// </summary>
     public async Task<List<OrderTemplate>> LoadTemplatesAsync()
     {
         try
@@ -75,14 +70,10 @@ public class OrderTemplateService
         }
     }
 
-    /// <summary>
-    /// Save templates to file
-    /// </summary>
     public async Task SaveTemplatesAsync()
     {
         try
         {
-            // Ensure directory exists
             var directory = Path.GetDirectoryName(_templatesFilePath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
@@ -117,9 +108,6 @@ public class OrderTemplateService
         }
     }
 
-    /// <summary>
-    /// Add new template
-    /// </summary>
     public async Task<OrderTemplate> AddTemplateAsync(OrderTemplate template)
     {
         try
@@ -140,9 +128,6 @@ public class OrderTemplateService
         }
     }
 
-    /// <summary>
-    /// Update existing template
-    /// </summary>
     public async Task UpdateTemplateAsync(OrderTemplate template)
     {
         try
@@ -170,9 +155,6 @@ public class OrderTemplateService
         }
     }
 
-    /// <summary>
-    /// Delete template
-    /// </summary>
     public async Task DeleteTemplateAsync(Guid templateId)
     {
         try

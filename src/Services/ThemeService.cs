@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
@@ -34,7 +34,7 @@ public enum ShapeVariant
     Angular = 0,
     /// <summary>Generous radii — Fluent / WinUI-inspired softness.</summary>
     Rounded = 1,
-    /// <summary>Zero radii — hard-cornered brutalist look.</summary>
+    /// <summary>Zero radii — hard-cornered look.</summary>
     Sharp = 2,
 }
 

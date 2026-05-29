@@ -3,10 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace OrderLog.Helpers;
 
-/// <summary>
-/// Contains P/Invoke declarations for native Windows API methods.
-/// Centralizes all platform invoke calls for better maintainability.
-/// </summary>
+/// <summary>P/Invoke declarations for Win32 API methods.</summary>
 internal static class NativeMethods
 {
     /// <summary>

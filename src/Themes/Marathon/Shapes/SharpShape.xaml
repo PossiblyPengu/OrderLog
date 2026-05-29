@@ -3,9 +3,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <!-- ═══════════════════════════════════════════════════════════════════════
-       SHAPE PROFILE — Sharp (Brutalist / Flat)
+       SHAPE PROFILE — Sharp
        Zero-tolerance aesthetic.
-       No radii · Hard corners · Raw brutalist feel.
+       No radii · Hard corners · Flat feel.
   ═══════════════════════════════════════════════════════════════════════ -->
 
   <!-- ─── Semantic scale ───────────────────────────────────────────────── -->

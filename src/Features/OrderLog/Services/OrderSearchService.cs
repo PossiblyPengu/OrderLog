@@ -5,9 +5,6 @@ using OrderLog.Features.Models;
 
 namespace OrderLog.Features.Services;
 
-/// <summary>
-/// Represents a search match within an order item
-/// </summary>
 public class SearchMatch
 {
     public string FieldName { get; set; } = string.Empty;
@@ -16,9 +13,6 @@ public class SearchMatch
     public int Length { get; set; }
 }
 
-/// <summary>
-/// Service for searching and filtering order items
-/// </summary>
 public class OrderSearchService
 {
     /// <summary>
@@ -44,12 +38,6 @@ public class OrderSearchService
         );
     }
 
-    /// <summary>
-    /// Filters items by status (multi-select)
-    /// </summary>
-    /// <param name="items">Items to filter</param>
-    /// <param name="statuses">Statuses to include (empty = all)</param>
-    /// <returns>Filtered items</returns>
     public IEnumerable<OrderItem> FilterByStatus(IEnumerable<OrderItem> items, OrderItem.OrderStatus[]? statuses)
     {
         if (statuses == null || statuses.Length == 0)
@@ -58,13 +46,6 @@ public class OrderSearchService
         return items.Where(item => statuses.Contains(item.Status));
     }
 
-    /// <summary>
-    /// Filters items by date range
-    /// </summary>
-    /// <param name="items">Items to filter</param>
-    /// <param name="start">Start date (inclusive, null = no start limit)</param>
-    /// <param name="end">End date (inclusive, null = no end limit)</param>
-    /// <returns>Filtered items</returns>
     public IEnumerable<OrderItem> FilterByDateRange(IEnumerable<OrderItem> items, DateTime? start, DateTime? end)
     {
         var result = items;
@@ -82,12 +63,6 @@ public class OrderSearchService
         return result;
     }
 
-    /// <summary>
-    /// Filters items by color hex values
-    /// </summary>
-    /// <param name="items">Items to filter</param>
-    /// <param name="colorHexes">Color hex values to include (empty = all)</param>
-    /// <returns>Filtered items</returns>
     public IEnumerable<OrderItem> FilterByColor(IEnumerable<OrderItem> items, string[]? colorHexes)
     {
         if (colorHexes == null || colorHexes.Length == 0)
@@ -140,19 +115,6 @@ public class OrderSearchService
             item.NoteCategory == noteCategory.Value);
     }
 
-    /// <summary>
-    /// Applies all filters in sequence
-    /// </summary>
-    /// <param name="items">Items to filter</param>
-    /// <param name="query">Search query</param>
-    /// <param name="statuses">Status filter</param>
-    /// <param name="startDate">Start date filter</param>
-    /// <param name="endDate">End date filter</param>
-    /// <param name="colorHexes">Color filter</param>
-    /// <param name="noteType">Note type filter</param>
-    /// <param name="noteCategory">Note category filter (only applies to sticky notes)</param>
-    /// <param name="expandLinkedGroups">Whether to expand linked order groups</param>
-    /// <returns>Filtered items</returns>
     public IEnumerable<OrderItem> ApplyAllFilters(
         IEnumerable<OrderItem> items,
         string? query = null,
