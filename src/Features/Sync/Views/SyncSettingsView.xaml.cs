@@ -6,13 +6,14 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using OrderLog.Features.Sync.Backends.JsonBin;
+using OrderLog.Features.Sync.Helpers;
 using OrderLog.Features.Sync.Models;
 using OrderLog.Infrastructure.Services;
 
 namespace OrderLog.Features.Sync.Views;
 
 /// <summary>
-/// Settings panel for the JSONBin cloud sync backend. Resolves the
+/// Settings panel for the hosted-endpoint cloud sync backend. Resolves the
 /// <see cref="JsonBinSyncService"/> singleton from DI and exposes the
 /// configuration / pairing UI.
 /// </summary>
@@ -48,6 +49,7 @@ public partial class SyncSettingsView : UserControl
         }
 
         DeviceNameBox.Text = _cloud.Settings.DeviceName;
+        EndpointUrlBox.Text = SecretProtector.Unprotect(_cloud.Settings.JsonBinMasterKeyProtected) ?? string.Empty;
         RefreshStatusLines();
         RefreshPairUi();
         _cloud.PropertyChanged += OnCloudPropertyChanged;
@@ -83,7 +85,7 @@ public partial class SyncSettingsView : UserControl
 
         PeerCountLine.Text = _cloud.IsRunning
             ? $"Polling every {_cloud.Settings.JsonBinPollIntervalSeconds}s \u2014 {_cloud.KnownPeerCount} peer(s) seen"
-            : "Push/pull state via jsonbin.io \u2014 no admin or firewall changes required";
+            : "Push/pull state via hosted endpoint \u2014 no admin or firewall changes required";
     }
 
     private void RefreshPairUi()
@@ -143,32 +145,31 @@ public partial class SyncSettingsView : UserControl
         try { await _settingsService.SaveSettingsAsync(SettingsAppName, _cloud.Settings); } catch { }
     }
 
-    // ─── JSONBin pairing handlers ──────────────────────────────────────────
+    // ─── Hosted-endpoint pairing handlers ─────────────────────────────────
 
     private async void StartNewSync_Click(object sender, RoutedEventArgs e)
     {
         if (_cloud == null) return;
-        var key = MasterKeyBox.Password?.Trim();
-        if (string.IsNullOrEmpty(key))
+        var endpointUrl = EndpointUrlBox.Text?.Trim();
+        if (string.IsNullOrEmpty(endpointUrl))
         {
-            KeyStatusLine.Text = "Enter your JSONBin master key first.";
+            KeyStatusLine.Text = "Enter the sync endpoint URL first.";
             return;
         }
 
-        SetBusy(true, "Validating key...");
+        SetBusy(true, "Validating endpoint URL...");
         try
         {
-            if (!await JsonBinSyncService.ValidateKeyAsync(key))
+            if (!await JsonBinSyncService.ValidateEndpointAsync(endpointUrl))
             {
-                KeyStatusLine.Text = "That key didn't work \u2014 double-check it on jsonbin.io.";
+                KeyStatusLine.Text = "That endpoint URL is invalid \u2014 use a full http(s) URL.";
                 return;
             }
 
-            KeyStatusLine.Text = "Creating collection and bin...";
-            var code = await _cloud.PairAsHostAsync(key);
+            KeyStatusLine.Text = "Creating remote sync state...";
+            var code = await _cloud.PairAsHostAsync(endpointUrl);
             await _cloud.StartAsync();
             KeyStatusLine.Text = "Paired \u2014 share the pairing code with your other PC.";
-            MasterKeyBox.Password = string.Empty;
             RefreshPairUi();
             RefreshStatusLines();
             try { Clipboard.SetText(code); KeyStatusLine.Text += " (copied to clipboard)"; } catch { }
@@ -183,11 +184,11 @@ public partial class SyncSettingsView : UserControl
     private async void JoinSync_Click(object sender, RoutedEventArgs e)
     {
         if (_cloud == null) return;
-        var key = MasterKeyBox.Password?.Trim();
+        var endpointUrl = EndpointUrlBox.Text?.Trim();
         var code = JoinCodeBox.Text?.Trim();
-        if (string.IsNullOrEmpty(key))
+        if (string.IsNullOrEmpty(endpointUrl))
         {
-            KeyStatusLine.Text = "Enter your JSONBin master key first.";
+            KeyStatusLine.Text = "Enter the sync endpoint URL first.";
             return;
         }
         if (string.IsNullOrEmpty(code))
@@ -196,20 +197,19 @@ public partial class SyncSettingsView : UserControl
             return;
         }
 
-        SetBusy(true, "Validating key...");
+        SetBusy(true, "Validating endpoint URL...");
         try
         {
-            if (!await JsonBinSyncService.ValidateKeyAsync(key))
+            if (!await JsonBinSyncService.ValidateEndpointAsync(endpointUrl))
             {
-                KeyStatusLine.Text = "That key didn't work \u2014 double-check it on jsonbin.io.";
+                KeyStatusLine.Text = "That endpoint URL is invalid \u2014 use a full http(s) URL.";
                 return;
             }
 
             KeyStatusLine.Text = "Joining sync group...";
-            await _cloud.JoinAsync(key, code);
+            await _cloud.JoinAsync(endpointUrl, code);
             await _cloud.StartAsync();
             KeyStatusLine.Text = "Joined \u2014 changes will sync within a few seconds.";
-            MasterKeyBox.Password = string.Empty;
             JoinCodeBox.Text = string.Empty;
             RefreshPairUi();
             RefreshStatusLines();
@@ -224,7 +224,7 @@ public partial class SyncSettingsView : UserControl
     private async void Unpair_Click(object sender, RoutedEventArgs e)
     {
         if (_cloud == null) return;
-        if (MessageBox.Show("Unpair this PC from JSONBin sync? You'll need to re-enter the master key and pairing code to resume.",
+        if (MessageBox.Show("Unpair this PC from hosted sync? You'll need to re-enter the endpoint URL and pairing code to resume.",
                 "Unpair", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
         try
         {

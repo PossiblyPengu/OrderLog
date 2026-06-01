@@ -14,7 +14,7 @@
         <TextBlock TextWrapping="Wrap" Margin="0,0,0,12"
                    FontFamily="{DynamicResource FontMono}"
                    FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
-            <Run Text="Share orders between this PC and your other PC over the internet via jsonbin.io. No admin rights or firewall changes required."/>
+            <Run Text="Share orders between this PC and your other PC over the internet via a hosted sync endpoint (for example Firebase Realtime Database). No admin rights or firewall changes required."/>
         </TextBlock>
 
         <!-- Status -->
@@ -65,30 +65,30 @@
             </StackPanel>
         </Border>
 
-        <!-- Step 1: Master Key -->
+        <!-- Step 1: Endpoint URL -->
         <Border Background="{DynamicResource SurfaceHoverBrush}"
                 CornerRadius="{DynamicResource CardCornerRadius}"
                 Padding="16" Margin="0,0,0,12">
             <StackPanel>
-                <TextBlock Text="JSONBin Master Key"
+                <TextBlock Text="Sync Endpoint URL"
                            FontFamily="{DynamicResource FontMono}"
                            FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}"/>
                 <TextBlock TextWrapping="Wrap" Margin="0,2,0,8"
                            FontFamily="{DynamicResource FontMono}"
                            FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
-                    <Run Text="Sign up free at jsonbin.io, then copy your X-Master-Key. Stored encrypted on this PC (Windows DPAPI, per-user)."/>
+                    <Run Text="Paste the base HTTPS endpoint URL used for sync. Example: https://YOUR-PROJECT-default-rtdb.firebaseio.com/sync?auth=TOKEN. Stored encrypted on this PC (Windows DPAPI, per-user)."/>
                 </TextBlock>
                 <Border Background="{DynamicResource SurfaceBrush}"
                         BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="1"
                         CornerRadius="{DynamicResource RadiusSm}"
                         Padding="8,6">
-                    <PasswordBox x:Name="MasterKeyBox"
-                                 FontFamily="{DynamicResource FontMono}"
-                                 FontSize="12"
-                                 Background="Transparent"
-                                 BorderThickness="0"
-                                 Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <TextBox x:Name="EndpointUrlBox"
+                             FontFamily="{DynamicResource FontMono}"
+                             FontSize="12"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Foreground="{DynamicResource TextPrimaryBrush}"/>
                 </Border>
                 <TextBlock x:Name="KeyStatusLine" Margin="0,6,0,0"
                            FontFamily="{DynamicResource FontMono}"
@@ -109,7 +109,7 @@
                 <TextBlock TextWrapping="Wrap" Margin="0,2,0,10"
                            FontFamily="{DynamicResource FontMono}"
                            FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
-                    <Run Text="On the FIRST PC click &quot;Start New Sync&quot;. Copy the pairing code it gives you. On the SECOND PC paste that code and click &quot;Join Existing&quot;."/>
+                    <Run Text="On the FIRST PC click &quot;Start New Sync&quot; to create remote sync state at your endpoint. Copy the pairing code it gives you. On the SECOND PC paste the same endpoint URL, paste that code, and click &quot;Join Existing&quot;."/>
                 </TextBlock>
 
                 <!-- Existing pairing summary (visible only after pairing) -->

@@ -3,7 +3,7 @@ using System;
 namespace OrderLog.Features.Sync.Models;
 
 /// <summary>
-/// Persisted JSONBin sync configuration. Stored via the existing
+/// Persisted cloud sync configuration. Stored via the existing
 /// <c>SettingsService</c> under app name "OrderLogSync".
 /// </summary>
 public sealed class SyncSettings
@@ -18,14 +18,16 @@ public sealed class SyncSettings
     public string DeviceName { get; set; } = Environment.MachineName;
 
     /// <summary>
-    /// JSONBin master key, DPAPI-encrypted then base64-encoded. Empty when
-    /// cloud sync has not been configured.
+    /// Hosted sync endpoint URL, DPAPI-encrypted then base64-encoded. Empty
+    /// when cloud sync has not been configured.
+    /// Property name is retained for backward compatibility.
     /// </summary>
     public string JsonBinMasterKeyProtected { get; set; } = string.Empty;
 
     /// <summary>
-    /// Id of the single shared bin that all peers in this sync group read
-    /// and write. Also acts as the pairing code copied between PCs.
+    /// Pairing code identifying the single shared state file that all peers
+    /// in this sync group read and write. Property name is retained for
+    /// backward compatibility.
     /// </summary>
     public string JsonBinSharedBinId { get; set; } = string.Empty;
 
